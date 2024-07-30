@@ -20,7 +20,6 @@ public class LauncherController {
     @PostMapping("launch")
     public GameArtifactInfo launch(@NotNull HttpServletRequest request) throws Exception {
         LaunchRequest launchRequest = new Gson().fromJson(new String(request.getInputStream().readAllBytes()), LaunchRequest.class);
-        List<Artifact> artifacts = new ArrayList<>();
         Textures textures = Textures.builder().build(); // todo parse textures from files
         // todo find artifacts
         return GameArtifactInfo.builder()
@@ -28,7 +27,7 @@ public class LauncherController {
                 .textures(textures)
                 .launchTypeData(LaunchTypeData.builder()
                         .mainClass(config.getLunarMain())
-                        .artifacts(artifacts)
+                        .artifacts(findArtifacts(launchRequest))
                         .build())
                 .build();
         // todo
@@ -36,10 +35,22 @@ public class LauncherController {
 
     @GetMapping("metadata")
     public LauncherMetadata metadata() throws Exception {
-        List<LauncherBlogpost> blogposts = new ArrayList<>();
-        // todo
         return LauncherMetadata.builder()
-                .blogPosts(blogposts)
+                .versions(findVersions())
+                .blogPosts(findBlogposts())
+                .alert(config.getAlert())
                 .build();
+    }
+
+    private List<LunarVersion> findVersions() throws Exception {
+        return List.of(); // todo
+    }
+
+    private List<LauncherBlogpost> findBlogposts() throws Exception {
+        return List.of(); // todo
+    }
+
+    private List<Artifact> findArtifacts(LaunchRequest launchRequest) throws Exception {
+        return List.of(); // todo
     }
 }
