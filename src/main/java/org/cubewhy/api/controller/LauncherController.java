@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotNull;
 import org.cubewhy.api.entity.*;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,5 +32,14 @@ public class LauncherController {
                         .build())
                 .build();
         // todo
+    }
+
+    @GetMapping("metadata")
+    public GameMetadata metadata() throws Exception {
+        List<GameBlogpost> blogposts = new ArrayList<>();
+        // todo
+        return GameMetadata.builder()
+                .blogPosts(blogposts)
+                .build();
     }
 }
