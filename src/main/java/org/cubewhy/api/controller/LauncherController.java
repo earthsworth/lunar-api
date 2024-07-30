@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import static org.cubewhy.api.LunarApiApplication.config;
+
 @RestController
 @RequestMapping("/launcher")
 public class LauncherController {
@@ -18,7 +20,7 @@ public class LauncherController {
         LaunchRequest launchRequest = new Gson().fromJson(new String(request.getInputStream().readAllBytes()), LaunchRequest.class);
         return GameArtifactInfo.builder()
                 .launchTypeData(LaunchTypeData.builder()
-                        .mainClass("com.moonsworth.lunar.genesis.Genesis")
+                        .mainClass(config.getLunarMain())
                         .build())
                 .build();
         // todo
