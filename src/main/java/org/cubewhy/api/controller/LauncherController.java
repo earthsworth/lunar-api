@@ -35,10 +35,10 @@ public class LauncherController {
     }
 
     @GetMapping("metadata")
-    public GameMetadata metadata() throws Exception {
-        List<GameBlogpost> blogposts = new ArrayList<>();
+    public LauncherMetadata metadata() throws Exception {
+        List<LauncherBlogpost> blogposts = new ArrayList<>();
         // todo
-        return GameMetadata.builder()
+        return LauncherMetadata.builder()
                 .blogPosts(blogposts)
                 .build();
     }
