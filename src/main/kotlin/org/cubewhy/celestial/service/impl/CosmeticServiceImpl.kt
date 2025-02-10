@@ -69,6 +69,7 @@ class CosmeticServiceImpl : CosmeticService {
             .setLogoColor(user.role.toLunarClientColor())
             .setRankName(user.role.rank)
             .addAllAvailableLunarPlusColors(PlusColor.entries.map { i -> i.toLunarClientColor() }.toList())
+            .addAllOwnedCosmeticIds(cosmeticList.map { it.cosmeticId }.toList())
             .addAllOwnedCosmetics(cosmeticList.map { it.toUserCosmetic().toOwnedCosmetic() }.toList())
             .setLogoAlwaysShow(true)
             .setHasAllCosmeticsFlag(true)
