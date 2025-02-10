@@ -1,0 +1,23 @@
+server:
+  port: 8888
+
+spring:
+  application:
+    name: lunar-api
+  data:
+    mongodb:
+      uri: mongodb://root:password@localhost/lcBackend?authSource=admin
+    redis:
+      url: redis://172.17.0.1:6379/0
+  security:
+    jwt:
+      key: 3cfa76ef14937c1c0ea519f8fc057a80fcd04a7420f8e8bcd0a7567c272e007b
+      # How long will the jwt expire (unit: day)
+      expire: 1
+
+lunar:
+  friend:
+    # Add a bot to user's friend list that users can use commands
+    bot:
+      enabled: true
+      username: lunar_bot

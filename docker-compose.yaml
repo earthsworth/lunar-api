@@ -1,0 +1,16 @@
+services:
+  mongo:
+    image: mongo:latest
+    container_name: lcBackendMongo
+    ports:
+      - '27017:27017'
+    environment:
+      - 'MONGO_INITDB_ROOT_USERNAME=root'
+      - 'MONGO_INITDB_ROOT_PASSWORD=password'
+      - 'MONGO_INITDB_DATABASE=lunarclient'
+    volumes:
+      - mongo:/data/db
+    restart: always
+volumes:
+  mongo:
+    driver: local
