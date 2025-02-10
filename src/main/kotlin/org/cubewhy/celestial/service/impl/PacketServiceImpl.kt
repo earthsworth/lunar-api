@@ -6,6 +6,7 @@ import com.lunarclient.websocket.handshake.v1.WebsocketHandshakeV1
 import com.lunarclient.websocket.protocol.v1.WebsocketProtocolV1
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.cubewhy.celestial.entity.User
+import org.cubewhy.celestial.service.CosmeticService
 import org.cubewhy.celestial.service.PacketService
 import org.cubewhy.celestial.service.UserService
 import org.cubewhy.celestial.util.JwtUtil
@@ -17,6 +18,7 @@ import java.time.Instant
 @Service
 data class PacketServiceImpl(
     val userService: UserService,
+    val cosmeticService: CosmeticService,
     val jwtUtil: JwtUtil
 ) : PacketService {
     companion object {
@@ -63,6 +65,11 @@ data class PacketServiceImpl(
     ): GeneratedMessage? {
         val user = session.attributes["user"] as User
         logger.info { "User ${user.username} send packet ${message.service}:${message.method}" }
+        when (message.service) {
+            "lunarclient.websocket.cosmetic.v1.CosmeticService" -> {
+                return cosmeticService.process(message.method, message.input, session, user)
+            }
+        }
         return null
     }
 }

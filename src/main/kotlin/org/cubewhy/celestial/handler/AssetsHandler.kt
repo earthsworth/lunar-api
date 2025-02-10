@@ -23,19 +23,18 @@ data class AssetsHandler(
     override fun handle(session: WebSocketSession): Mono<Void> {
         return session.receive().concatMap { message ->
             if (!session.attributes.containsKey("user")) {
+                // process handshake
                 val pbMessage = WebsocketHandshakeV1.Handshake.parseFrom(message.payload.asInputStream())
                 mono {
-
-                    // process handshake
-
                     session.attributes["user"] = packetService.processHandshake(pbMessage, session)
                     null // no response
                 }
             } else {
-                val pbMessage = WebsocketProtocolV1.ServerboundWebSocketMessage.parseFrom(message.payload.asInputStream())
+                // process common message
+                val pbMessage =
+                    WebsocketProtocolV1.ServerboundWebSocketMessage.parseFrom(message.payload.asInputStream())
                 mono {
                     packetService.process(pbMessage, session)?.wrapCommon(pbMessage.requestId)
-
                 }
             }
         }.concatMap { message ->

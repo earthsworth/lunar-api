@@ -18,5 +18,8 @@ data class User(
     val createdAt: Instant = Instant.now(),
     val lastSeenAt: Instant = Instant.now(),
     val allowFriendRequests: Boolean = true,
-    val clothCloak: Boolean = true
+    val clothCloak: Boolean = true,
+
+    val activeCosmetics: List<UserCosmetic> = mutableListOf(),
+    val equippedCosmetics: List<UserCosmetic> = mutableListOf()
 )

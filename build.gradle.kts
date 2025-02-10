@@ -20,7 +20,8 @@ repositories {
 }
 
 dependencies {
-	implementation("com.auth0:java-jwt:4.4.0")
+    implementation("com.opencsv:opencsv:5.10")
+    implementation("com.auth0:java-jwt:4.4.0")
 	implementation("io.github.oshai:kotlin-logging-jvm:7.0.3")
 	implementation("com.google.protobuf:protobuf-kotlin:4.29.3")
 	implementation("org.springframework.boot:spring-boot-starter-data-mongodb-reactive")
