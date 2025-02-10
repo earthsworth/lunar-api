@@ -12,6 +12,7 @@ import org.cubewhy.celestial.util.JwtUtil
 import org.cubewhy.celestial.util.toUUIDString
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.socket.WebSocketSession
+import java.time.Instant
 
 @Service
 data class PacketServiceImpl(
@@ -38,11 +39,20 @@ data class PacketServiceImpl(
         return null // unknown packet
     }
 
-    override suspend fun processHandshake(message: WebsocketHandshakeV1.Handshake, session: WebSocketSession): User {
+    override suspend fun processHandshake(message: WebsocketHandshakeV1.Handshake, session: WebSocketSession): User? {
         // this is the handshake packet (first packet)
         // parse packet
-        // todo verify jwt
-        val user = userService.loadUserByUuid(message.identity.player.uuid.toUUIDString())
+        val jwt = message.identity.authenticatorJwt
+        // resolve JWT
+        val decodedJWT = jwtUtil.resolveJwt(jwt)
+        if (decodedJWT == null || Instant.now().isAfter(decodedJWT.expiresAtAsInstant)) {
+            return null // bad jwt
+        }
+        val providedUUID = message.identity.player.uuid.toUUIDString()
+        if (decodedJWT.claims["mcuuid"]?.asString() != providedUUID) {
+            return null // uuid not match
+        }
+        val user = userService.loadUserByUuid(providedUUID)
         logger.info { "User ${user.username} logged in to the assets service" }
         return user
     }
