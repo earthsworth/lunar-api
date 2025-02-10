@@ -2,6 +2,7 @@ package org.cubewhy.celestial.handler
 
 import com.lunarclient.websocket.handshake.v1.WebsocketHandshakeV1
 import com.lunarclient.websocket.protocol.v1.WebsocketProtocolV1
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.reactor.mono
 import org.cubewhy.celestial.service.PacketService
 import org.cubewhy.celestial.util.wrapCommon
@@ -15,34 +16,35 @@ import reactor.kotlin.core.publisher.toMono
 data class AssetsHandler(
     val packetService: PacketService
 ) : WebSocketHandler {
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
+
     override fun handle(session: WebSocketSession): Mono<Void> {
-        return Mono.defer {
+        return session.receive().concatMap { message ->
             if (!session.attributes.containsKey("user")) {
-                handleHandshake(session)
+                val pbMessage = WebsocketHandshakeV1.Handshake.parseFrom(message.payload.asInputStream())
+                mono {
+
+                    // process handshake
+
+                    session.attributes["user"] = packetService.processHandshake(pbMessage, session)
+                    null // no response
+                }
             } else {
-                handleCommon(session)
-            }
-        }
-    }
+                val pbMessage = WebsocketProtocolV1.ServerboundWebSocketMessage.parseFrom(message.payload.asInputStream())
+                mono {
+                    packetService.process(pbMessage, session)?.wrapCommon(pbMessage.requestId)
 
-    private fun handleHandshake(session: WebSocketSession): Mono<Void> {
-        return session.receive()
-            .flatMap { message -> mono { WebsocketHandshakeV1.Handshake.parseDelimitedFrom(message.payload.asInputStream()) } }
-            .flatMap { message ->
-                mono { packetService.processHandshake(message, session) }
+                }
             }
-            .then()
-    }
-
-    private fun handleCommon(session: WebSocketSession): Mono<Void> {
-        return session.receive()
-            .flatMap { message -> mono { WebsocketProtocolV1.ServerboundWebSocketMessage.parseDelimitedFrom(message.payload.asInputStream()) } }
-            .flatMap { message ->
-                mono { packetService.process(message, session)?.wrapCommon(message.requestId) }
-            }
-            .flatMap { message ->
-                session.send(session.binaryMessage { it.wrap(message.toByteArray()) }.toMono())
-            } // convent message and send
-            .then()
+        }.concatMap { message ->
+            session.send(session.binaryMessage { it.wrap(message.toByteArray()) }.toMono()) // send response
+        }.doOnError { err ->
+            logger.error(err) { "Failed to handle websocket message" }
+        }.doFinally { signalType ->
+            // remove session id and close session
+            logger.info { "Websocket terminated [${signalType.name}]" }
+        }.then()
     }
 }

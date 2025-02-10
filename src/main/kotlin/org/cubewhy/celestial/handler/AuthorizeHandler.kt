@@ -1,6 +1,7 @@
 package org.cubewhy.celestial.handler
 
 import com.lunarclient.authenticator.v1.LunarclientAuthenticatorV1
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.reactor.mono
 import org.cubewhy.celestial.service.PacketService
 import org.cubewhy.celestial.util.wrapAuthenticator
@@ -14,12 +15,17 @@ import reactor.kotlin.core.publisher.toMono
 data class AuthorizeHandler(
     private val packetService: PacketService
 ) : WebSocketHandler {
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
+
     override fun handle(session: WebSocketSession): Mono<Void> {
         return session.receive()
-            .flatMap { message -> mono { LunarclientAuthenticatorV1.ServerboundWebSocketMessage.parseDelimitedFrom(message.payload.asInputStream()) } } // parse message
+            .flatMap { message -> LunarclientAuthenticatorV1.ServerboundWebSocketMessage.parseFrom(message.payload.asInputStream()).toMono() } // parse message
             .flatMap { message -> mono { packetService.processAuthorize(message) } } // process message
             .flatMap { message -> message.wrapAuthenticator().toMono() } // wrap message
             .flatMap { message -> session.send(session.binaryMessage { it.wrap(message.toByteArray()) }.toMono()) } // convent message and send
+            .doOnError { e -> logger.error(e) { "WebSocket processing error" } }
             .then()
     }
 }

@@ -38,17 +38,19 @@ data class PacketServiceImpl(
         return null // unknown packet
     }
 
-    override suspend fun processHandshake(message: WebsocketHandshakeV1.Handshake, session: WebSocketSession) {
-        if (session.attributes.getOrDefault("user", null) == null) {
-            // this is the handshake packet (first packet)
-            // parse packet
-            val user = userService.loadUserByUuid(message.identity.player.uuid.toUUIDString())
-            logger.info { "User ${user.username} logged in to the assets service" }
-            session.attributes["user"] = user
-        }
+    override suspend fun processHandshake(message: WebsocketHandshakeV1.Handshake, session: WebSocketSession): User {
+        // this is the handshake packet (first packet)
+        // parse packet
+        // todo verify jwt
+        val user = userService.loadUserByUuid(message.identity.player.uuid.toUUIDString())
+        logger.info { "User ${user.username} logged in to the assets service" }
+        return user
     }
 
-    override suspend fun process(message: WebsocketProtocolV1.ServerboundWebSocketMessage, session: WebSocketSession): GeneratedMessage? {
+    override suspend fun process(
+        message: WebsocketProtocolV1.ServerboundWebSocketMessage,
+        session: WebSocketSession
+    ): GeneratedMessage? {
         val user = session.attributes["user"] as User
         logger.info { "User ${user.username} send packet ${message.service}:${message.method}" }
         return null
