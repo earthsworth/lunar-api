@@ -103,7 +103,7 @@ class CosmeticServiceImpl(
                 // push refresh event
                 targetSession?.pushEvent(WebsocketCosmeticV1.RefreshCosmeticsPush.newBuilder().build())
             }
-        session.pushCosmeticEvent(user, message.settings) // push event to self
+//        session.pushCosmeticEvent(user, message.settings) // push event to self
         return WebsocketCosmeticV1.UpdateCosmeticSettingsResponse.getDefaultInstance()
     }
 
