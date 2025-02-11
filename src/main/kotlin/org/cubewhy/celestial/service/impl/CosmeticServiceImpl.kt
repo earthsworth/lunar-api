@@ -98,26 +98,26 @@ class CosmeticServiceImpl(
         // push settings to other players
         subscriptionService.getWorldPlayerUuids(session)
             .forEach { uuid ->
-                getSession(uuid)?.pushCosmeticEvents(uuid, user, message.settings)
+                val targetSession = getSession(uuid)
+                targetSession?.pushCosmeticEvent(user, message.settings)
+                // push refresh event
+                targetSession?.pushEvent(WebsocketCosmeticV1.RefreshCosmeticsPush.newBuilder().build())
             }
-        session.pushCosmeticEvents(user.uuid, user, message.settings) // push event to self
+        session.pushCosmeticEvent(user, message.settings) // push event to self
         return WebsocketCosmeticV1.UpdateCosmeticSettingsResponse.getDefaultInstance()
     }
 
-    private suspend fun WebSocketSession.pushCosmeticEvents(uuid: String, user: User, settings: WebsocketCosmeticV1.CustomizableCosmeticSettings) {
+    private suspend fun WebSocketSession.pushCosmeticEvent(user: User, settings: WebsocketCosmeticV1.CustomizableCosmeticSettings) {
         // push cosmetics event
-        this.pushEvent(this@CosmeticServiceImpl.buildCosmeticsPush(uuid, user, settings))
-        // push refresh event
-        this.pushEvent(WebsocketCosmeticV1.RefreshCosmeticsPush.newBuilder().build())
+        this.pushEvent(this@CosmeticServiceImpl.buildCosmeticsPush(user, settings))
     }
 
     private fun buildCosmeticsPush(
-        uuid: String,
         user: User,
         settings: WebsocketCosmeticV1.CustomizableCosmeticSettings
     ) =
         WebsocketCosmeticV1.PlayerCosmeticsPush.newBuilder().apply {
-            this.playerUuid = uuid.toLunarClientUUID()
+            this.playerUuid = user.uuid.toLunarClientUUID()
             this.settings = settings
             this.logoColor = user.role.toLunarClientColor()
             this.logoAlwaysShow = user.cosmetic.logoAlwaysShow
