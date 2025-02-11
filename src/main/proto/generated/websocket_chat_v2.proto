@@ -2,7 +2,7 @@
 // For learning purposes only
 // https://t.me/earthsworth
 syntax = "proto3";
-package com.lunarclient.websocket.chat.v2;
+package lunarclient.websocket.chat.v2;
 
 import "google/protobuf/any.proto";
 import "google/protobuf/struct.proto";
@@ -15,143 +15,149 @@ import "google/protobuf/source_context.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/type.proto";
 import "google/protobuf/wrappers.proto";
-
+        
 import "generated/lunarclient_common_v1.proto";
+
+option java_package = "com.lunarclient.websocket.chat.v2";
+
+
 // Analysis
 // 21 packets stored.
 // File name (Generated): websocket_chat_v2.proto
-
+        
 // Message struct
-
+        
 // From com.lunarclient.websocket.chat.v2.Chat
 message Chat {
-
-  optional chat.v2.ChatRef chatId = 1; // Type: com.lunarclient.websocket.chat.v2.ChatRef
-  repeated common.v1.UuidAndUsername participants = 2; // Type: com.lunarclient.common.v1.UuidAndUsername
-  chat.v2.ChatType type = 3; // Type: com.lunarclient.websocket.chat.v2.ChatType
-  repeated chat.v2.ChatMessage recentMessages = 4; // Type: com.lunarclient.websocket.chat.v2.ChatMessage
-
+  
+  optional  chat.v2.ChatRef chat_id = 1; // Type: com.lunarclient.websocket.chat.v2.ChatRef
+   repeated common.v1.UuidAndUsername participants = 2; // Type: com.lunarclient.common.v1.UuidAndUsername
+    chat.v2.ChatType type = 3; // Type: com.lunarclient.websocket.chat.v2.ChatType
+   repeated chat.v2.ChatMessage recent_messages = 4; // Type: com.lunarclient.websocket.chat.v2.ChatMessage
+  
 }
 
 // From com.lunarclient.websocket.chat.v2.ChatMessage
 message ChatMessage {
-
-  optional common.v1.Uuid chatMessageId = 1; // Type: com.lunarclient.common.v1.Uuid
-  optional google.protobuf.Timestamp sentAt = 2; // Type: google.protobuf.Timestamp
-  optional common.v1.Uuid sender = 3; // Type: com.lunarclient.common.v1.Uuid
-  optional chat.v2.ChatMessageContents contents = 4; // Type: com.lunarclient.websocket.chat.v2.ChatMessageContents
-
+  
+  optional  common.v1.Uuid chat_message_id = 1; // Type: com.lunarclient.common.v1.Uuid
+  optional  google.protobuf.Timestamp sent_at = 2; // Type: google.protobuf.Timestamp
+  optional  common.v1.Uuid sender = 3; // Type: com.lunarclient.common.v1.Uuid
+  optional  chat.v2.ChatMessageContents contents = 4; // Type: com.lunarclient.websocket.chat.v2.ChatMessageContents
+  
 }
 
 // From com.lunarclient.websocket.chat.v2.ChatMessageContents
 message ChatMessageContents {
   oneof contents {
-    string plainText = 1; // Type: string
+    string plain_text = 1; // Type: string
   }
 }
 
 // From com.lunarclient.websocket.chat.v2.ChatMessagePush
 message ChatMessagePush {
-
-  int32 chatId = 1; // Type: int32
-  optional chat.v2.ChatMessage chatMessage = 2; // Type: com.lunarclient.websocket.chat.v2.ChatMessage
-
+  
+    int32 chat_id = 1; // Type: int32
+  optional  chat.v2.ChatMessage chat_message = 2; // Type: com.lunarclient.websocket.chat.v2.ChatMessage
+  
 }
 
 // From com.lunarclient.websocket.chat.v2.ChatRef
 message ChatRef {
   oneof target {
-    common.v1.Uuid chatId = 1; // Type: com.lunarclient.common.v1.Uuid
-    common.v1.Uuid friendUuid = 2; // Type: com.lunarclient.common.v1.Uuid
+    common.v1.Uuid chat_id = 1; // Type: com.lunarclient.common.v1.Uuid
+    common.v1.Uuid friend_uuid = 2; // Type: com.lunarclient.common.v1.Uuid
   }
 }
 
 // From com.lunarclient.websocket.chat.v2.CreateChatRequest
 message CreateChatRequest {
-
-  repeated common.v1.Uuid participantUuids = 1; // Type: com.lunarclient.common.v1.Uuid
-  chat.v2.ChatType chatType = 2; // Type: com.lunarclient.websocket.chat.v2.ChatType
-
+  
+   repeated common.v1.Uuid participant_uuids = 1; // Type: com.lunarclient.common.v1.Uuid
+    chat.v2.ChatType chat_type = 2; // Type: com.lunarclient.websocket.chat.v2.ChatType
+  
 }
 
 // From com.lunarclient.websocket.chat.v2.CreateChatResponse
 message CreateChatResponse {
-
-  chat.v2.CreateChatResponse_Status status = 1; // Type: com.lunarclient.websocket.chat.v2.CreateChatResponse_Status
-
+  
+    chat.v2.CreateChatResponse_Status status = 1; // Type: com.lunarclient.websocket.chat.v2.CreateChatResponse_Status
+  
 }
 
 // From com.lunarclient.websocket.chat.v2.InviteToChatRequest
 message InviteToChatRequest {
-
-  int32 chatId = 1; // Type: int32
-  optional common.v1.Uuid participantUuid = 2; // Type: com.lunarclient.common.v1.Uuid
-
+  
+    int32 chat_id = 1; // Type: int32
+  optional  common.v1.Uuid participant_uuid = 2; // Type: com.lunarclient.common.v1.Uuid
+  
 }
 
 // From com.lunarclient.websocket.chat.v2.InviteToChatResponse
 message InviteToChatResponse {
-
-  chat.v2.InviteToChatResponse_Status status = 1; // Type: com.lunarclient.websocket.chat.v2.InviteToChatResponse_Status
-
+  
+    chat.v2.InviteToChatResponse_Status status = 1; // Type: com.lunarclient.websocket.chat.v2.InviteToChatResponse_Status
+  
 }
 
 // From com.lunarclient.websocket.chat.v2.LeaveChatRequest
 message LeaveChatRequest {
-
-  int32 chatId = 1; // Type: int32
-
+  
+    int32 chat_id = 1; // Type: int32
+  
 }
 
 // From com.lunarclient.websocket.chat.v2.LeaveChatResponse
 message LeaveChatResponse {
-
-
+  
+  
+  
 }
 
 // From com.lunarclient.websocket.chat.v2.LoadChatMessagesRequest
 message LoadChatMessagesRequest {
-
-  int32 chatId = 1; // Type: int32
-  int32 beforeMessageId = 2; // Type: int32
-  int32 numMessages = 3; // Type: int32
-
+  
+    int32 chat_id = 1; // Type: int32
+    int32 before_message_id = 2; // Type: int32
+    int32 num_messages = 3; // Type: int32
+  
 }
 
 // From com.lunarclient.websocket.chat.v2.LoadChatMessagesResponse
 message LoadChatMessagesResponse {
-
-  repeated chat.v2.ChatMessage messages = 1; // Type: com.lunarclient.websocket.chat.v2.ChatMessage
-
+  
+   repeated chat.v2.ChatMessage messages = 1; // Type: com.lunarclient.websocket.chat.v2.ChatMessage
+  
 }
 
 // From com.lunarclient.websocket.chat.v2.LoginRequest
 message LoginRequest {
-
-
+  
+  
+  
 }
 
 // From com.lunarclient.websocket.chat.v2.LoginResponse
 message LoginResponse {
-
-  repeated chat.v2.Chat chats = 1; // Type: com.lunarclient.websocket.chat.v2.Chat
-
+  
+   repeated chat.v2.Chat chats = 1; // Type: com.lunarclient.websocket.chat.v2.Chat
+  
 }
 
 // From com.lunarclient.websocket.chat.v2.SendChatMessageRequest
 message SendChatMessageRequest {
   oneof recipient {
-    int32 chatId = 1; // Type: int32
-    common.v1.Uuid recipientUuid = 2; // Type: com.lunarclient.common.v1.Uuid
-    string chatMessage = 3; // Type: string
+    int32 chat_id = 1; // Type: int32
+    common.v1.Uuid recipient_uuid = 2; // Type: com.lunarclient.common.v1.Uuid
+    string chat_message = 3; // Type: string
   }
 }
 
 // From com.lunarclient.websocket.chat.v2.SendChatMessageResponse
 message SendChatMessageResponse {
-
-  chat.v2.SendChatMessageResponse_Status status = 1; // Type: com.lunarclient.websocket.chat.v2.SendChatMessageResponse_Status
-
+  
+    chat.v2.SendChatMessageResponse_Status status = 1; // Type: com.lunarclient.websocket.chat.v2.SendChatMessageResponse_Status
+  
 }
 
 // From com.lunarclient.websocket.chat.v2.ChatType

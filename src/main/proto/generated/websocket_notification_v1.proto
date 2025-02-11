@@ -2,7 +2,7 @@
 // For learning purposes only
 // https://t.me/earthsworth
 syntax = "proto3";
-package com.lunarclient.websocket.notification.v1;
+package lunarclient.websocket.notification.v1;
 
 import "google/protobuf/any.proto";
 import "google/protobuf/struct.proto";
@@ -15,92 +15,99 @@ import "google/protobuf/source_context.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/type.proto";
 import "google/protobuf/wrappers.proto";
-
+        
 import "generated/lunarclient_common_v1.proto";
+
+option java_package = "com.lunarclient.websocket.notification.v1";
+
+
 // Analysis
 // 12 packets stored.
 // File name (Generated): websocket_notification_v1.proto
-
+        
 // Message struct
-
+        
 // From com.lunarclient.websocket.notification.v1.DisplayChatMessagePush
 message DisplayChatMessagePush {
-
-  string chatMessage = 1; // Type: string
-
+  
+    string chat_message = 1; // Type: string
+  
 }
 
 // From com.lunarclient.websocket.notification.v1.DisplayNotificationPush
 message DisplayNotificationPush {
-
-  string notificationTitle = 1; // Type: string
-  string notificationMessage = 2; // Type: string
-
+  
+    string notification_title = 1; // Type: string
+    string notification_message = 2; // Type: string
+  
 }
 
 // From com.lunarclient.websocket.notification.v1.LoginRequest
 message LoginRequest {
-
-
+  
+  
+  
 }
 
 // From com.lunarclient.websocket.notification.v1.LoginResponse
 message LoginResponse {
-
-  repeated notification.v1.Notification notifications = 1; // Type: com.lunarclient.websocket.notification.v1.Notification
-
+  
+   repeated notification.v1.Notification notifications = 1; // Type: com.lunarclient.websocket.notification.v1.Notification
+  
 }
 
 // From com.lunarclient.websocket.notification.v1.NewNotificationPush
 message NewNotificationPush {
-
-  optional notification.v1.Notification notification = 1; // Type: com.lunarclient.websocket.notification.v1.Notification
-
+  
+  optional  notification.v1.Notification notification = 1; // Type: com.lunarclient.websocket.notification.v1.Notification
+  
 }
 
 // From com.lunarclient.websocket.notification.v1.Notification
 message Notification {
-
-  optional common.v1.Uuid id = 1; // Type: com.lunarclient.common.v1.Uuid
-  string title = 2; // Type: string
-  notification.v1.Notification_NotificationType type = 3; // Type: com.lunarclient.websocket.notification.v1.Notification_NotificationType
-  optional google.protobuf.Timestamp sentAt = 4; // Type: google.protobuf.Timestamp
-  optional google.protobuf.Timestamp readAt = 5; // Type: google.protobuf.Timestamp
-  string metadata = 6; // Type: string
-
+  
+  optional  common.v1.Uuid id = 1; // Type: com.lunarclient.common.v1.Uuid
+    string title = 2; // Type: string
+    notification.v1.Notification_NotificationType type = 3; // Type: com.lunarclient.websocket.notification.v1.Notification_NotificationType
+  optional  google.protobuf.Timestamp sent_at = 4; // Type: google.protobuf.Timestamp
+  optional  google.protobuf.Timestamp read_at = 5; // Type: google.protobuf.Timestamp
+    string metadata = 6; // Type: string
+  
 }
 
 // From com.lunarclient.websocket.notification.v1.OpenAlertRequest
 message OpenAlertRequest {
-
-  int32 alertId = 1; // Type: int32
-
+  
+    int32 alert_id = 1; // Type: int32
+  
 }
 
 // From com.lunarclient.websocket.notification.v1.OpenAlertResponse
 message OpenAlertResponse {
-
-
+  
+  
+  
 }
 
 // From com.lunarclient.websocket.notification.v1.OpenNotificationRequest
 message OpenNotificationRequest {
-
-  optional common.v1.Uuid notificationId = 1; // Type: com.lunarclient.common.v1.Uuid
-
+  
+  optional  common.v1.Uuid notification_id = 1; // Type: com.lunarclient.common.v1.Uuid
+  
 }
 
 // From com.lunarclient.websocket.notification.v1.OpenNotificationResponse
 message OpenNotificationResponse {
-
-
+  
+  
+  
 }
 
 // From com.lunarclient.websocket.notification.v1.RemoveNotificationPush
 message RemoveNotificationPush {
-
-  optional common.v1.Uuid id = 1; // Type: com.lunarclient.common.v1.Uuid
-
+  
+  optional  common.v1.Uuid id = 1; // Type: com.lunarclient.common.v1.Uuid
+  
 }
 
 // From com.lunarclient.websocket.notification.v1.Notification$NotificationType

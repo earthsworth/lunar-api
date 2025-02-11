@@ -2,7 +2,7 @@
 // For learning purposes only
 // https://t.me/earthsworth
 syntax = "proto3";
-package com.lunarclient.websocket.server.v1;
+package lunarclient.websocket.server.v1;
 
 import "google/protobuf/any.proto";
 import "google/protobuf/struct.proto";
@@ -15,56 +15,60 @@ import "google/protobuf/source_context.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/type.proto";
 import "google/protobuf/wrappers.proto";
-
+        
 import "generated/lunarclient_common_v1.proto";
+
+option java_package = "com.lunarclient.websocket.server.v1";
+
+
 // Analysis
 // 7 packets stored.
 // File name (Generated): websocket_server_v1.proto
-
+        
 // Message struct
-
+        
 // From com.lunarclient.websocket.server.v1.CheckServerRecommendationsRequest
 message CheckServerRecommendationsRequest {
-
-  string serverIp = 1; // Type: string
-
+  
+    string server_ip = 1; // Type: string
+  
 }
 
 // From com.lunarclient.websocket.server.v1.CheckServerRecommendationsResponse
 message CheckServerRecommendationsResponse {
-
-  optional server.v1.ServerRecommendations recommendations = 1; // Type: com.lunarclient.websocket.server.v1.ServerRecommendations
-
+  
+  optional  server.v1.ServerRecommendations recommendations = 1; // Type: com.lunarclient.websocket.server.v1.ServerRecommendations
+  
 }
 
 // From com.lunarclient.websocket.server.v1.GetPlayerCountsRequest
 message GetPlayerCountsRequest {
-
-  repeated string serverIds = 1; // Type: string
-
+  
+   repeated string server_ids = 1; // Type: string
+  
 }
 
 // From com.lunarclient.websocket.server.v1.GetPlayerCountsResponse$Server
 message GetPlayerCountsResponse_Server {
-
-  string serverId = 1; // Type: string
-  server.v1.GetPlayerCountsResponse_Server_Status status = 2; // Type: com.lunarclient.websocket.server.v1.GetPlayerCountsResponse_Server_Status
-  int32 onlineCount = 3; // Type: int32
-
+  
+    string server_id = 1; // Type: string
+    server.v1.GetPlayerCountsResponse_Server_Status status = 2; // Type: com.lunarclient.websocket.server.v1.GetPlayerCountsResponse_Server_Status
+    int32 online_count = 3; // Type: int32
+  
 }
 
 // From com.lunarclient.websocket.server.v1.GetPlayerCountsResponse
 message GetPlayerCountsResponse {
-
-  repeated server.v1.GetPlayerCountsResponse_Server servers = 1; // Type: com.lunarclient.websocket.server.v1.GetPlayerCountsResponse_Server
-
+  
+   repeated server.v1.GetPlayerCountsResponse_Server servers = 1; // Type: com.lunarclient.websocket.server.v1.GetPlayerCountsResponse_Server
+  
 }
 
 // From com.lunarclient.websocket.server.v1.ServerRecommendations
 message ServerRecommendations {
-
-  optional common.v1.PlayerModpack modpack = 1; // Type: com.lunarclient.common.v1.PlayerModpack
-
+  
+  optional  common.v1.PlayerModpack modpack = 1; // Type: com.lunarclient.common.v1.PlayerModpack
+  
 }
 
 // From com.lunarclient.websocket.server.v1.GetPlayerCountsResponse$Server$Status

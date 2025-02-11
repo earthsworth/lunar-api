@@ -2,7 +2,7 @@
 // For learning purposes only
 // https://t.me/earthsworth
 syntax = "proto3";
-package com.lunarclient.websocket.wrapped.v1;
+package lunarclient.websocket.wrapped.v1;
 
 import "google/protobuf/any.proto";
 import "google/protobuf/struct.proto";
@@ -15,31 +15,36 @@ import "google/protobuf/source_context.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/type.proto";
 import "google/protobuf/wrappers.proto";
+        
+
+
+option java_package = "com.lunarclient.websocket.wrapped.v1";
 
 
 // Analysis
 // 3 packets stored.
 // File name (Generated): websocket_wrapped_v1.proto
-
+        
 // Message struct
-
+        
 // From com.lunarclient.websocket.wrapped.v1.CounterUpdate
 message CounterUpdate {
-
-  string counter = 1; // Type: string
-  int32 delta = 2; // Type: int32
-
+  
+    string counter = 1; // Type: string
+    int32 delta = 2; // Type: int32
+  
 }
 
 // From com.lunarclient.websocket.wrapped.v1.RecordCountersRequest
 message RecordCountersRequest {
-
-  repeated wrapped.v1.CounterUpdate updates = 1; // Type: com.lunarclient.websocket.wrapped.v1.CounterUpdate
-
+  
+   repeated wrapped.v1.CounterUpdate updates = 1; // Type: com.lunarclient.websocket.wrapped.v1.CounterUpdate
+  
 }
 
 // From com.lunarclient.websocket.wrapped.v1.RecordCountersResponse
 message RecordCountersResponse {
-
-
+  
+  
+  
 }

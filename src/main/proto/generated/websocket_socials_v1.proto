@@ -2,7 +2,7 @@
 // For learning purposes only
 // https://t.me/earthsworth
 syntax = "proto3";
-package com.lunarclient.websocket.socials.v1;
+package lunarclient.websocket.socials.v1;
 
 import "google/protobuf/any.proto";
 import "google/protobuf/struct.proto";
@@ -15,78 +15,85 @@ import "google/protobuf/source_context.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/type.proto";
 import "google/protobuf/wrappers.proto";
-
+        
 import "generated/lunarclient_common_v1.proto";
+
+option java_package = "com.lunarclient.websocket.socials.v1";
+
+
 // Analysis
 // 11 packets stored.
 // File name (Generated): websocket_socials_v1.proto
-
+        
 // Message struct
-
+        
 // From com.lunarclient.websocket.socials.v1.LinkedSocial
 message LinkedSocial {
-
-  optional common.v1.UserSocial social = 1; // Type: com.lunarclient.common.v1.UserSocial
-  optional google.protobuf.Timestamp linkedAt = 2; // Type: google.protobuf.Timestamp
-  optional socials.v1.LinkedSocialCommunity community = 3; // Type: com.lunarclient.websocket.socials.v1.LinkedSocialCommunity
-
+  
+  optional  common.v1.UserSocial social = 1; // Type: com.lunarclient.common.v1.UserSocial
+  optional  google.protobuf.Timestamp linked_at = 2; // Type: google.protobuf.Timestamp
+  optional  socials.v1.LinkedSocialCommunity community = 3; // Type: com.lunarclient.websocket.socials.v1.LinkedSocialCommunity
+  
 }
 
 // From com.lunarclient.websocket.socials.v1.LinkedSocialCommunity
 message LinkedSocialCommunity {
-
-  bool isMember = 1; // Type: bool
-  optional google.protobuf.Timestamp joinedAt = 2; // Type: google.protobuf.Timestamp
-  optional google.protobuf.Timestamp leftAt = 3; // Type: google.protobuf.Timestamp
-
+  
+    bool is_member = 1; // Type: bool
+  optional  google.protobuf.Timestamp joined_at = 2; // Type: google.protobuf.Timestamp
+  optional  google.protobuf.Timestamp left_at = 3; // Type: google.protobuf.Timestamp
+  
 }
 
 // From com.lunarclient.websocket.socials.v1.LoginRequest
 message LoginRequest {
-
-
+  
+  
+  
 }
 
 // From com.lunarclient.websocket.socials.v1.LoginResponse
 message LoginResponse {
-
-  repeated socials.v1.LinkedSocial linkedSocials = 1; // Type: com.lunarclient.websocket.socials.v1.LinkedSocial
-  socials.v1.SocialsVisibility socialsVisibility = 2; // Type: com.lunarclient.websocket.socials.v1.SocialsVisibility
-
+  
+   repeated socials.v1.LinkedSocial linked_socials = 1; // Type: com.lunarclient.websocket.socials.v1.LinkedSocial
+    socials.v1.SocialsVisibility socials_visibility = 2; // Type: com.lunarclient.websocket.socials.v1.SocialsVisibility
+  
 }
 
 // From com.lunarclient.websocket.socials.v1.RefreshSocialsPush
 message RefreshSocialsPush {
-
-
+  
+  
+  
 }
 
 // From com.lunarclient.websocket.socials.v1.SetSocialsVisibilityRequest
 message SetSocialsVisibilityRequest {
-
-  socials.v1.SocialsVisibility visibility = 1; // Type: com.lunarclient.websocket.socials.v1.SocialsVisibility
-
+  
+    socials.v1.SocialsVisibility visibility = 1; // Type: com.lunarclient.websocket.socials.v1.SocialsVisibility
+  
 }
 
 // From com.lunarclient.websocket.socials.v1.SetSocialsVisibilityResponse
 message SetSocialsVisibilityResponse {
-
-
+  
+  
+  
 }
 
 // From com.lunarclient.websocket.socials.v1.UnlinkSocialRequest
 message UnlinkSocialRequest {
-
-  common.v1.UserSocialPlatform platform = 1; // Type: com.lunarclient.common.v1.UserSocialPlatform
-
+  
+    common.v1.UserSocialPlatform platform = 1; // Type: com.lunarclient.common.v1.UserSocialPlatform
+  
 }
 
 // From com.lunarclient.websocket.socials.v1.UnlinkSocialResponse
 message UnlinkSocialResponse {
-
-  socials.v1.UnlinkSocialResponse_Status status = 1; // Type: com.lunarclient.websocket.socials.v1.UnlinkSocialResponse_Status
-  common.v1.UserSocialPlatform platform = 2; // Type: com.lunarclient.common.v1.UserSocialPlatform
-
+  
+    socials.v1.UnlinkSocialResponse_Status status = 1; // Type: com.lunarclient.websocket.socials.v1.UnlinkSocialResponse_Status
+    common.v1.UserSocialPlatform platform = 2; // Type: com.lunarclient.common.v1.UserSocialPlatform
+  
 }
 
 // From com.lunarclient.websocket.socials.v1.SocialsVisibility

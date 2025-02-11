@@ -2,7 +2,7 @@
 // For learning purposes only
 // https://t.me/earthsworth
 syntax = "proto3";
-package com.lunarclient.apollo.entity.v1;
+package lunarclient.apollo.entity.v1;
 
 import "google/protobuf/any.proto";
 import "google/protobuf/struct.proto";
@@ -15,38 +15,42 @@ import "google/protobuf/source_context.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/type.proto";
 import "google/protobuf/wrappers.proto";
-
+        
 import "generated/apollo_common_v1.proto";
+
+option java_package = "com.lunarclient.apollo.entity.v1";
+
+
 // Analysis
 // 4 packets stored.
 // File name (Generated): apollo_entity_v1.proto
-
+        
 // Message struct
-
+        
 // From com.lunarclient.apollo.entity.v1.FlipEntityMessage
 message FlipEntityMessage {
-
-  repeated common.v1.EntityId entityIds = 1; // Type: com.lunarclient.apollo.common.v1.EntityId
-
+  
+   repeated common.v1.EntityId entity_ids = 1; // Type: com.lunarclient.apollo.common.v1.EntityId
+  
 }
 
 // From com.lunarclient.apollo.entity.v1.OverrideRainbowSheepMessage
 message OverrideRainbowSheepMessage {
-
-  repeated common.v1.EntityId entityIds = 1; // Type: com.lunarclient.apollo.common.v1.EntityId
-
+  
+   repeated common.v1.EntityId entity_ids = 1; // Type: com.lunarclient.apollo.common.v1.EntityId
+  
 }
 
 // From com.lunarclient.apollo.entity.v1.ResetFlipedEntityMessage
 message ResetFlipedEntityMessage {
-
-  repeated common.v1.EntityId entityIds = 1; // Type: com.lunarclient.apollo.common.v1.EntityId
-
+  
+   repeated common.v1.EntityId entity_ids = 1; // Type: com.lunarclient.apollo.common.v1.EntityId
+  
 }
 
 // From com.lunarclient.apollo.entity.v1.ResetRainbowSheepMessage
 message ResetRainbowSheepMessage {
-
-  repeated common.v1.EntityId entityIds = 1; // Type: com.lunarclient.apollo.common.v1.EntityId
-
+  
+   repeated common.v1.EntityId entity_ids = 1; // Type: com.lunarclient.apollo.common.v1.EntityId
+  
 }

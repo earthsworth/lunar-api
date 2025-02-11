@@ -2,7 +2,7 @@
 // For learning purposes only
 // https://t.me/earthsworth
 syntax = "proto3";
-package com.lunarclient.gameipc.styngr.v1;
+package lunarclient.gameipc.styngr.v1;
 
 import "google/protobuf/any.proto";
 import "google/protobuf/struct.proto";
@@ -15,197 +15,213 @@ import "google/protobuf/source_context.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/type.proto";
 import "google/protobuf/wrappers.proto";
+        
+
+
+option java_package = "com.lunarclient.gameipc.styngr.v1";
 
 
 // Analysis
 // 27 packets stored.
 // File name (Generated): gameipc_styngr_v1.proto
-
+        
 // Message struct
-
+        
 // From com.lunarclient.gameipc.styngr.v1.FetchPlaylistsRequest
 message FetchPlaylistsRequest {
-
-
+  
+  
+  
 }
 
 // From com.lunarclient.gameipc.styngr.v1.FetchPlaylistsResponse$Playlist
 message FetchPlaylistsResponse_Playlist {
-
-  string id = 1; // Type: string
-  string name = 2; // Type: string
-  optional string description = 3; // Type: string
-  int32 trackCount = 4; // Type: int32
-  optional google.protobuf.Duration duration = 5; // Type: google.protobuf.Duration
-  styngr.v1.PlaylistLicense license = 6; // Type: com.lunarclient.gameipc.styngr.v1.PlaylistLicense
-  styngr.v1.PlaylistMonetization monetization = 7; // Type: com.lunarclient.gameipc.styngr.v1.PlaylistMonetization
-
+  
+    string id = 1; // Type: string
+    string name = 2; // Type: string
+  optional  string description = 3; // Type: string
+    int32 track_count = 4; // Type: int32
+  optional  google.protobuf.Duration duration = 5; // Type: google.protobuf.Duration
+    styngr.v1.PlaylistLicense license = 6; // Type: com.lunarclient.gameipc.styngr.v1.PlaylistLicense
+    styngr.v1.PlaylistMonetization monetization = 7; // Type: com.lunarclient.gameipc.styngr.v1.PlaylistMonetization
+  
 }
 
 // From com.lunarclient.gameipc.styngr.v1.FetchPlaylistsResponse
 message FetchPlaylistsResponse {
-
-  repeated styngr.v1.FetchPlaylistsResponse_Playlist playlists = 1; // Type: com.lunarclient.gameipc.styngr.v1.FetchPlaylistsResponse_Playlist
-  bool premium = 2; // Type: bool
-
+  
+   repeated styngr.v1.FetchPlaylistsResponse_Playlist playlists = 1; // Type: com.lunarclient.gameipc.styngr.v1.FetchPlaylistsResponse_Playlist
+    bool premium = 2; // Type: bool
+  
 }
 
 // From com.lunarclient.gameipc.styngr.v1.FetchStateRequest
 message FetchStateRequest {
-
-
+  
+  
+  
 }
 
 // From com.lunarclient.gameipc.styngr.v1.FetchStateResponse
 message FetchStateResponse {
-
-  optional styngr.v1.StyngrTrackState track = 1; // Type: com.lunarclient.gameipc.styngr.v1.StyngrTrackState
-  optional styngr.v1.StyngrControlsState controls = 2; // Type: com.lunarclient.gameipc.styngr.v1.StyngrControlsState
-  optional styngr.v1.StyngrProgressState progress = 3; // Type: com.lunarclient.gameipc.styngr.v1.StyngrProgressState
-
+  
+  optional  styngr.v1.StyngrTrackState track = 1; // Type: com.lunarclient.gameipc.styngr.v1.StyngrTrackState
+  optional  styngr.v1.StyngrControlsState controls = 2; // Type: com.lunarclient.gameipc.styngr.v1.StyngrControlsState
+  optional  styngr.v1.StyngrProgressState progress = 3; // Type: com.lunarclient.gameipc.styngr.v1.StyngrProgressState
+  
 }
 
 // From com.lunarclient.gameipc.styngr.v1.NextTrackRequest
 message NextTrackRequest {
-
-
+  
+  
+  
 }
 
 // From com.lunarclient.gameipc.styngr.v1.NextTrackResponse
 message NextTrackResponse {
-
-
+  
+  
+  
 }
 
 // From com.lunarclient.gameipc.styngr.v1.OpenSelectorRequest
 message OpenSelectorRequest {
-
-
+  
+  
+  
 }
 
 // From com.lunarclient.gameipc.styngr.v1.OpenSelectorResponse
 message OpenSelectorResponse {
-
-
+  
+  
+  
 }
 
 // From com.lunarclient.gameipc.styngr.v1.SetMutedRequest
 message SetMutedRequest {
-
-  bool muted = 1; // Type: bool
-
+  
+    bool muted = 1; // Type: bool
+  
 }
 
 // From com.lunarclient.gameipc.styngr.v1.SetMutedResponse
 message SetMutedResponse {
-
-
+  
+  
+  
 }
 
 // From com.lunarclient.gameipc.styngr.v1.SetPlayingRequest
 message SetPlayingRequest {
-
-  bool playing = 1; // Type: bool
-
+  
+    bool playing = 1; // Type: bool
+  
 }
 
 // From com.lunarclient.gameipc.styngr.v1.SetPlayingResponse
 message SetPlayingResponse {
-
-
+  
+  
+  
 }
 
 // From com.lunarclient.gameipc.styngr.v1.SetVolumeRequest
 message SetVolumeRequest {
-
-  float volume = 1; // Type: float
-
+  
+    float volume = 1; // Type: float
+  
 }
 
 // From com.lunarclient.gameipc.styngr.v1.SetVolumeResponse
 message SetVolumeResponse {
-
-
+  
+  
+  
 }
 
 // From com.lunarclient.gameipc.styngr.v1.StartPlaylistRequest
 message StartPlaylistRequest {
-
-  styngr.v1.PlaylistLicense playlistType = 1; // Type: com.lunarclient.gameipc.styngr.v1.PlaylistLicense
-  string playlistId = 2; // Type: string
-
+  
+    styngr.v1.PlaylistLicense playlist_type = 1; // Type: com.lunarclient.gameipc.styngr.v1.PlaylistLicense
+    string playlist_id = 2; // Type: string
+  
 }
 
 // From com.lunarclient.gameipc.styngr.v1.StartPlaylistResponse
 message StartPlaylistResponse {
-
-
+  
+  
+  
 }
 
 // From com.lunarclient.gameipc.styngr.v1.StyngrControlsState
 message StyngrControlsState {
-
-  bool playing = 1; // Type: bool
-  bool muted = 2; // Type: bool
-  float volume = 3; // Type: float
-
+  
+    bool playing = 1; // Type: bool
+    bool muted = 2; // Type: bool
+    float volume = 3; // Type: float
+  
 }
 
 // From com.lunarclient.gameipc.styngr.v1.StyngrProgressState
 message StyngrProgressState {
-
-  float duration = 1; // Type: float
-  float position = 2; // Type: float
-
+  
+    float duration = 1; // Type: float
+    float position = 2; // Type: float
+  
 }
 
 // From com.lunarclient.gameipc.styngr.v1.StyngrTrackControlsUpdate
 message StyngrTrackControlsUpdate {
-
-  bool playing = 1; // Type: bool
-  bool muted = 2; // Type: bool
-  float volume = 3; // Type: float
-
+  
+    bool playing = 1; // Type: bool
+    bool muted = 2; // Type: bool
+    float volume = 3; // Type: float
+  
 }
 
 // From com.lunarclient.gameipc.styngr.v1.StyngrTrackProgressUpdate
 message StyngrTrackProgressUpdate {
-
-  float duration = 1; // Type: float
-  float position = 2; // Type: float
-
+  
+    float duration = 1; // Type: float
+    float position = 2; // Type: float
+  
 }
 
 // From com.lunarclient.gameipc.styngr.v1.StyngrTrackState
 message StyngrTrackState {
-
-  string imageUrl = 1; // Type: string
-  string title = 2; // Type: string
-  repeated string artistNames = 3; // Type: string
-  bool liked = 4; // Type: bool
-  int32 remainingSkips = 5; // Type: int32
-  string playlistId = 6; // Type: string
-  string playlistName = 7; // Type: string
-
+  
+    string image_url = 1; // Type: string
+    string title = 2; // Type: string
+   repeated string artist_names = 3; // Type: string
+    bool liked = 4; // Type: bool
+    int32 remaining_skips = 5; // Type: int32
+    string playlist_id = 6; // Type: string
+    string playlist_name = 7; // Type: string
+  
 }
 
 // From com.lunarclient.gameipc.styngr.v1.StyngrTrackUpdate
 message StyngrTrackUpdate {
-
-  optional styngr.v1.StyngrTrackState track = 1; // Type: com.lunarclient.gameipc.styngr.v1.StyngrTrackState
-
+  
+  optional  styngr.v1.StyngrTrackState track = 1; // Type: com.lunarclient.gameipc.styngr.v1.StyngrTrackState
+  
 }
 
 // From com.lunarclient.gameipc.styngr.v1.ToggleLikedRequest
 message ToggleLikedRequest {
-
-
+  
+  
+  
 }
 
 // From com.lunarclient.gameipc.styngr.v1.ToggleLikedResponse
 message ToggleLikedResponse {
-
-
+  
+  
+  
 }
 
 // From com.lunarclient.gameipc.styngr.v1.PlaylistLicense

@@ -2,7 +2,7 @@
 // For learning purposes only
 // https://t.me/earthsworth
 syntax = "proto3";
-package com.lunarclient.websocket.conversation.v1;
+package lunarclient.websocket.conversation.v1;
 
 import "google/protobuf/any.proto";
 import "google/protobuf/struct.proto";
@@ -15,52 +15,56 @@ import "google/protobuf/source_context.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/type.proto";
 import "google/protobuf/wrappers.proto";
-
+        
 import "generated/lunarclient_common_v1.proto";
+
+option java_package = "com.lunarclient.websocket.conversation.v1";
+
+
 // Analysis
 // 15 packets stored.
 // File name (Generated): websocket_conversation_v1.proto
-
+        
 // Message struct
-
+        
 // From com.lunarclient.websocket.conversation.v1.ConversationMessage
 message ConversationMessage {
-
-  optional common.v1.Uuid id = 1; // Type: com.lunarclient.common.v1.Uuid
-  optional google.protobuf.Timestamp sentAt = 2; // Type: google.protobuf.Timestamp
-  optional conversation.v1.ConversationSender sender = 3; // Type: com.lunarclient.websocket.conversation.v1.ConversationSender
-  optional conversation.v1.ConversationMessageContents contents = 4; // Type: com.lunarclient.websocket.conversation.v1.ConversationMessageContents
-
+  
+  optional  common.v1.Uuid id = 1; // Type: com.lunarclient.common.v1.Uuid
+  optional  google.protobuf.Timestamp sent_at = 2; // Type: google.protobuf.Timestamp
+  optional  conversation.v1.ConversationSender sender = 3; // Type: com.lunarclient.websocket.conversation.v1.ConversationSender
+  optional  conversation.v1.ConversationMessageContents contents = 4; // Type: com.lunarclient.websocket.conversation.v1.ConversationMessageContents
+  
 }
 
 // From com.lunarclient.websocket.conversation.v1.ConversationMessageContents
 message ConversationMessageContents {
   oneof contents {
-    string plainText = 1; // Type: string
+    string plain_text = 1; // Type: string
   }
 }
 
 // From com.lunarclient.websocket.conversation.v1.ConversationMessagePush
 message ConversationMessagePush {
-
-  optional conversation.v1.ConversationReference conversationReference = 1; // Type: com.lunarclient.websocket.conversation.v1.ConversationReference
-  optional conversation.v1.ConversationMessage message = 2; // Type: com.lunarclient.websocket.conversation.v1.ConversationMessage
-
+  
+  optional  conversation.v1.ConversationReference conversation_reference = 1; // Type: com.lunarclient.websocket.conversation.v1.ConversationReference
+  optional  conversation.v1.ConversationMessage message = 2; // Type: com.lunarclient.websocket.conversation.v1.ConversationMessage
+  
 }
 
 // From com.lunarclient.websocket.conversation.v1.ConversationPreSendActionPush
 message ConversationPreSendActionPush {
-
-  optional conversation.v1.ConversationReference conversationReference = 1; // Type: com.lunarclient.websocket.conversation.v1.ConversationReference
-  conversation.v1.PreSendAction action = 2; // Type: com.lunarclient.websocket.conversation.v1.PreSendAction
-  optional conversation.v1.ConversationSender sender = 3; // Type: com.lunarclient.websocket.conversation.v1.ConversationSender
-
+  
+  optional  conversation.v1.ConversationReference conversation_reference = 1; // Type: com.lunarclient.websocket.conversation.v1.ConversationReference
+    conversation.v1.PreSendAction action = 2; // Type: com.lunarclient.websocket.conversation.v1.PreSendAction
+  optional  conversation.v1.ConversationSender sender = 3; // Type: com.lunarclient.websocket.conversation.v1.ConversationSender
+  
 }
 
 // From com.lunarclient.websocket.conversation.v1.ConversationReference
 message ConversationReference {
   oneof target {
-    common.v1.Uuid friendUuid = 1; // Type: com.lunarclient.common.v1.Uuid
+    common.v1.Uuid friend_uuid = 1; // Type: com.lunarclient.common.v1.Uuid
   }
 }
 
@@ -73,46 +77,46 @@ message ConversationSender {
 
 // From com.lunarclient.websocket.conversation.v1.LoadConversationRequest
 message LoadConversationRequest {
-
-  optional conversation.v1.ConversationReference conversationReference = 1; // Type: com.lunarclient.websocket.conversation.v1.ConversationReference
-
+  
+  optional  conversation.v1.ConversationReference conversation_reference = 1; // Type: com.lunarclient.websocket.conversation.v1.ConversationReference
+  
 }
 
 // From com.lunarclient.websocket.conversation.v1.LoadConversationResponse
 message LoadConversationResponse {
-
-  repeated conversation.v1.ConversationMessage messages = 1; // Type: com.lunarclient.websocket.conversation.v1.ConversationMessage
-
+  
+   repeated conversation.v1.ConversationMessage messages = 1; // Type: com.lunarclient.websocket.conversation.v1.ConversationMessage
+  
 }
 
 // From com.lunarclient.websocket.conversation.v1.PreSendActionRequest
 message PreSendActionRequest {
-
-  optional conversation.v1.ConversationReference conversationReference = 1; // Type: com.lunarclient.websocket.conversation.v1.ConversationReference
-  conversation.v1.PreSendAction action = 2; // Type: com.lunarclient.websocket.conversation.v1.PreSendAction
-
+  
+  optional  conversation.v1.ConversationReference conversation_reference = 1; // Type: com.lunarclient.websocket.conversation.v1.ConversationReference
+    conversation.v1.PreSendAction action = 2; // Type: com.lunarclient.websocket.conversation.v1.PreSendAction
+  
 }
 
 // From com.lunarclient.websocket.conversation.v1.PreSendActionResponse
 message PreSendActionResponse {
-
-  conversation.v1.PreSendActionResponse_Status status = 1; // Type: com.lunarclient.websocket.conversation.v1.PreSendActionResponse_Status
-
+  
+    conversation.v1.PreSendActionResponse_Status status = 1; // Type: com.lunarclient.websocket.conversation.v1.PreSendActionResponse_Status
+  
 }
 
 // From com.lunarclient.websocket.conversation.v1.SendConversationMessageRequest
 message SendConversationMessageRequest {
-
-  optional conversation.v1.ConversationReference conversationReference = 1; // Type: com.lunarclient.websocket.conversation.v1.ConversationReference
-  optional conversation.v1.ConversationMessageContents messageContents = 2; // Type: com.lunarclient.websocket.conversation.v1.ConversationMessageContents
-
+  
+  optional  conversation.v1.ConversationReference conversation_reference = 1; // Type: com.lunarclient.websocket.conversation.v1.ConversationReference
+  optional  conversation.v1.ConversationMessageContents message_contents = 2; // Type: com.lunarclient.websocket.conversation.v1.ConversationMessageContents
+  
 }
 
 // From com.lunarclient.websocket.conversation.v1.SendConversationMessageResponse
 message SendConversationMessageResponse {
-
-  conversation.v1.SendConversationMessageResponse_Status status = 1; // Type: com.lunarclient.websocket.conversation.v1.SendConversationMessageResponse_Status
-
+  
+    conversation.v1.SendConversationMessageResponse_Status status = 1; // Type: com.lunarclient.websocket.conversation.v1.SendConversationMessageResponse_Status
+  
 }
 
 // From com.lunarclient.websocket.conversation.v1.PreSendAction

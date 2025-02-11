@@ -2,7 +2,7 @@
 // For learning purposes only
 // https://t.me/earthsworth
 syntax = "proto3";
-package com.lunarclient.gameipc.auth.v1;
+package lunarclient.gameipc.auth.v1;
 
 import "google/protobuf/any.proto";
 import "google/protobuf/struct.proto";
@@ -15,55 +15,61 @@ import "google/protobuf/source_context.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/type.proto";
 import "google/protobuf/wrappers.proto";
-
+        
 import "generated/lunarclient_common_v1.proto";
+
+option java_package = "com.lunarclient.gameipc.auth.v1";
+
+
 // Analysis
 // 9 packets stored.
 // File name (Generated): gameipc_auth_v1.proto
-
+        
 // Message struct
-
+        
 // From com.lunarclient.gameipc.auth.v1.AddAccountRequest
 message AddAccountRequest {
-
-
+  
+  
+  
 }
 
 // From com.lunarclient.gameipc.auth.v1.AddAccountResponse
 message AddAccountResponse {
-
-  bool success = 1; // Type: bool
-  auth.v1.AddAccountResponse_AccountError error = 2; // Type: com.lunarclient.gameipc.auth.v1.AddAccountResponse_AccountError
-
+  
+    bool success = 1; // Type: bool
+    auth.v1.AddAccountResponse_AccountError error = 2; // Type: com.lunarclient.gameipc.auth.v1.AddAccountResponse_AccountError
+  
 }
 
 // From com.lunarclient.gameipc.auth.v1.OpenMicrosoftPopupRequest
 message OpenMicrosoftPopupRequest {
-
-
+  
+  
+  
 }
 
 // From com.lunarclient.gameipc.auth.v1.OpenMicrosoftPopupResponse
 message OpenMicrosoftPopupResponse {
-
-  auth.v1.OpenMicrosoftPopupResponse_Status status = 1; // Type: com.lunarclient.gameipc.auth.v1.OpenMicrosoftPopupResponse_Status
-  string url = 2; // Type: string
-
+  
+    auth.v1.OpenMicrosoftPopupResponse_Status status = 1; // Type: com.lunarclient.gameipc.auth.v1.OpenMicrosoftPopupResponse_Status
+    string url = 2; // Type: string
+  
 }
 
 // From com.lunarclient.gameipc.auth.v1.RefreshAccountRequest
 message RefreshAccountRequest {
-
-  optional common.v1.Uuid uuid = 1; // Type: com.lunarclient.common.v1.Uuid
-
+  
+  optional  common.v1.Uuid uuid = 1; // Type: com.lunarclient.common.v1.Uuid
+  
 }
 
 // From com.lunarclient.gameipc.auth.v1.RefreshAccountResponse
 message RefreshAccountResponse {
-
-  bool success = 1; // Type: bool
-  auth.v1.RefreshAccountResponse_AccountError error = 2; // Type: com.lunarclient.gameipc.auth.v1.RefreshAccountResponse_AccountError
-
+  
+    bool success = 1; // Type: bool
+    auth.v1.RefreshAccountResponse_AccountError error = 2; // Type: com.lunarclient.gameipc.auth.v1.RefreshAccountResponse_AccountError
+  
 }
 
 // From com.lunarclient.gameipc.auth.v1.AddAccountResponse$AccountError

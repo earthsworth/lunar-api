@@ -2,7 +2,7 @@
 // For learning purposes only
 // https://t.me/earthsworth
 syntax = "proto3";
-package com.lunarclient.websocket.store.v1;
+package lunarclient.websocket.store.v1;
 
 import "google/protobuf/any.proto";
 import "google/protobuf/struct.proto";
@@ -15,234 +15,241 @@ import "google/protobuf/source_context.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/type.proto";
 import "google/protobuf/wrappers.proto";
+        
+
+
+option java_package = "com.lunarclient.websocket.store.v1";
 
 
 // Analysis
 // 29 packets stored.
 // File name (Generated): websocket_store_v1.proto
-
+        
 // Message struct
-
+        
 // From com.lunarclient.websocket.store.v1.AddCouponToBasketRequest
 message AddCouponToBasketRequest {
-
-  string couponCode = 1; // Type: string
-
+  
+    string coupon_code = 1; // Type: string
+  
 }
 
 // From com.lunarclient.websocket.store.v1.AddCouponToBasketResponse
 message AddCouponToBasketResponse {
-
-  string errorMessage = 1; // Type: string
-  optional store.v1.Basket currentBasket = 2; // Type: com.lunarclient.websocket.store.v1.Basket
-
+  
+    string error_message = 1; // Type: string
+  optional  store.v1.Basket current_basket = 2; // Type: com.lunarclient.websocket.store.v1.Basket
+  
 }
 
 // From com.lunarclient.websocket.store.v1.AddItemToBasketRequest
 message AddItemToBasketRequest {
-
-  string packageId = 1; // Type: string
-  int32 quantity = 2; // Type: int32
-  map<string, google.protobuf.Any> options = 3; // Type: map<string,google.protobuf.Any>
-
+  
+    string package_id = 1; // Type: string
+    int32 quantity = 2; // Type: int32
+    map<string,google.protobuf.Any> options = 3; // Type: map<string,google.protobuf.Any>
+  
 }
 
 // From com.lunarclient.websocket.store.v1.AddItemToBasketResponse
 message AddItemToBasketResponse {
-
-  string errorMessage = 1; // Type: string
-  optional store.v1.Basket currentBasket = 2; // Type: com.lunarclient.websocket.store.v1.Basket
-
+  
+    string error_message = 1; // Type: string
+  optional  store.v1.Basket current_basket = 2; // Type: com.lunarclient.websocket.store.v1.Basket
+  
 }
 
 // From com.lunarclient.websocket.store.v1.Basket
 message Basket {
-
-  optional store.v1.Money subtotal = 1; // Type: com.lunarclient.websocket.store.v1.Money
-  repeated store.v1.BasketItem items = 2; // Type: com.lunarclient.websocket.store.v1.BasketItem
-  repeated store.v1.BasketCoupon coupons = 3; // Type: com.lunarclient.websocket.store.v1.BasketCoupon
-  repeated string availableGateways = 4; // Type: string
-
+  
+  optional  store.v1.Money subtotal = 1; // Type: com.lunarclient.websocket.store.v1.Money
+   repeated store.v1.BasketItem items = 2; // Type: com.lunarclient.websocket.store.v1.BasketItem
+   repeated store.v1.BasketCoupon coupons = 3; // Type: com.lunarclient.websocket.store.v1.BasketCoupon
+   repeated string available_gateways = 4; // Type: string
+  
 }
 
 // From com.lunarclient.websocket.store.v1.BasketCoupon
 message BasketCoupon {
-
-  string code = 2; // Type: string
-  string description = 3; // Type: string
-
+  
+    string code = 2; // Type: string
+    string description = 3; // Type: string
+  
 }
 
 // From com.lunarclient.websocket.store.v1.BasketItem
 message BasketItem {
-
-  string id = 1; // Type: string
-  optional store.v1.Money priceInBasket = 2; // Type: com.lunarclient.websocket.store.v1.Money
-  optional store.v1.Package package = 3; // Type: com.lunarclient.websocket.store.v1.Package
-  int32 quantity = 4; // Type: int32
-  map<string, google.protobuf.Any> options = 5; // Type: map<string,google.protobuf.Any>
-
+  
+    string id = 1; // Type: string
+  optional  store.v1.Money price_in_basket = 2; // Type: com.lunarclient.websocket.store.v1.Money
+  optional  store.v1.Package package = 3; // Type: com.lunarclient.websocket.store.v1.Package
+    int32 quantity = 4; // Type: int32
+    map<string,google.protobuf.Any> options = 5; // Type: map<string,google.protobuf.Any>
+  
 }
 
 // From com.lunarclient.websocket.store.v1.Category
 message Category {
-
-  string id = 1; // Type: string
-  string name = 2; // Type: string
-  optional store.v1.RichText description = 3; // Type: com.lunarclient.websocket.store.v1.RichText
-  store.v1.Category_DisplayType displayType = 4; // Type: com.lunarclient.websocket.store.v1.Category_DisplayType
-  repeated store.v1.Package packages = 5; // Type: com.lunarclient.websocket.store.v1.Package
-  repeated store.v1.Category subcategories = 6; // Type: com.lunarclient.websocket.store.v1.Category
-
+  
+    string id = 1; // Type: string
+    string name = 2; // Type: string
+  optional  store.v1.RichText description = 3; // Type: com.lunarclient.websocket.store.v1.RichText
+    store.v1.Category_DisplayType display_type = 4; // Type: com.lunarclient.websocket.store.v1.Category_DisplayType
+   repeated store.v1.Package packages = 5; // Type: com.lunarclient.websocket.store.v1.Package
+   repeated store.v1.Category subcategories = 6; // Type: com.lunarclient.websocket.store.v1.Category
+  
 }
 
 // From com.lunarclient.websocket.store.v1.CheckoutRequest
 message CheckoutRequest {
-
-  string gateway = 1; // Type: string
-
+  
+    string gateway = 1; // Type: string
+  
 }
 
 // From com.lunarclient.websocket.store.v1.CheckoutResponse
 message CheckoutResponse {
-
-  string checkoutUrl = 1; // Type: string
-
+  
+    string checkout_url = 1; // Type: string
+  
 }
 
 // From com.lunarclient.websocket.store.v1.GetCategoryRequest
 message GetCategoryRequest {
   oneof id {
-    string categoryId = 2; // Type: string
-    string categorySlug = 3; // Type: string
+    string category_id = 2; // Type: string
+    string category_slug = 3; // Type: string
   }
 }
 
 // From com.lunarclient.websocket.store.v1.GetCategoryResponse
 message GetCategoryResponse {
-
-  optional store.v1.Category category = 1; // Type: com.lunarclient.websocket.store.v1.Category
-  optional store.v1.Basket currentBasket = 2; // Type: com.lunarclient.websocket.store.v1.Basket
-
+  
+  optional  store.v1.Category category = 1; // Type: com.lunarclient.websocket.store.v1.Category
+  optional  store.v1.Basket current_basket = 2; // Type: com.lunarclient.websocket.store.v1.Basket
+  
 }
 
 // From com.lunarclient.websocket.store.v1.GetPackageRequest
 message GetPackageRequest {
   oneof id {
-    string packageId = 2; // Type: string
+    string package_id = 2; // Type: string
   }
 }
 
 // From com.lunarclient.websocket.store.v1.GetPackageResponse
 message GetPackageResponse {
-
-  optional store.v1.Package package = 1; // Type: com.lunarclient.websocket.store.v1.Package
-  optional store.v1.Basket currentBasket = 2; // Type: com.lunarclient.websocket.store.v1.Basket
-
+  
+  optional  store.v1.Package package = 1; // Type: com.lunarclient.websocket.store.v1.Package
+  optional  store.v1.Basket current_basket = 2; // Type: com.lunarclient.websocket.store.v1.Basket
+  
 }
 
 // From com.lunarclient.websocket.store.v1.LoginRequest
 message LoginRequest {
-
-
+  
+  
+  
 }
 
 // From com.lunarclient.websocket.store.v1.LoginResponse
 message LoginResponse {
   oneof result {
-    string basketId = 1; // Type: string
-    string errorMessage = 2; // Type: string
+    string basket_id = 1; // Type: string
+    string error_message = 2; // Type: string
   }
 }
 
 // From com.lunarclient.websocket.store.v1.LogoutRequest
 message LogoutRequest {
-
-
+  
+  
+  
 }
 
 // From com.lunarclient.websocket.store.v1.LogoutResponse
 message LogoutResponse {
-
-
+  
+  
+  
 }
 
 // From com.lunarclient.websocket.store.v1.Money
 message Money {
-
-  string amount = 1; // Type: string
-
+  
+    string amount = 1; // Type: string
+  
 }
 
 // From com.lunarclient.websocket.store.v1.Package
 message Package {
-
-  string id = 1; // Type: string
-  string name = 2; // Type: string
-  optional store.v1.RichText description = 3; // Type: com.lunarclient.websocket.store.v1.RichText
-  optional store.v1.Money originalPrice = 4; // Type: com.lunarclient.websocket.store.v1.Money
-  optional store.v1.Money effectivePrice = 5; // Type: com.lunarclient.websocket.store.v1.Money
-  bool customPrice = 6; // Type: bool
-  store.v1.Package_Type type = 7; // Type: com.lunarclient.websocket.store.v1.Package_Type
-  bool canPurchase = 8; // Type: bool
-  string imageUrl = 9; // Type: string
-  bool disableGifting = 11; // Type: bool
-  bool disableQuantity = 12; // Type: bool
-  optional google.protobuf.Timestamp availabilityEnd = 13; // Type: google.protobuf.Timestamp
-
+  
+    string id = 1; // Type: string
+    string name = 2; // Type: string
+  optional  store.v1.RichText description = 3; // Type: com.lunarclient.websocket.store.v1.RichText
+  optional  store.v1.Money original_price = 4; // Type: com.lunarclient.websocket.store.v1.Money
+  optional  store.v1.Money effective_price = 5; // Type: com.lunarclient.websocket.store.v1.Money
+    bool custom_price = 6; // Type: bool
+    store.v1.Package_Type type = 7; // Type: com.lunarclient.websocket.store.v1.Package_Type
+    bool can_purchase = 8; // Type: bool
+    string image_url = 9; // Type: string
+    bool disable_gifting = 11; // Type: bool
+    bool disable_quantity = 12; // Type: bool
+  optional  google.protobuf.Timestamp availability_end = 13; // Type: google.protobuf.Timestamp
+  
 }
 
 // From com.lunarclient.websocket.store.v1.RemoveCouponFromBasketRequest
 message RemoveCouponFromBasketRequest {
-
-  string couponCode = 1; // Type: string
-
+  
+    string coupon_code = 1; // Type: string
+  
 }
 
 // From com.lunarclient.websocket.store.v1.RemoveCouponFromBasketResponse
 message RemoveCouponFromBasketResponse {
-
-  string errorMessage = 1; // Type: string
-  optional store.v1.Basket currentBasket = 2; // Type: com.lunarclient.websocket.store.v1.Basket
-
+  
+    string error_message = 1; // Type: string
+  optional  store.v1.Basket current_basket = 2; // Type: com.lunarclient.websocket.store.v1.Basket
+  
 }
 
 // From com.lunarclient.websocket.store.v1.RemoveItemFromBasketRequest
 message RemoveItemFromBasketRequest {
-
-  string itemId = 1; // Type: string
-
+  
+    string item_id = 1; // Type: string
+  
 }
 
 // From com.lunarclient.websocket.store.v1.RemoveItemFromBasketResponse
 message RemoveItemFromBasketResponse {
-
-  string errorMessage = 1; // Type: string
-  optional store.v1.Basket currentBasket = 2; // Type: com.lunarclient.websocket.store.v1.Basket
-
+  
+    string error_message = 1; // Type: string
+  optional  store.v1.Basket current_basket = 2; // Type: com.lunarclient.websocket.store.v1.Basket
+  
 }
 
 // From com.lunarclient.websocket.store.v1.RichText
 message RichText {
-
-  string html = 1; // Type: string
-
+  
+    string html = 1; // Type: string
+  
 }
 
 // From com.lunarclient.websocket.store.v1.UpdateItemInBasketRequest
 message UpdateItemInBasketRequest {
-
-  string itemId = 1; // Type: string
-  optional int32 newQuantity = 2; // Type: int32
-
+  
+    string item_id = 1; // Type: string
+  optional  int32 new_quantity = 2; // Type: int32
+  
 }
 
 // From com.lunarclient.websocket.store.v1.UpdateItemInBasketResponse
 message UpdateItemInBasketResponse {
-
-  string errorMessage = 1; // Type: string
-  optional store.v1.Basket currentBasket = 2; // Type: com.lunarclient.websocket.store.v1.Basket
-
+  
+    string error_message = 1; // Type: string
+  optional  store.v1.Basket current_basket = 2; // Type: com.lunarclient.websocket.store.v1.Basket
+  
 }
 
 // From com.lunarclient.websocket.store.v1.Category$DisplayType

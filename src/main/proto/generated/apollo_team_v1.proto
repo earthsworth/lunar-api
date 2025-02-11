@@ -2,7 +2,7 @@
 // For learning purposes only
 // https://t.me/earthsworth
 syntax = "proto3";
-package com.lunarclient.apollo.team.v1;
+package lunarclient.apollo.team.v1;
 
 import "google/protobuf/any.proto";
 import "google/protobuf/struct.proto";
@@ -15,34 +15,39 @@ import "google/protobuf/source_context.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/type.proto";
 import "google/protobuf/wrappers.proto";
-
+        
 import "generated/apollo_common_v1.proto";
+
+option java_package = "com.lunarclient.apollo.team.v1";
+
+
 // Analysis
 // 3 packets stored.
 // File name (Generated): apollo_team_v1.proto
-
+        
 // Message struct
-
+        
 // From com.lunarclient.apollo.team.v1.ResetTeamMembersMessage
 message ResetTeamMembersMessage {
-
-
+  
+  
+  
 }
 
 // From com.lunarclient.apollo.team.v1.TeamMember
 message TeamMember {
-
-  optional common.v1.Uuid playerUuid = 1; // Type: com.lunarclient.apollo.common.v1.Uuid
-  optional common.v1.Component playerDisplayName = 2; // Type: com.lunarclient.apollo.common.v1.Component
-  optional common.v1.Location location = 3; // Type: com.lunarclient.apollo.common.v1.Location
-  optional common.v1.Color markerColor = 4; // Type: com.lunarclient.apollo.common.v1.Color
-  string adventureJsonPlayerName = 5; // Type: string
-
+  
+  optional  common.v1.Uuid player_uuid = 1; // Type: com.lunarclient.apollo.common.v1.Uuid
+  optional  common.v1.Component player_display_name = 2; // Type: com.lunarclient.apollo.common.v1.Component
+  optional  common.v1.Location location = 3; // Type: com.lunarclient.apollo.common.v1.Location
+  optional  common.v1.Color marker_color = 4; // Type: com.lunarclient.apollo.common.v1.Color
+    string adventure_json_player_name = 5; // Type: string
+  
 }
 
 // From com.lunarclient.apollo.team.v1.UpdateTeamMembersMessage
 message UpdateTeamMembersMessage {
-
-  repeated team.v1.TeamMember members = 1; // Type: com.lunarclient.apollo.team.v1.TeamMember
-
+  
+   repeated team.v1.TeamMember members = 1; // Type: com.lunarclient.apollo.team.v1.TeamMember
+  
 }

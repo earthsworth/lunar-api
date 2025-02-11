@@ -2,7 +2,7 @@
 // For learning purposes only
 // https://t.me/earthsworth
 syntax = "proto3";
-package com.lunarclient.websocket.promotion.v1;
+package lunarclient.websocket.promotion.v1;
 
 import "google/protobuf/any.proto";
 import "google/protobuf/struct.proto";
@@ -15,55 +15,60 @@ import "google/protobuf/source_context.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/type.proto";
 import "google/protobuf/wrappers.proto";
+        
+
+
+option java_package = "com.lunarclient.websocket.promotion.v1";
 
 
 // Analysis
 // 9 packets stored.
 // File name (Generated): websocket_promotion_v1.proto
-
+        
 // Message struct
-
+        
 // From com.lunarclient.websocket.promotion.v1.CosmeticPromotionReward
 message CosmeticPromotionReward {
-
-  int32 cosmeticId = 1; // Type: int32
-
+  
+    int32 cosmetic_id = 1; // Type: int32
+  
 }
 
 // From com.lunarclient.websocket.promotion.v1.EmotePromotionReward
 message EmotePromotionReward {
-
-  int32 emoteId = 1; // Type: int32
-
+  
+    int32 emote_id = 1; // Type: int32
+  
 }
 
 // From com.lunarclient.websocket.promotion.v1.EndPromotionViewRequest
 message EndPromotionViewRequest {
-
-  string promotionId = 1; // Type: string
-  bool completed = 2; // Type: bool
-
+  
+    string promotion_id = 1; // Type: string
+    bool completed = 2; // Type: bool
+  
 }
 
 // From com.lunarclient.websocket.promotion.v1.EndPromotionViewResponse
 message EndPromotionViewResponse {
-
-  repeated promotion.v1.PromotionReward rewards = 1; // Type: com.lunarclient.websocket.promotion.v1.PromotionReward
-
+  
+   repeated promotion.v1.PromotionReward rewards = 1; // Type: com.lunarclient.websocket.promotion.v1.PromotionReward
+  
 }
 
 // From com.lunarclient.websocket.promotion.v1.LoginRequest
 message LoginRequest {
-
-
+  
+  
+  
 }
 
 // From com.lunarclient.websocket.promotion.v1.LoginResponse
 message LoginResponse {
-
-  bool cornerExempt = 1; // Type: bool
-  bool showAds = 2; // Type: bool
-
+  
+    bool corner_exempt = 1; // Type: bool
+    bool show_ads = 2; // Type: bool
+  
 }
 
 // From com.lunarclient.websocket.promotion.v1.PromotionReward
@@ -76,13 +81,14 @@ message PromotionReward {
 
 // From com.lunarclient.websocket.promotion.v1.StartPromotionViewRequest
 message StartPromotionViewRequest {
-
-  string promotionId = 1; // Type: string
-
+  
+    string promotion_id = 1; // Type: string
+  
 }
 
 // From com.lunarclient.websocket.promotion.v1.StartPromotionViewResponse
 message StartPromotionViewResponse {
-
-
+  
+  
+  
 }

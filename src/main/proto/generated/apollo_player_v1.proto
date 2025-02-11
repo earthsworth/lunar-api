@@ -2,7 +2,7 @@
 // For learning purposes only
 // https://t.me/earthsworth
 syntax = "proto3";
-package com.lunarclient.apollo.player.v1;
+package lunarclient.apollo.player.v1;
 
 import "google/protobuf/any.proto";
 import "google/protobuf/struct.proto";
@@ -15,39 +15,43 @@ import "google/protobuf/source_context.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/type.proto";
 import "google/protobuf/wrappers.proto";
-
+        
 import "generated/apollo_common_v1.proto";
+
+option java_package = "com.lunarclient.apollo.player.v1";
+
+
 // Analysis
 // 5 packets stored.
 // File name (Generated): apollo_player_v1.proto
-
+        
 // Message struct
-
+        
 // From com.lunarclient.apollo.player.v1.ModMessage
 message ModMessage {
-
-  string id = 1; // Type: string
-  string name = 2; // Type: string
-  string version = 3; // Type: string
-  player.v1.ModMessage_Type type = 4; // Type: com.lunarclient.apollo.player.v1.ModMessage_Type
-
+  
+    string id = 1; // Type: string
+    string name = 2; // Type: string
+    string version = 3; // Type: string
+    player.v1.ModMessage_Type type = 4; // Type: com.lunarclient.apollo.player.v1.ModMessage_Type
+  
 }
 
 // From com.lunarclient.apollo.player.v1.PlayerHandshakeMessage
 message PlayerHandshakeMessage {
-
-  optional common.v1.MinecraftVersion minecraftVersion = 1; // Type: com.lunarclient.apollo.common.v1.MinecraftVersion
-  optional common.v1.LunarClientVersion lunarClientVersion = 2; // Type: com.lunarclient.apollo.common.v1.LunarClientVersion
-  repeated player.v1.ModMessage installedMods = 3; // Type: com.lunarclient.apollo.player.v1.ModMessage
-  player.v1.EmbeddedCheckoutSupport embeddedCheckoutSupport = 4; // Type: com.lunarclient.apollo.player.v1.EmbeddedCheckoutSupport
-
+  
+  optional  common.v1.MinecraftVersion minecraft_version = 1; // Type: com.lunarclient.apollo.common.v1.MinecraftVersion
+  optional  common.v1.LunarClientVersion lunar_client_version = 2; // Type: com.lunarclient.apollo.common.v1.LunarClientVersion
+   repeated player.v1.ModMessage installed_mods = 3; // Type: com.lunarclient.apollo.player.v1.ModMessage
+    player.v1.EmbeddedCheckoutSupport embedded_checkout_support = 4; // Type: com.lunarclient.apollo.player.v1.EmbeddedCheckoutSupport
+  
 }
 
 // From com.lunarclient.apollo.player.v1.UpdatePlayerWorldMessage
 message UpdatePlayerWorldMessage {
-
-  string world = 1; // Type: string
-
+  
+    string world = 1; // Type: string
+  
 }
 
 // From com.lunarclient.apollo.player.v1.EmbeddedCheckoutSupport

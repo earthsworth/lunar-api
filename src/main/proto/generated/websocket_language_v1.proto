@@ -2,7 +2,7 @@
 // For learning purposes only
 // https://t.me/earthsworth
 syntax = "proto3";
-package com.lunarclient.websocket.language.v1;
+package lunarclient.websocket.language.v1;
 
 import "google/protobuf/any.proto";
 import "google/protobuf/struct.proto";
@@ -15,30 +15,35 @@ import "google/protobuf/source_context.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/type.proto";
 import "google/protobuf/wrappers.proto";
+        
+
+
+option java_package = "com.lunarclient.websocket.language.v1";
 
 
 // Analysis
 // 3 packets stored.
 // File name (Generated): websocket_language_v1.proto
-
+        
 // Message struct
-
+        
 // From com.lunarclient.websocket.language.v1.Language
 message Language {
   oneof language {
-    string minecraftCode = 2; // Type: string
+    string minecraft_code = 2; // Type: string
   }
 }
 
 // From com.lunarclient.websocket.language.v1.UpdateLanguageRequest
 message UpdateLanguageRequest {
-
-  optional language.v1.Language newLanguage = 1; // Type: com.lunarclient.websocket.language.v1.Language
-
+  
+  optional  language.v1.Language new_language = 1; // Type: com.lunarclient.websocket.language.v1.Language
+  
 }
 
 // From com.lunarclient.websocket.language.v1.UpdateLanguageResponse
 message UpdateLanguageResponse {
-
-
+  
+  
+  
 }

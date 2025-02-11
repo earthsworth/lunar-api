@@ -2,7 +2,7 @@
 // For learning purposes only
 // https://t.me/earthsworth
 syntax = "proto3";
-package com.lunarclient.websocket.handshake.v1;
+package lunarclient.websocket.handshake.v1;
 
 import "google/protobuf/any.proto";
 import "google/protobuf/struct.proto";
@@ -20,6 +20,10 @@ import "generated/lunarclient_common_v1.proto";
 import "generated/websocket_friend_v1.proto";
 import "generated/websocket_language_v1.proto";
 import "generated/websocket_radio_v1.proto";
+
+option java_package = "com.lunarclient.websocket.handshake.v1";
+
+
 // Analysis
 // 8 packets stored.
 // File name (Generated): websocket_handshake_v1.proto
@@ -29,31 +33,30 @@ import "generated/websocket_radio_v1.proto";
 // From com.lunarclient.websocket.handshake.v1.GameHandshake
 message GameHandshake {
 
-  optional common.v1.MinecraftVersion minecraftVersion = 1; // Type: com.lunarclient.common.v1.MinecraftVersion
-  optional common.v1.LunarClientVersion lunarClientVersion = 2; // Type: com.lunarclient.common.v1.LunarClientVersion
-  optional friend.v1.InboundLocation location = 3; // Type: com.lunarclient.websocket.friend.v1.InboundLocation
-  repeated string ichorModules = 4; // Type: string
-  repeated handshake.v1.InstalledMod installedMods = 5; // Type: com.lunarclient.websocket.handshake.v1.InstalledMod
-  optional common.v1.PlayerModpack modpack = 6; // Type: com.lunarclient.common.v1.PlayerModpack
-  repeated string glExtensions = 7; // Type: string
-  string launchId = 8; // Type: string
+  optional  common.v1.MinecraftVersion minecraft_version = 1; // Type: com.lunarclient.common.v1.MinecraftVersion
+  optional  common.v1.LunarClientVersion lunar_client_version = 2; // Type: com.lunarclient.common.v1.LunarClientVersion
+  optional  friend.v1.InboundLocation location = 3; // Type: com.lunarclient.websocket.friend.v1.InboundLocation
+  repeated string ichor_modules = 4; // Type: string
+  repeated handshake.v1.InstalledMod installed_mods = 5; // Type: com.lunarclient.websocket.handshake.v1.InstalledMod
+  optional  common.v1.PlayerModpack modpack = 6; // Type: com.lunarclient.common.v1.PlayerModpack
+  repeated string gl_extensions = 7; // Type: string
+  string launch_id = 8; // Type: string
 
 }
 
 // From com.lunarclient.websocket.handshake.v1.Handshake
 message Handshake {
-  optional handshake.v1.MinecraftIdentity identity = 1; // Type: com.lunarclient.websocket.handshake.v1.MinecraftIdentity
-  common.v1.LauncherVersion launcherVersion = 2; // Type: com.lunarclient.common.v1.LauncherVersion
-  string installationId = 3; // Type: string
+  handshake.v1.MinecraftIdentity identity = 1; // Type: com.lunarclient.websocket.handshake.v1.MinecraftIdentity
+  optional common.v1.LauncherVersion launcher_version = 2; // Type: com.lunarclient.common.v1.LauncherVersion
+  optional string installation_id = 3; // Type: string
   string hwid = 4; // Type: string
-  string operatingSystem = 5; // Type: string
-  string operatingSystemRelease = 11; // Type: string
-  string cpuArchitecture = 6; // Type: string
-  optional  language.v1.Language language = 7; // Type: com.lunarclient.websocket.language.v1.Language
-  string canaryToken = 10; // Type: string
-  optional handshake.v1.GameHandshake gameHandshake = 8; // Type: com.lunarclient.websocket.handshake.v1.GameHandshake
-  optional  handshake.v1.LauncherHandshake launcherHandshake = 9; // Type: com.lunarclient.websocket.handshake.v1.LauncherHandshake
-
+  string operating_system = 5; // Type: string
+  string operating_system_release = 11; // Type: string
+  string cpu_architecture = 6; // Type: string
+  optional language.v1.Language language = 7; // Type: com.lunarclient.websocket.language.v1.Language
+  string canary_token = 10; // Type: string
+  optional handshake.v1.GameHandshake game_handshake = 8; // Type: com.lunarclient.websocket.handshake.v1.GameHandshake
+  optional handshake.v1.LauncherHandshake launcher_handshake = 9; // Type: com.lunarclient.websocket.handshake.v1.LauncherHandshake
 }
 
 // From com.lunarclient.websocket.handshake.v1.InstalledMod
@@ -70,18 +73,18 @@ message InstalledMod {
 message LauncherHandshake {
 
   string environment = 1; // Type: string
-  string sessionId = 2; // Type: string
-  string updaterStream = 3; // Type: string
-  handshake.v1.LauncherHandshake_ElectronBinariesType electronBinariesType = 4; // Type: com.lunarclient.websocket.handshake.v1.LauncherHandshake_ElectronBinariesType
+  string session_id = 2; // Type: string
+  string updater_stream = 3; // Type: string
+  handshake.v1.LauncherHandshake_ElectronBinariesType electron_binaries_type = 4; // Type: com.lunarclient.websocket.handshake.v1.LauncherHandshake_ElectronBinariesType
   bool elevated = 5; // Type: bool
-  bool silentStart = 6; // Type: bool
-  int32 uptimeSinceStart = 7; // Type: int32
-  optional google.protobuf.Timestamp startedAt = 8; // Type: google.protobuf.Timestamp
-  int32 buildNumber = 9; // Type: int32
-  string gitCommitHash = 10; // Type: string
-  string gitShortCommitHash = 11; // Type: string
-  optional radio.v1.InboundRadioInfo radioInfo = 12; // Type: com.lunarclient.websocket.radio.v1.InboundRadioInfo
-  bool optimizedAds = 13; // Type: bool
+  bool silent_start = 6; // Type: bool
+  int32 uptime_since_start = 7; // Type: int32
+  optional  google.protobuf.Timestamp started_at = 8; // Type: google.protobuf.Timestamp
+  int32 build_number = 9; // Type: int32
+  string git_commit_hash = 10; // Type: string
+  string git_short_commit_hash = 11; // Type: string
+  optional  radio.v1.InboundRadioInfo radio_info = 12; // Type: com.lunarclient.websocket.radio.v1.InboundRadioInfo
+  bool optimized_ads = 13; // Type: bool
   bool analytics = 14; // Type: bool
 
 }
@@ -89,9 +92,9 @@ message LauncherHandshake {
 // From com.lunarclient.websocket.handshake.v1.MinecraftIdentity
 message MinecraftIdentity {
 
-  optional common.v1.UuidAndUsername player = 1; // Type: com.lunarclient.common.v1.UuidAndUsername
+  optional  common.v1.UuidAndUsername player = 1; // Type: com.lunarclient.common.v1.UuidAndUsername
   handshake.v1.MinecraftIdentity_Type type = 2; // Type: com.lunarclient.websocket.handshake.v1.MinecraftIdentity_Type
-  string authenticatorJwt = 3; // Type: string
+  string authenticator_jwt = 3; // Type: string
 
 }
 
