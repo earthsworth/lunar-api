@@ -13,7 +13,10 @@ import org.cubewhy.celestial.entity.User
 import org.cubewhy.celestial.entity.UserCosmetic
 import org.cubewhy.celestial.repository.UserRepository
 import org.cubewhy.celestial.service.CosmeticService
+import org.cubewhy.celestial.service.SubscriptionService
+import org.cubewhy.celestial.util.pushEvent
 import org.cubewhy.celestial.util.toLunarClientColor
+import org.cubewhy.celestial.util.toLunarClientUUID
 import org.springframework.core.io.ClassPathResource
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.socket.WebSocketSession
@@ -23,6 +26,7 @@ import java.time.Instant
 @Service
 class CosmeticServiceImpl(
     private val userRepository: UserRepository,
+    private val subscriptionService: SubscriptionService
 ) : CosmeticService {
 
     companion object {
@@ -58,28 +62,23 @@ class CosmeticServiceImpl(
         session: WebSocketSession,
         user: User
     ): GeneratedMessage? {
-        when (method) {
-            "Login" -> {
-                // process login packet
-                return this.processLogin(user)
-            }
+        return when (method) {
+            "Login" -> this.processLogin(user) // process login packet
 
             "UpdateCosmeticSettings" -> {
                 // parse payload
                 val pb = WebsocketCosmeticV1.UpdateCosmeticSettingsRequest.parseFrom(payload)
-                return this.updateCosmeticSettings(pb, user)
+                this.processUpdateCosmeticSettings(pb, user, session)
             }
 
-            else -> {
-                // unknown packet
-                return null
-            }
+            else -> null // unknown packet
         }
     }
 
-    private suspend fun updateCosmeticSettings(
+    override suspend fun processUpdateCosmeticSettings(
         message: WebsocketCosmeticV1.UpdateCosmeticSettingsRequest,
-        user: User
+        user: User,
+        session: WebSocketSession
     ): GeneratedMessage? {
         user.cosmetic.clothCloak = message.settings.clothCloak
         user.cosmetic.equippedCosmetics =
@@ -94,12 +93,27 @@ class CosmeticServiceImpl(
         user.cosmetic.showOverLeggings = message.settings.showOverLeggings
         // save user
         logger.info { "Saving cosmetics settings of user ${user.username} (count: ${message.settings.equippedCosmeticsList.size})" }
-
         userRepository.save(user).awaitFirst()
+        // push settings to other players
+        subscriptionService.getWorldPlayerUuids(session)
+            .forEach { uuid ->
+                // push cosmetics event
+                session.pushEvent(this.buildCosmeticsPush(uuid, user, message.settings))
+                // push refresh event
+                session.pushEvent(WebsocketCosmeticV1.RefreshCosmeticsPush.newBuilder().build())
+            }
         return WebsocketCosmeticV1.UpdateCosmeticSettingsResponse.getDefaultInstance()
     }
 
-    private suspend fun processLogin(user: User): GeneratedMessage {
+    private fun buildCosmeticsPush(playerUuid: String, user: User, settings: WebsocketCosmeticV1.CustomizableCosmeticSettings) =
+        WebsocketCosmeticV1.PlayerCosmeticsPush.newBuilder().apply {
+            this.playerUuid = playerUuid.toLunarClientUUID()
+            this.settings = settings
+            this.logoColor = user.role.toLunarClientColor()
+            this.logoAlwaysShow = user.cosmetic.logoAlwaysShow
+        }.build()
+
+    override suspend fun processLogin(user: User): GeneratedMessage {
         return WebsocketCosmeticV1.LoginResponse.newBuilder().apply {
             settings = buildCosmeticSettings(user)
             logoColor = user.role.toLunarClientColor()
@@ -107,7 +121,7 @@ class CosmeticServiceImpl(
             addAllAvailableLunarPlusColors(PlusColor.entries.map { it.toLunarClientColor() })
             addAllOwnedCosmeticIds(cosmeticList.map { it.cosmeticId })
             addAllOwnedCosmetics(cosmeticList.map { it.toUserCosmetic().toOwnedCosmetic() })
-            logoAlwaysShow = true
+            logoAlwaysShow = user.cosmetic.logoAlwaysShow
             hasAllCosmeticsFlag = true
         }.build()
     }

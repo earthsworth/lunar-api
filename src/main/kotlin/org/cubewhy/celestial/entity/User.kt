@@ -34,5 +34,6 @@ data class UserCosmeticSettings(
     var showOverChestplate: Boolean = false,
     var showOverBoots: Boolean = false,
     var showOverLeggings: Boolean = false,
-    var equippedCosmetics: List<UserCosmetic> = emptyList()
+    var equippedCosmetics: List<UserCosmetic> = emptyList(),
+    var logoAlwaysShow: Boolean = true
 )

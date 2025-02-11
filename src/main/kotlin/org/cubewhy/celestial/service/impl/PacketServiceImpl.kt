@@ -8,6 +8,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import org.cubewhy.celestial.entity.User
 import org.cubewhy.celestial.service.CosmeticService
 import org.cubewhy.celestial.service.PacketService
+import org.cubewhy.celestial.service.SubscriptionService
 import org.cubewhy.celestial.service.UserService
 import org.cubewhy.celestial.util.JwtUtil
 import org.cubewhy.celestial.util.toUUIDString
@@ -19,6 +20,7 @@ import java.time.Instant
 data class PacketServiceImpl(
     val userService: UserService,
     val cosmeticService: CosmeticService,
+    val subscriptionService: SubscriptionService,
     val jwtUtil: JwtUtil
 ) : PacketService {
     companion object {
@@ -68,6 +70,10 @@ data class PacketServiceImpl(
         when (message.service) {
             "lunarclient.websocket.cosmetic.v1.CosmeticService" -> {
                 return cosmeticService.process(message.method, message.input, session, user)
+            }
+
+            "lunarclient.websocket.subscription.v1.SubscriptionService" -> {
+                return subscriptionService.process(message.method, message.input, session, user)
             }
         }
         return null

@@ -1,5 +1,6 @@
 package org.cubewhy.celestial.util
 
+import com.google.protobuf.Any
 import com.google.protobuf.ByteString
 import com.google.protobuf.GeneratedMessage
 import com.google.protobuf.Timestamp
@@ -8,6 +9,9 @@ import com.lunarclient.authenticator.v1.LunarclientAuthenticatorV1.AuthSuccessMe
 import com.lunarclient.common.v1.LunarclientCommonV1
 import com.lunarclient.websocket.protocol.v1.WebsocketProtocolV1
 import com.lunarclient.websocket.protocol.v1.WebsocketProtocolV1.WebSocketRpcResponse
+import kotlinx.coroutines.reactive.awaitFirst
+import org.springframework.web.reactive.socket.WebSocketSession
+import reactor.kotlin.core.publisher.toMono
 import java.time.Instant
 import java.util.*
 
@@ -23,6 +27,13 @@ fun GeneratedMessage.wrapCommon(requestId: ByteString): WebsocketProtocolV1.Clie
             .setOutput(this.toByteString())
             .build())
         .build()
+}
+
+
+fun GeneratedMessage.wrapPush(): WebsocketProtocolV1.ClientboundWebSocketMessage {
+    return WebsocketProtocolV1.ClientboundWebSocketMessage.newBuilder().apply {
+        pushNotification = Any.pack(this@wrapPush)
+    }.build()
 }
 
 fun AuthSuccessMessage.wrapAuthenticator(): LunarclientAuthenticatorV1.ClientboundWebSocketMessage {
@@ -44,3 +55,17 @@ fun Int.toLunarClientColor(): LunarclientCommonV1.Color =
     LunarclientCommonV1.Color.newBuilder().apply {
         color = this@toLunarClientColor
     }.build()
+
+fun UUID.toLunarClientUUID(): LunarclientCommonV1.Uuid = LunarclientCommonV1.Uuid.newBuilder().apply {
+    this.high64 = this@toLunarClientUUID.mostSignificantBits
+    this.low64 = this@toLunarClientUUID.leastSignificantBits
+}.build()
+
+fun String.toLunarClientUUID() = UUID.fromString(this).toLunarClientUUID()
+
+suspend fun WebSocketSession.pushEvent(event: GeneratedMessage) {
+    val payload = event
+        .wrapPush()
+        .toByteArray()
+    this.send(this.binaryMessage { it.wrap(payload) }.toMono()).awaitFirst()
+}
