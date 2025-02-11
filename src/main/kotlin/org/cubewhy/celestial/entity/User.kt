@@ -17,10 +17,10 @@ data class User(
     var createdAt: Instant = Instant.now(),
     var lastSeenAt: Instant = Instant.now(),
     var allowFriendRequests: Boolean = true,
+    var lunarPlusColor: Int? = null,
 
     var cosmetic: UserCosmeticSettings = UserCosmeticSettings()
-) {
-}
+)
 
 data class UserCosmeticSettings(
     var lunarPlusColor: Int? = null,

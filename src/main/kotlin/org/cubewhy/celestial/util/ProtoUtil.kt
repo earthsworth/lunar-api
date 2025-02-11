@@ -7,13 +7,19 @@ import com.google.protobuf.Timestamp
 import com.lunarclient.authenticator.v1.LunarclientAuthenticatorV1
 import com.lunarclient.authenticator.v1.LunarclientAuthenticatorV1.AuthSuccessMessage
 import com.lunarclient.common.v1.LunarclientCommonV1
+import com.lunarclient.common.v1.LunarclientCommonV1.UuidAndUsername
 import com.lunarclient.websocket.protocol.v1.WebsocketProtocolV1
 import com.lunarclient.websocket.protocol.v1.WebsocketProtocolV1.WebSocketRpcResponse
 import kotlinx.coroutines.reactive.awaitFirst
 import org.springframework.web.reactive.socket.WebSocketSession
 import reactor.kotlin.core.publisher.toMono
+import org.cubewhy.celestial.entity.User
+import org.springframework.lang.Contract
 import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
 import java.util.*
+
 
 /**
  * Wrap an assets server packet with LunarClient wrapper
@@ -68,4 +74,40 @@ suspend fun WebSocketSession.pushEvent(event: GeneratedMessage) {
         .wrapPush()
         .toByteArray()
     this.send(this.binaryMessage { it.wrap(payload) }.toMono()).awaitFirst()
+}
+
+fun toUuidAndUsername(username: String?): UuidAndUsername {
+    return UuidAndUsername.newBuilder()
+        .setUsername(username)
+        .build()
+}
+
+fun toUuidAndUsername(username: String?, uuid: String): UuidAndUsername {
+    val parsedUUID = UUID.fromString(uuid)
+    return UuidAndUsername.newBuilder()
+        .setUsername(username)
+        .setUuid(
+            LunarclientCommonV1.Uuid.newBuilder()
+                .setHigh64(parsedUUID.mostSignificantBits)
+                .setLow64(parsedUUID.leastSignificantBits)
+        )
+        .build()
+}
+
+fun toUuidAndUsername(user: User): UuidAndUsername {
+    return toUuidAndUsername(user.username, user.uuid)
+}
+
+/**
+ * Convent a Instant to LunarClient timestamp
+ *
+ * @param instant Instant object
+ * @return timestamp message
+ */
+@Contract("_ -> new")
+fun calcTimestamp(instant: Instant): Timestamp {
+    return Timestamp.newBuilder()
+        .setNanos(instant.nano)
+        .setSeconds(instant.epochSecond)
+        .build()
 }
