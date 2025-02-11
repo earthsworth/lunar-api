@@ -4,6 +4,7 @@ import com.lunarclient.websocket.handshake.v1.WebsocketHandshakeV1
 import com.lunarclient.websocket.protocol.v1.WebsocketProtocolV1
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.reactor.mono
+import org.cubewhy.celestial.entity.User
 import org.cubewhy.celestial.service.PacketService
 import org.cubewhy.celestial.util.wrapCommon
 import org.springframework.stereotype.Component
@@ -11,6 +12,7 @@ import org.springframework.web.reactive.socket.WebSocketHandler
 import org.springframework.web.reactive.socket.WebSocketSession
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
+import reactor.netty.channel.AbortedException
 
 @Component
 data class AssetsHandler(
@@ -39,10 +41,15 @@ data class AssetsHandler(
             }
         }.concatMap { message ->
             session.send(session.binaryMessage { it.wrap(message.toByteArray()) }.toMono()) // send response
-        }.doOnError { err ->
-            logger.error(err) { "Failed to handle websocket message" }
+        }.doOnError { e ->
+            if (e !is AbortedException) {
+                // ignore session disconnected
+                logger.error(e) { "WebSocket processing error" }
+            }
         }.doFinally { signalType ->
             // remove session id and close session
+            val user = session.attributes["user"] as User?
+            logger.info { "User ${user?.username} disconnected" }
             logger.info { "Websocket terminated [${signalType.name}]" }
         }.then()
     }

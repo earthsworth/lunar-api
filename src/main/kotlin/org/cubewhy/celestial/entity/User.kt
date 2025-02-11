@@ -18,7 +18,7 @@ data class User(
     var lastSeenAt: Instant = Instant.now(),
     var allowFriendRequests: Boolean = true,
 
-    val cosmetic: UserCosmeticSettings = UserCosmeticSettings()
+    var cosmetic: UserCosmeticSettings = UserCosmeticSettings()
 ) {
 }
 
@@ -34,4 +34,5 @@ data class UserCosmeticSettings(
     var showOverChestplate: Boolean = false,
     var showOverBoots: Boolean = false,
     var showOverLeggings: Boolean = false,
-    )
+    var equippedCosmetics: List<UserCosmetic> = emptyList()
+)

@@ -10,6 +10,7 @@ import org.springframework.web.reactive.socket.WebSocketHandler
 import org.springframework.web.reactive.socket.WebSocketSession
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
+import reactor.netty.channel.AbortedException
 
 @Component
 data class AuthorizeHandler(
@@ -21,11 +22,21 @@ data class AuthorizeHandler(
 
     override fun handle(session: WebSocketSession): Mono<Void> {
         return session.receive()
-            .flatMap { message -> LunarclientAuthenticatorV1.ServerboundWebSocketMessage.parseFrom(message.payload.asInputStream()).toMono() } // parse message
+            .flatMap { message ->
+                LunarclientAuthenticatorV1.ServerboundWebSocketMessage.parseFrom(message.payload.asInputStream())
+                    .toMono()
+            } // parse message
             .flatMap { message -> mono { packetService.processAuthorize(message) } } // process message
             .flatMap { message -> message.wrapAuthenticator().toMono() } // wrap message
-            .flatMap { message -> session.send(session.binaryMessage { it.wrap(message.toByteArray()) }.toMono()) } // convent message and send
-            .doOnError { e -> logger.error(e) { "WebSocket processing error" } }
+            .flatMap { message ->
+                session.send(session.binaryMessage { it.wrap(message.toByteArray()) }.toMono())
+            } // convent message and send
+            .doOnError { e ->
+                if (e !is AbortedException) {
+                    // ignore session disconnected
+                    logger.error(e) { "WebSocket processing error" }
+                }
+            }
             .then()
     }
 }

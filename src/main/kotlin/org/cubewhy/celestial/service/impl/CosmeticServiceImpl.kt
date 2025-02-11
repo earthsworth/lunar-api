@@ -10,6 +10,7 @@ import kotlinx.coroutines.reactive.awaitFirst
 import org.cubewhy.celestial.entity.Cosmetic
 import org.cubewhy.celestial.entity.PlusColor
 import org.cubewhy.celestial.entity.User
+import org.cubewhy.celestial.entity.UserCosmetic
 import org.cubewhy.celestial.repository.UserRepository
 import org.cubewhy.celestial.service.CosmeticService
 import org.cubewhy.celestial.util.toLunarClientColor
@@ -17,6 +18,7 @@ import org.springframework.core.io.ClassPathResource
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.socket.WebSocketSession
 import java.io.InputStreamReader
+import java.time.Instant
 
 @Service
 class CosmeticServiceImpl(
@@ -80,7 +82,8 @@ class CosmeticServiceImpl(
         user: User
     ): GeneratedMessage? {
         user.cosmetic.clothCloak = message.settings.clothCloak
-        user.cosmetic.activeCosmetics = message.settings.activeCosmeticIdsList
+        user.cosmetic.equippedCosmetics =
+            message.settings.equippedCosmeticsList.map { UserCosmetic(it.cosmeticId, Instant.now(), null, null) }
         user.cosmetic.flipShoulderPet = message.settings.flipShoulderPet
         user.cosmetic.lunarPlusColor = message.settings.plusColor.color
         user.cosmetic.showHatsOverHelmet = message.settings.showHatsOverHelmet
@@ -90,11 +93,9 @@ class CosmeticServiceImpl(
         user.cosmetic.showOverBoots = message.settings.showOverBoots
         user.cosmetic.showOverLeggings = message.settings.showOverLeggings
         // save user
-        val saved = userRepository.save(user)
-            .doOnNext {
-              logger.info { "User data ${it.username} upudated" }
-            }.awaitFirst()
-        logger.info { "Update cosmetics settings for user ${user.username} (${saved.cosmetic.activeCosmetics.size} cosmetics active)" }
+        logger.info { "Saving cosmetics settings of user ${user.username} (count: ${message.settings.equippedCosmeticsList.size})" }
+
+        userRepository.save(user).awaitFirst()
         return WebsocketCosmeticV1.UpdateCosmeticSettingsResponse.getDefaultInstance()
     }
 
@@ -115,7 +116,7 @@ class CosmeticServiceImpl(
         return WebsocketCosmeticV1.CustomizableCosmeticSettings.newBuilder().apply {
             clothCloak = user.cosmetic.clothCloak
             addAllActiveCosmeticIds(user.cosmetic.activeCosmetics.map { it })
-//            addAllEquippedCosmetics(cosmeticList.map { it.toUserCosmetic().toEquippedCosmetic() })
+            addAllEquippedCosmetics(user.cosmetic.equippedCosmetics.map { it.toEquippedCosmetic() })
             flipShoulderPet = false
             user.cosmetic.lunarPlusColor?.let { setPlusColor(it.toLunarClientColor()) }
         }.build()
