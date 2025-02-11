@@ -22,11 +22,13 @@ data class UserServiceImpl(
     override suspend fun loadUser(username: String, uuid: String): User {
         return userRepository.findByUuid(uuid)
             .switchIfEmpty {
-                userRepository.save(User(
-                    username = username,
-                    uuid = uuid,
-                    role = Role.USER
-                ))
+                userRepository.save(
+                    User(
+                        username = username,
+                        uuid = uuid,
+                        role = Role.USER
+                    )
+                )
             }
             .doOnNext { user ->
                 logger.info { "Successfully loaded user ${user.username}" }

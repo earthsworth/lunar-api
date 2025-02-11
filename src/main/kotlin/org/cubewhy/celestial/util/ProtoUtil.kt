@@ -24,10 +24,12 @@ import java.util.*
  * */
 fun GeneratedMessage.wrapCommon(requestId: ByteString): WebsocketProtocolV1.ClientboundWebSocketMessage {
     return WebsocketProtocolV1.ClientboundWebSocketMessage.newBuilder()
-        .setRpcResponse(WebSocketRpcResponse.newBuilder()
-            .setRequestId(requestId)
-            .setOutput(this.toByteString())
-            .build())
+        .setRpcResponse(
+            WebSocketRpcResponse.newBuilder()
+                .setRequestId(requestId)
+                .setOutput(this.toByteString())
+                .build()
+        )
         .build()
 }
 

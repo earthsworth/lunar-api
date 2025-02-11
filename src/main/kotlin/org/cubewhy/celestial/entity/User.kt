@@ -20,8 +20,7 @@ data class User(
     var lunarPlusColor: Int? = null,
 
     var cosmetic: UserCosmeticSettings = UserCosmeticSettings()
-) {
-}
+)
 
 data class UserCosmeticSettings(
     var lunarPlusColor: Int? = null,

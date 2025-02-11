@@ -5,7 +5,7 @@ import org.springframework.data.mongodb.core.mapping.Document
 import java.time.Instant
 
 @Document
-data class Friend (
+data class Friend(
     @Id val id: String,
     val user1: String,
     val user2: String,

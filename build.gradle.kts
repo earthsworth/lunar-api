@@ -34,6 +34,7 @@ dependencies {
 	testImplementation("io.projectreactor:reactor-test")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    implementation ("org.testcontainers:testcontainers:1.20.4")
 }
 
 kotlin {

@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository
 import reactor.core.publisher.Mono
 
 @Repository
-interface FriendRequestRepository: ReactiveCrudRepository<FriendRequest, String> {
+interface FriendRequestRepository : ReactiveCrudRepository<FriendRequest, String> {
     fun existsBySenderIdAndRecipientId(senderId: String, recipientId: String): Mono<Boolean>
 }

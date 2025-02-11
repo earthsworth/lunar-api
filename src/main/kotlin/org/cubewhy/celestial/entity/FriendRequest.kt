@@ -7,7 +7,7 @@ import java.time.Instant
 @Document
 data class FriendRequest(
     @Id
-    val id: String,
+    val id: String?,
     val senderId: String,
     val recipientId: String,
     val timestamp: Instant,
