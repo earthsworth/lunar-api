@@ -12,4 +12,9 @@ interface SubscriptionService : PacketProcessor {
     ): WebsocketSubscriptionV1.SubscribeResponse
 
     fun getWorldPlayerUuids(session: WebSocketSession): List<String>
+    suspend fun processUnsubscribe(
+        request: WebsocketSubscriptionV1.UnsubscribeRequest,
+        session: WebSocketSession,
+        user: User
+    ): WebsocketSubscriptionV1.UnsubscribeResponse
 }
