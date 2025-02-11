@@ -161,10 +161,10 @@ class FriendServiceImpl(
             player = toUuidAndUsername(user.username)
             rankName = user.role.rank
             friendsSince = calcTimestamp(since)
-            logoColor = toLunarClientColor(targetLogoColor)
+            logoColor = targetLogoColor.toLunarClientColor()
             isRadioPremium = targetRadioPremium
-            if (targetLunarPlusColor != null) plusColor = toLunarClientColor(targetLunarPlusColor)
-            TODO("websocketUtil.isOnline")
+            if (targetLunarPlusColor != null) plusColor = targetLunarPlusColor.toLunarClientColor()
+            // TODO websocketUtil.isOnline
         }.build()
     }
 
