@@ -104,7 +104,7 @@ class CosmeticServiceImpl(
                 // push cosmetics event
                 targetSession?.pushCosmeticEvent(user, message.settings)
             }
-//        session.pushCosmeticEvent(user, message.settings) // push event to self
+        session.pushCosmeticEvent(user, message.settings) // push event to self
         return WebsocketCosmeticV1.UpdateCosmeticSettingsResponse.getDefaultInstance()
     }
 
