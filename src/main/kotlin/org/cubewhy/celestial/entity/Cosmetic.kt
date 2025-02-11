@@ -31,7 +31,7 @@ data class UserCosmetic(
         return WebsocketCosmeticV1.OwnedCosmetic.newBuilder().apply {
             cosmeticId = this@UserCosmetic.cosmeticId
             grantedAt = this@UserCosmetic.grantedAt.toProtobufType()
-            expirationReason = this@UserCosmetic.expirationReason?.toLunarClientType()
+            this@UserCosmetic.expirationReason?.let { setExpirationReason(it.toLunarClientType()) }
             this@UserCosmetic.expiresAt?.let { setExpiresAt(it.toProtobufType()) }
         }.build()
 
