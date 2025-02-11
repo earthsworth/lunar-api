@@ -45,7 +45,7 @@ class SubscriptionServiceImpl : SubscriptionService {
         user: User
     ): WebsocketSubscriptionV1.UnsubscribeResponse {
         // remove all uuids from session
-        logger.info { "User $user unsubscribed" }
+        logger.info { "User ${user.username} unsubscribed" }
         session.attributes["multiplayer-uuids"] = emptyList<String>() // clear uuid list
         return WebsocketSubscriptionV1.UnsubscribeResponse.getDefaultInstance()
     }
