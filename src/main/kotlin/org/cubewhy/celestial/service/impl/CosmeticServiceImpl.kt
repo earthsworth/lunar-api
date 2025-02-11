@@ -58,6 +58,7 @@ class CosmeticServiceImpl(
     ): GeneratedMessage? {
         when (method) {
             "Login" -> {
+                // process login packet
                 return this.processLogin(user)
             }
 
@@ -110,7 +111,7 @@ class CosmeticServiceImpl(
         return WebsocketCosmeticV1.CustomizableCosmeticSettings.newBuilder().apply {
             clothCloak = user.cosmetic.clothCloak
             addAllActiveCosmeticIds(user.cosmetic.activeCosmetics.map { it })
-            addAllEquippedCosmetics(cosmeticList.map { it.toUserCosmetic().toEquippedCosmetic() })
+//            addAllEquippedCosmetics(cosmeticList.map { it.toUserCosmetic().toEquippedCosmetic() })
             flipShoulderPet = false
             user.cosmetic.lunarPlusColor?.let { setPlusColor(it.toLunarClientColor()) }
         }.build()
