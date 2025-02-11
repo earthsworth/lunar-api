@@ -11,6 +11,7 @@ import com.lunarclient.common.v1.LunarclientCommonV1.UuidAndUsername
 import com.lunarclient.websocket.protocol.v1.WebsocketProtocolV1
 import com.lunarclient.websocket.protocol.v1.WebsocketProtocolV1.WebSocketRpcResponse
 import kotlinx.coroutines.reactive.awaitFirst
+import kotlinx.coroutines.reactive.awaitFirstOrNull
 import org.springframework.web.reactive.socket.WebSocketSession
 import reactor.kotlin.core.publisher.toMono
 import org.cubewhy.celestial.entity.User
@@ -73,7 +74,7 @@ suspend fun WebSocketSession.pushEvent(event: GeneratedMessage) {
     val payload = event
         .wrapPush()
         .toByteArray()
-    this.send(this.binaryMessage { it.wrap(payload) }.toMono()).awaitFirst()
+    this.send(this.binaryMessage { it.wrap(payload) }.toMono()).awaitFirstOrNull()
 }
 
 fun toUuidAndUsername(username: String?): UuidAndUsername {
