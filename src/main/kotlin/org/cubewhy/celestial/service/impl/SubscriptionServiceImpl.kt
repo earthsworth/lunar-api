@@ -44,9 +44,9 @@ class SubscriptionServiceImpl : SubscriptionService {
         session: WebSocketSession,
         user: User
     ): WebsocketSubscriptionV1.UnsubscribeResponse {
-        // remove all uuids from session
-        logger.info { "User ${user.username} unsubscribed" }
-        session.attributes["multiplayer-uuids"] = emptyList<String>() // clear uuid list
+        val uuids = request.targetUuidsList
+        logger.info { "User ${user.username} update multiplayer player list (${uuids.size} players) (unsub)" }
+        session.attributes["multiplayer-uuids"] = uuids // set new uuid list
         return WebsocketSubscriptionV1.UnsubscribeResponse.getDefaultInstance()
     }
 
@@ -67,7 +67,7 @@ class SubscriptionServiceImpl : SubscriptionService {
         uuids: List<String>,
         user: User
     ) {
-        logger.info { "User ${user.username} update multiplayer player list (${uuids.size} players)" }
+        logger.info { "User ${user.username} update multiplayer player list (${uuids.size} players) (sub)" }
         session.attributes["multiplayer-uuids"] = uuids
     }
 
