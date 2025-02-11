@@ -27,12 +27,15 @@ data class UserCosmetic(
         .setCosmeticId(this.cosmeticId)
         .build()
 
-    fun toOwnedCosmetic(): WebsocketCosmeticV1.OwnedCosmetic = WebsocketCosmeticV1.OwnedCosmetic.newBuilder()
-        .setCosmeticId(this.cosmeticId)
-        .setGrantedAt(grantedAt.toProtobufType())
-        .setExpiresAt(expiresAt?.toProtobufType())
-        .setExpirationReason(expirationReason?.toLunarClientType())
-        .build()
+    fun toOwnedCosmetic(): WebsocketCosmeticV1.OwnedCosmetic {
+        return WebsocketCosmeticV1.OwnedCosmetic.newBuilder().apply {
+            cosmeticId = this@UserCosmetic.cosmeticId
+            grantedAt = this@UserCosmetic.grantedAt.toProtobufType()
+            expirationReason = this@UserCosmetic.expirationReason?.toLunarClientType()
+            this@UserCosmetic.expiresAt?.let { setExpiresAt(it.toProtobufType()) }
+        }.build()
+
+    }
 }
 
 enum class CosmeticExpirationReason {

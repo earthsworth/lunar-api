@@ -64,25 +64,25 @@ class CosmeticServiceImpl : CosmeticService {
     }
 
     private suspend fun processLogin(user: User): GeneratedMessage {
-        val builder = WebsocketCosmeticV1.LoginResponse.newBuilder()
-            .setSettings(this.buildCosmeticSettings(user))
-            .setLogoColor(user.role.toLunarClientColor())
-            .setRankName(user.role.rank)
-            .addAllAvailableLunarPlusColors(PlusColor.entries.map { i -> i.toLunarClientColor() }.toList())
-            .addAllOwnedCosmeticIds(cosmeticList.map { it.cosmeticId }.toList())
-            .addAllOwnedCosmetics(cosmeticList.map { it.toUserCosmetic().toOwnedCosmetic() }.toList())
-            .setLogoAlwaysShow(true)
-            .setHasAllCosmeticsFlag(true)
-        return builder.build()
+        return WebsocketCosmeticV1.LoginResponse.newBuilder().apply {
+            settings = buildCosmeticSettings(user)
+            logoColor = user.role.toLunarClientColor()
+            rankName = user.role.rank
+            addAllAvailableLunarPlusColors(PlusColor.entries.map { it.toLunarClientColor() })
+            addAllOwnedCosmeticIds(cosmeticList.map { it.cosmeticId })
+            addAllOwnedCosmetics(cosmeticList.map { it.toUserCosmetic().toOwnedCosmetic() })
+            logoAlwaysShow = true
+            hasAllCosmeticsFlag = true
+        }.build()
     }
 
     private fun buildCosmeticSettings(user: User): WebsocketCosmeticV1.CustomizableCosmeticSettings {
-        val builder = WebsocketCosmeticV1.CustomizableCosmeticSettings.newBuilder()
-            .setClothCloak(user.clothCloak)
-            .addAllActiveCosmeticIds(user.activeCosmetics.map { it.cosmeticId }.toList())
-            .addAllEquippedCosmetics(user.equippedCosmetics.map { it.toEquippedCosmetic() }.toList())
-            .setFlipShoulderPet(false)
-            .setPlusColor(user.lunarPlusColor?.toLunarClientColor())
-        return builder.build()
+        return WebsocketCosmeticV1.CustomizableCosmeticSettings.newBuilder().apply {
+            clothCloak = user.clothCloak
+            addAllActiveCosmeticIds(user.activeCosmetics.map { it.cosmeticId })
+            addAllEquippedCosmetics(user.equippedCosmetics.map { it.toEquippedCosmetic() })
+            flipShoulderPet = false
+            user.lunarPlusColor?.let { setPlusColor(it.toLunarClientColor()) }
+        }.build()
     }
 }
