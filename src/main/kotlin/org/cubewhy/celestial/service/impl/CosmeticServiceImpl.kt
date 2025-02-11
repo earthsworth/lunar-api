@@ -98,7 +98,7 @@ class CosmeticServiceImpl(
         subscriptionService.getWorldPlayerUuids(session)
             .forEach { uuid ->
                 // push cosmetics event
-                session.pushEvent(this.buildCosmeticsPush(uuid, user, message.settings))
+                session.pushEvent(this.buildCosmeticsPush(user.uuid, user, message.settings))
                 // push refresh event
                 session.pushEvent(WebsocketCosmeticV1.RefreshCosmeticsPush.newBuilder().build())
             }
