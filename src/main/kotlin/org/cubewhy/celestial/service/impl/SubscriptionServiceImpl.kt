@@ -46,7 +46,7 @@ class SubscriptionServiceImpl : SubscriptionService {
     ): WebsocketSubscriptionV1.UnsubscribeResponse {
         val uuids = request.targetUuidsList
         logger.info { "User ${user.username} update multiplayer player list (${uuids.size} players) (unsub)" }
-        session.attributes["multiplayer-uuids"] = uuids.map { it.toUUIDString() } // set new uuid list
+        (session.attributes["multiplayer-uuids"] as MutableList<String>).removeAll(uuids.map { it.toUUIDString() }.toSet()) // set new uuid list
         return WebsocketSubscriptionV1.UnsubscribeResponse.getDefaultInstance()
     }
 
@@ -68,7 +68,11 @@ class SubscriptionServiceImpl : SubscriptionService {
         user: User
     ) {
         logger.info { "User ${user.username} update multiplayer player list (${uuids.size} players) (sub)" }
-        session.attributes["multiplayer-uuids"] = uuids
+        if (!session.attributes.containsKey("multiplayer-uuids")) {
+            session.attributes["multiplayer-uuids"] = uuids.toMutableList()
+        } else {
+            (session.attributes["multiplayer-uuids"] as MutableList<String>).addAll(uuids)
+        }
     }
 
     override fun getWorldPlayerUuids(session: WebSocketSession): List<String> {
