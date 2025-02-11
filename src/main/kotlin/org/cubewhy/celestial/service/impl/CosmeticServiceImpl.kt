@@ -90,7 +90,11 @@ class CosmeticServiceImpl(
         user.cosmetic.showOverBoots = message.settings.showOverBoots
         user.cosmetic.showOverLeggings = message.settings.showOverLeggings
         // save user
-        userRepository.save(user).awaitFirst()
+        val saved = userRepository.save(user)
+            .doOnNext {
+              logger.info { "User data ${it.username} upudated" }
+            }.awaitFirst()
+        logger.info { "Update cosmetics settings for user ${user.username} (${saved.cosmetic.activeCosmetics.size} cosmetics active)" }
         return WebsocketCosmeticV1.UpdateCosmeticSettingsResponse.getDefaultInstance()
     }
 
