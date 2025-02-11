@@ -5,6 +5,7 @@ import com.lunarclient.websocket.protocol.v1.WebsocketProtocolV1
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.reactor.mono
 import org.cubewhy.celestial.entity.User
+import org.cubewhy.celestial.handler.AssetsHandler.Companion.sessions
 import org.cubewhy.celestial.service.PacketService
 import org.cubewhy.celestial.util.wrapCommon
 import org.springframework.stereotype.Component
@@ -13,6 +14,7 @@ import org.springframework.web.reactive.socket.WebSocketSession
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
 import reactor.netty.channel.AbortedException
+import java.util.concurrent.ConcurrentHashMap
 
 @Component
 data class AssetsHandler(
@@ -20,6 +22,7 @@ data class AssetsHandler(
 ) : WebSocketHandler {
     companion object {
         private val logger = KotlinLogging.logger {}
+        val sessions = ConcurrentHashMap<String, WebSocketSession>() // uuid:session
     }
 
     override fun handle(session: WebSocketSession): Mono<Void> {
@@ -28,7 +31,9 @@ data class AssetsHandler(
                 // process handshake
                 val pbMessage = WebsocketHandshakeV1.Handshake.parseFrom(message.payload.asInputStream())
                 mono {
-                    session.attributes["user"] = packetService.processHandshake(pbMessage, session)
+                    val user = packetService.processHandshake(pbMessage, session)
+                    session.attributes["user"] = user
+                    sessions[user!!.uuid] = session
                     null // no response
                 }
             } else {
@@ -49,8 +54,16 @@ data class AssetsHandler(
         }.doFinally { signalType ->
             // remove session id and close session
             val user = session.attributes["user"] as User?
-            logger.info { "User ${user?.username} disconnected" }
-            logger.info { "Websocket terminated [${signalType.name}]" }
+            // remove session
+            user?.let {
+                sessions.remove(it.uuid)
+                logger.info { "User ${it.username} disconnected" }
+                logger.info { "Websocket terminated [${signalType.name}]" }
+            }
         }.then()
     }
+}
+
+fun getSession(uuid: String): WebSocketSession? {
+    return sessions[uuid]?.takeIf { it.isOpen }
 }

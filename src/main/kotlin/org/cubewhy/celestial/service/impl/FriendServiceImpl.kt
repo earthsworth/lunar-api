@@ -164,7 +164,7 @@ class FriendServiceImpl(
             logoColor = targetLogoColor.toLunarClientColor()
             isRadioPremium = targetRadioPremium
             if (targetLunarPlusColor != null) plusColor = targetLunarPlusColor.toLunarClientColor()
-            // TODO websocketUtil.isOnline
+            // TODO session.isOnline
         }.build()
     }
 

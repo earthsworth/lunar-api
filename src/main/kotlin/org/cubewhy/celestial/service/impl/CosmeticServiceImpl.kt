@@ -11,6 +11,7 @@ import org.cubewhy.celestial.entity.Cosmetic
 import org.cubewhy.celestial.entity.PlusColor
 import org.cubewhy.celestial.entity.User
 import org.cubewhy.celestial.entity.UserCosmetic
+import org.cubewhy.celestial.handler.getSession
 import org.cubewhy.celestial.repository.UserRepository
 import org.cubewhy.celestial.service.CosmeticService
 import org.cubewhy.celestial.service.SubscriptionService
@@ -96,11 +97,12 @@ class CosmeticServiceImpl(
         userRepository.save(user).awaitFirst()
         // push settings to other players
         subscriptionService.getWorldPlayerUuids(session)
-            .forEach { uuid ->
+            .mapNotNull { uuid -> getSession(uuid) }
+            .forEach { targetSession ->
                 // push cosmetics event
-                session.pushEvent(this.buildCosmeticsPush(user.uuid, user, message.settings))
+                targetSession.pushEvent(this.buildCosmeticsPush(user.uuid, user, message.settings))
                 // push refresh event
-                session.pushEvent(WebsocketCosmeticV1.RefreshCosmeticsPush.newBuilder().build())
+                targetSession.pushEvent(WebsocketCosmeticV1.RefreshCosmeticsPush.newBuilder().build())
             }
         return WebsocketCosmeticV1.UpdateCosmeticSettingsResponse.getDefaultInstance()
     }
