@@ -18,7 +18,6 @@ data class User(
     var lastSeenAt: Instant = Instant.now(),
     var allowFriendRequests: Boolean = true,
     var lunarPlusColor: Int? = null,
-    var language: String = "en",
 
     var cosmetic: UserCosmeticSettings = UserCosmeticSettings()
 )

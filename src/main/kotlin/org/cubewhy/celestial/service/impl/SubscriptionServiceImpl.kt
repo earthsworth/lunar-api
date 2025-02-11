@@ -46,6 +46,7 @@ class SubscriptionServiceImpl : SubscriptionService {
     ): WebsocketSubscriptionV1.UnsubscribeResponse {
         val uuids = request.targetUuidsList
         logger.info { "User ${user.username} update multiplayer player list (${uuids.size} players) (unsub)" }
+        @Suppress("UNCHECKED_CAST")
         (session.attributes["multiplayer-uuids"] as MutableList<String>).removeAll(uuids.map { it.toUUIDString() }.toSet()) // set new uuid list
         return WebsocketSubscriptionV1.UnsubscribeResponse.getDefaultInstance()
     }
@@ -56,7 +57,7 @@ class SubscriptionServiceImpl : SubscriptionService {
         user: User
     ): WebsocketSubscriptionV1.SubscribeResponse {
         val playerUuids = request.targetUuidsList.map { it.toUUIDString() }
-        // save ids to redis
+        // save ids to session properties
         this.saveWorldPlayerUuids(session, playerUuids, user)
 
         return WebsocketSubscriptionV1.SubscribeResponse.newBuilder().build() // empty data
@@ -71,6 +72,7 @@ class SubscriptionServiceImpl : SubscriptionService {
         if (!session.attributes.containsKey("multiplayer-uuids")) {
             session.attributes["multiplayer-uuids"] = uuids.toMutableList()
         } else {
+            @Suppress("UNCHECKED_CAST")
             (session.attributes["multiplayer-uuids"] as MutableList<String>).addAll(uuids)
         }
     }

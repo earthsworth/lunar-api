@@ -15,10 +15,10 @@ import java.time.Instant
 
 @Service
 data class PacketServiceImpl(
-    val userService: UserService,
-    val cosmeticService: CosmeticService,
-    val subscriptionService: SubscriptionService,
-    val jwtUtil: JwtUtil,
+    private val userService: UserService,
+    private val cosmeticService: CosmeticService,
+    private val subscriptionService: SubscriptionService,
+    private val jwtUtil: JwtUtil,
     private val languageService: LanguageService
 ) : PacketService {
     companion object {
