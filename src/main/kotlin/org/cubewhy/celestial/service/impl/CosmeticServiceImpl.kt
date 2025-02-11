@@ -6,17 +6,22 @@ import com.lunarclient.websocket.cosmetic.v1.WebsocketCosmeticV1
 import com.opencsv.CSVReader
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.annotation.PostConstruct
+import kotlinx.coroutines.reactive.awaitFirst
 import org.cubewhy.celestial.entity.Cosmetic
 import org.cubewhy.celestial.entity.PlusColor
 import org.cubewhy.celestial.entity.User
+import org.cubewhy.celestial.repository.UserRepository
 import org.cubewhy.celestial.service.CosmeticService
+import org.cubewhy.celestial.util.toLunarClientColor
 import org.springframework.core.io.ClassPathResource
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.socket.WebSocketSession
 import java.io.InputStreamReader
 
 @Service
-class CosmeticServiceImpl : CosmeticService {
+class CosmeticServiceImpl(
+    private val userRepository: UserRepository,
+) : CosmeticService {
 
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -56,11 +61,36 @@ class CosmeticServiceImpl : CosmeticService {
                 return this.processLogin(user)
             }
 
+            "UpdateCosmeticSettings" -> {
+                // parse payload
+                val pb = WebsocketCosmeticV1.UpdateCosmeticSettingsRequest.parseFrom(payload)
+                return this.updateCosmeticSettings(pb, user)
+            }
+
             else -> {
                 // unknown packet
                 return null
             }
         }
+    }
+
+    private suspend fun updateCosmeticSettings(
+        message: WebsocketCosmeticV1.UpdateCosmeticSettingsRequest,
+        user: User
+    ): GeneratedMessage? {
+        user.cosmetic.clothCloak = message.settings.clothCloak
+        user.cosmetic.activeCosmetics = message.settings.activeCosmeticIdsList
+        user.cosmetic.flipShoulderPet = message.settings.flipShoulderPet
+        user.cosmetic.lunarPlusColor = message.settings.plusColor.color
+        user.cosmetic.showHatsOverHelmet = message.settings.showHatsOverHelmet
+        user.cosmetic.showHatsOverSkinLayer = message.settings.showHatsOverSkinLayer
+        user.cosmetic.hatHeightOffsetCount = message.settings.hatHeightOffsetCount
+        user.cosmetic.showOverChestplate = message.settings.showOverChestplate
+        user.cosmetic.showOverBoots = message.settings.showOverBoots
+        user.cosmetic.showOverLeggings = message.settings.showOverLeggings
+        // save user
+        userRepository.save(user).awaitFirst()
+        return WebsocketCosmeticV1.UpdateCosmeticSettingsResponse.getDefaultInstance()
     }
 
     private suspend fun processLogin(user: User): GeneratedMessage {
@@ -78,11 +108,11 @@ class CosmeticServiceImpl : CosmeticService {
 
     private fun buildCosmeticSettings(user: User): WebsocketCosmeticV1.CustomizableCosmeticSettings {
         return WebsocketCosmeticV1.CustomizableCosmeticSettings.newBuilder().apply {
-            clothCloak = user.clothCloak
-            addAllActiveCosmeticIds(user.activeCosmetics.map { it.cosmeticId })
-            addAllEquippedCosmetics(user.equippedCosmetics.map { it.toEquippedCosmetic() })
+            clothCloak = user.cosmetic.clothCloak
+            addAllActiveCosmeticIds(user.cosmetic.activeCosmetics.map { it })
+            addAllEquippedCosmetics(cosmeticList.map { it.toUserCosmetic().toEquippedCosmetic() })
             flipShoulderPet = false
-            user.lunarPlusColor?.let { setPlusColor(it.toLunarClientColor()) }
+            user.cosmetic.lunarPlusColor?.let { setPlusColor(it.toLunarClientColor()) }
         }.build()
     }
 }

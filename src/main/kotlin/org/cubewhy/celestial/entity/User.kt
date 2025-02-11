@@ -9,17 +9,29 @@ data class User(
     @Id
     val id: String? = null,
 
-    val username: String,
+    var username: String,
     val uuid: String,
-    val role: Role,
+    var role: Role,
 
-    val radioPremium: Boolean = false,
-    val lunarPlusColor: PlusColor? = null,
-    val createdAt: Instant = Instant.now(),
-    val lastSeenAt: Instant = Instant.now(),
-    val allowFriendRequests: Boolean = true,
-    val clothCloak: Boolean = true,
+    var radioPremium: Boolean = false,
+    var createdAt: Instant = Instant.now(),
+    var lastSeenAt: Instant = Instant.now(),
+    var allowFriendRequests: Boolean = true,
 
-    val activeCosmetics: List<UserCosmetic> = mutableListOf(),
-    val equippedCosmetics: List<UserCosmetic> = mutableListOf()
-)
+    val cosmetic: UserCosmeticSettings = UserCosmeticSettings()
+) {
+}
+
+data class UserCosmeticSettings(
+    var lunarPlusColor: Int? = null,
+    var clothCloak: Boolean = true,
+    var flipShoulderPet: Boolean = false,
+    var activeCosmetics: List<Int> = mutableListOf(),
+    var showHatsOverHelmet: Boolean = false,
+    var showHatsOverSkinLayer: Boolean = false,
+    var hatHeightOffsetCount: Int = 0,
+    var showHatsOverHat: Boolean = false,
+    var showOverChestplate: Boolean = false,
+    var showOverBoots: Boolean = false,
+    var showOverLeggings: Boolean = false,
+    )

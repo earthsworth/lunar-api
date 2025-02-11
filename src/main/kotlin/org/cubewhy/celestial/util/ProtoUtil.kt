@@ -39,3 +39,8 @@ fun Instant.toProtobufType(): Timestamp = Timestamp.newBuilder()
     .setSeconds(epochSecond)
     .setNanos(nano)
     .build()
+
+fun Int.toLunarClientColor(): LunarclientCommonV1.Color =
+    LunarclientCommonV1.Color.newBuilder().apply {
+        color = this@toLunarClientColor
+    }.build()
