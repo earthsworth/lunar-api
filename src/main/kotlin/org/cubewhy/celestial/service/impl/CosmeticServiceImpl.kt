@@ -104,10 +104,15 @@ class CosmeticServiceImpl(
                 // push refresh event
                 targetSession.pushEvent(WebsocketCosmeticV1.RefreshCosmeticsPush.newBuilder().build())
             }
+        session.pushEvent(WebsocketCosmeticV1.RefreshCosmeticsPush.newBuilder().build()) // push to self
         return WebsocketCosmeticV1.UpdateCosmeticSettingsResponse.getDefaultInstance()
     }
 
-    private fun buildCosmeticsPush(playerUuid: String, user: User, settings: WebsocketCosmeticV1.CustomizableCosmeticSettings) =
+    private fun buildCosmeticsPush(
+        playerUuid: String,
+        user: User,
+        settings: WebsocketCosmeticV1.CustomizableCosmeticSettings
+    ) =
         WebsocketCosmeticV1.PlayerCosmeticsPush.newBuilder().apply {
             this.playerUuid = playerUuid.toLunarClientUUID()
             this.settings = settings
