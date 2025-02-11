@@ -6,10 +6,7 @@ import com.lunarclient.websocket.handshake.v1.WebsocketHandshakeV1
 import com.lunarclient.websocket.protocol.v1.WebsocketProtocolV1
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.cubewhy.celestial.entity.User
-import org.cubewhy.celestial.service.CosmeticService
-import org.cubewhy.celestial.service.PacketService
-import org.cubewhy.celestial.service.SubscriptionService
-import org.cubewhy.celestial.service.UserService
+import org.cubewhy.celestial.service.*
 import org.cubewhy.celestial.util.JwtUtil
 import org.cubewhy.celestial.util.toUUIDString
 import org.springframework.stereotype.Service
@@ -21,7 +18,8 @@ data class PacketServiceImpl(
     val userService: UserService,
     val cosmeticService: CosmeticService,
     val subscriptionService: SubscriptionService,
-    val jwtUtil: JwtUtil
+    val jwtUtil: JwtUtil,
+    private val languageService: LanguageService
 ) : PacketService {
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -74,6 +72,11 @@ data class PacketServiceImpl(
 
             "lunarclient.websocket.subscription.v1.SubscriptionService" -> {
                 return subscriptionService.process(message.method, message.input, session, user)
+            }
+
+            "lunarclient.websocket.language.v1.LanguageService" -> {
+                languageService.process(message.method, message.input, session, user)
+                return null
             }
         }
         return null
