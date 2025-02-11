@@ -99,12 +99,9 @@ class CosmeticServiceImpl(
         subscriptionService.getWorldPlayerUuids(session)
             .forEach { uuid ->
                 val targetSession = getSession(uuid)
-                // push refresh event
-                targetSession?.pushEvent(WebsocketCosmeticV1.RefreshCosmeticsPush.newBuilder().build())
                 // push cosmetics event
                 targetSession?.pushCosmeticEvent(user, message.settings)
             }
-        session.pushCosmeticEvent(user, message.settings) // push event to self
         return WebsocketCosmeticV1.UpdateCosmeticSettingsResponse.getDefaultInstance()
     }
 
