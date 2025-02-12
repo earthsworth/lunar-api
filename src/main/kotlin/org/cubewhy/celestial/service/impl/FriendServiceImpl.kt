@@ -1,3 +1,5 @@
+package org.cubewhy.celestial.service.impl
+
 import com.google.protobuf.ByteString
 import com.google.protobuf.GeneratedMessage
 import com.lunarclient.websocket.friend.v1.WebsocketFriendV1
@@ -5,6 +7,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.reactive.awaitFirst
 import kotlinx.coroutines.reactive.awaitFirstOrNull
+import kotlinx.coroutines.reactive.awaitLast
+import kotlinx.coroutines.reactor.mono
+import org.cubewhy.celestial.entity.Friend
 import org.cubewhy.celestial.entity.FriendRequest
 import org.cubewhy.celestial.entity.User
 import org.cubewhy.celestial.event.UserOfflineEvent
@@ -35,7 +40,7 @@ class FriendServiceImpl(
     @Value("\${lunar.friend.bot.username}")
     var botUsername = "lunar_cn"
 
-    override suspend fun processFriendRequest(
+    override suspend fun process(
         method: String,
         payload: ByteString,
         session: WebSocketSession,
@@ -132,39 +137,30 @@ class FriendServiceImpl(
     private suspend fun findFriends(user: User): List<WebsocketFriendV1.OfflineFriend> {
         return friendRepository.findFriendRelations(user.id!!)
             .flatMap { friend ->
-                val targetId = if (user.id == friend.user1) friend.user2 else friend.user1
-                userRepository.findById(targetId)
+                userRepository.findById(friend.getTargetId(user))
                     .map { targetUser ->
                         buildOfflineFriend(
                             targetUser,
-                            friend.timestamp,
-                            targetUser.role.color,
-                            targetUser.radioPremium,
-                            targetUser.lunarPlusColor,
-                            targetUser.lastSeenAt
+                            friend
                         )
                     }
             }
             .collectList()
-            .awaitFirst()
+            .awaitLast()
     }
 
     private fun buildOfflineFriend(
-        user: User,
-        since: Instant,
-        targetLogoColor: Int,
-        targetRadioPremium: Boolean,
-        targetLunarPlusColor: Int?,
-        targetLastSeenAt: Instant
+        friendUser: User,
+        friend: Friend
     ): WebsocketFriendV1.OfflineFriend {
         return WebsocketFriendV1.OfflineFriend.newBuilder().apply {
-            player = toUuidAndUsername(user.username)
-            rankName = user.role.rank
-            friendsSince = calcTimestamp(since)
-            logoColor = targetLogoColor.toLunarClientColor()
-            isRadioPremium = targetRadioPremium
-            lastVisibleOnline = targetLastSeenAt.toProtobufType()
-            if (targetLunarPlusColor != null) plusColor = targetLunarPlusColor.toLunarClientColor()
+            player = toUuidAndUsername(friendUser)
+            rankName = friendUser.role.rank
+            friendsSince = friend.timestamp.toProtobufType()
+            friendUser.lunarPlusColor?.let { plusColor = it.toLunarClientColor() }
+            logoColor = friendUser.role.toLunarClientColor()
+            isRadioPremium = friendUser.radioPremium
+            lastVisibleOnline = friendUser.lastSeenAt.toProtobufType()
         }.build()
     }
 
@@ -203,7 +199,10 @@ class FriendServiceImpl(
      * @param status     Status
      * @return Friend response
      */
-    private fun buildResponse(targetUser: User, status: WebsocketFriendV1.SendFriendRequestResponse_Status): WebsocketFriendV1.SendFriendRequestResponse {
+    private fun buildResponse(
+        targetUser: User,
+        status: WebsocketFriendV1.SendFriendRequestResponse_Status
+    ): WebsocketFriendV1.SendFriendRequestResponse {
         return WebsocketFriendV1.SendFriendRequestResponse.newBuilder()
             .setTarget(toUuidAndUsername(targetUser))
             .setStatus(status)
@@ -217,7 +216,10 @@ class FriendServiceImpl(
      * @param status   Status
      * @return Friend response
      */
-    private fun buildResponse(username: String, status: WebsocketFriendV1.SendFriendRequestResponse_Status): WebsocketFriendV1.SendFriendRequestResponse {
+    private fun buildResponse(
+        username: String,
+        status: WebsocketFriendV1.SendFriendRequestResponse_Status
+    ): WebsocketFriendV1.SendFriendRequestResponse {
         return WebsocketFriendV1.SendFriendRequestResponse.newBuilder()
             .setTarget(toUuidAndUsername(username))
             .setStatus(status)
@@ -226,8 +228,22 @@ class FriendServiceImpl(
 
     @EventListener
     fun onUserOffline(event: UserOfflineEvent) {
-        // todo send
+        val user = event.user
         scope.launch {
+            friendRepository.findFriendRelations(user.id!!)
+                .flatMap { friend ->
+                    userRepository.findById(friend.getTargetId(user)).flatMap { friendUser ->
+                        mono {
+                            sessionService.getSession(friendUser)?.let { session ->
+                                session.pushEvent(WebsocketFriendV1.FriendStatusPush.newBuilder().apply {
+                                    offlineFriend = buildOfflineFriend(friendUser, friend) // went offline
+                                }.build())
+                            }
+                        }
+                    }
+                }
+                .collectList()
+                .awaitLast()
         }
     }
 }

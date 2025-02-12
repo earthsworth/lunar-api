@@ -10,4 +10,11 @@ data class Friend(
     val user1: String,
     val user2: String,
     val timestamp: Instant = Instant.now()
-)
+) {
+    fun getTargetId(user: User): String {
+        if (user1 == user.id) {
+            return user2
+        }
+        return user1
+    }
+}

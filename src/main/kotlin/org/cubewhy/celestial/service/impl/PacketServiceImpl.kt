@@ -20,6 +20,7 @@ import java.time.Instant
 data class PacketServiceImpl(
     private val userService: UserService,
     private val cosmeticService: CosmeticService,
+    private val friendService: FriendService,
     private val sessionService: SessionService,
     private val subscriptionService: SubscriptionService,
     private val languageService: LanguageService,
@@ -93,6 +94,10 @@ data class PacketServiceImpl(
             "lunarclient.websocket.language.v1.LanguageService" -> {
                 languageService.process(message.method, message.input, session, user)
                 return null
+            }
+
+            "lunarclient.websocket.friend.v1.FriendService" -> {
+                friendService.process(message.method, message.input, session, user)
             }
         }
         return null

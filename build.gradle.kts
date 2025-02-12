@@ -33,12 +33,14 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-redis-reactive")
     implementation("org.springframework.amqp:spring-rabbit-stream")
     implementation("com.alibaba.fastjson2:fastjson2:2.0.54")
+    implementation("org.springframework.boot:spring-boot-starter-security")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("io.projectreactor:reactor-test")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.springframework.boot:spring-boot-testcontainers")
     testImplementation("org.testcontainers:mongodb")
+    testImplementation("org.springframework.security:spring-security-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
