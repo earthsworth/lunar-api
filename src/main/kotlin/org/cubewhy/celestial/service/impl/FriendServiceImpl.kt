@@ -1,9 +1,6 @@
 import com.google.protobuf.ByteString
 import com.google.protobuf.GeneratedMessage
 import com.lunarclient.websocket.friend.v1.WebsocketFriendV1
-import com.lunarclient.websocket.friend.v1.WebsocketFriendV1.FriendRequestReceivedPush
-import com.lunarclient.websocket.friend.v1.WebsocketFriendV1.SendFriendRequestResponse
-import com.lunarclient.websocket.friend.v1.WebsocketFriendV1.SendFriendRequestResponse_Status
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.reactive.awaitFirst
@@ -81,7 +78,7 @@ class FriendServiceImpl(
         if (user.username.equals(targetUsername, ignoreCase = true)) {
             return buildResponse(
                 user,
-                SendFriendRequestResponse_Status.SENDFRIENDREQUESTRESPONSE_STATUS_STATUS_TARGET_IS_SENDER
+                WebsocketFriendV1.SendFriendRequestResponse_Status.SENDFRIENDREQUESTRESPONSE_STATUS_STATUS_TARGET_IS_SENDER
             )
         }
 
@@ -90,35 +87,35 @@ class FriendServiceImpl(
 
         when {
             targetUser == null -> return buildResponse(
-                user,
-                SendFriendRequestResponse_Status.SENDFRIENDREQUESTRESPONSE_STATUS_STATUS_TARGET_INVALID_USERNAME
+                targetUsername,
+                WebsocketFriendV1.SendFriendRequestResponse_Status.SENDFRIENDREQUESTRESPONSE_STATUS_STATUS_TARGET_INVALID_USERNAME
             )
 
             !targetUser.allowFriendRequests -> return buildResponse(
-                user,
-                SendFriendRequestResponse_Status.SENDFRIENDREQUESTRESPONSE_STATUS_STATUS_TARGET_FRIEND_REQUESTS_DISABLED
+                targetUser,
+                WebsocketFriendV1.SendFriendRequestResponse_Status.SENDFRIENDREQUESTRESPONSE_STATUS_STATUS_TARGET_FRIEND_REQUESTS_DISABLED
             )
 
             hasFriend(user, targetUser) -> return buildResponse(
-                user,
-                SendFriendRequestResponse_Status.SENDFRIENDREQUESTRESPONSE_STATUS_STATUS_ALREADY_FRIENDS
+                targetUser,
+                WebsocketFriendV1.SendFriendRequestResponse_Status.SENDFRIENDREQUESTRESPONSE_STATUS_STATUS_ALREADY_FRIENDS
             )
 
             hasInboundFriendRequests(user, targetUser) -> return buildResponse(
-                user,
-                SendFriendRequestResponse_Status.SENDFRIENDREQUESTRESPONSE_STATUS_STATUS_ALREADY_HAVE_INBOUND_REQUEST
+                targetUser,
+                WebsocketFriendV1.SendFriendRequestResponse_Status.SENDFRIENDREQUESTRESPONSE_STATUS_STATUS_ALREADY_HAVE_INBOUND_REQUEST
             )
 
             hasOutboundFriendRequests(user, targetUser) -> return buildResponse(
-                user,
-                SendFriendRequestResponse_Status.SENDFRIENDREQUESTRESPONSE_STATUS_STATUS_ALREADY_HAVE_OUTBOUND_REQUEST
+                targetUser,
+                WebsocketFriendV1.SendFriendRequestResponse_Status.SENDFRIENDREQUESTRESPONSE_STATUS_STATUS_ALREADY_HAVE_OUTBOUND_REQUEST
             )
 
             else -> {
                 sendFriendRequest(user, targetUser)
                 return buildResponse(
                     user,
-                    SendFriendRequestResponse_Status.SENDFRIENDREQUESTRESPONSE_STATUS_STATUS_OK
+                    WebsocketFriendV1.SendFriendRequestResponse_Status.SENDFRIENDREQUESTRESPONSE_STATUS_STATUS_OK
                 )
             }
         }
@@ -187,7 +184,7 @@ class FriendServiceImpl(
         friendRequestRepository.save(FriendRequest(null, user.id!!, target.id!!, Instant.now())).awaitFirst()
         // send notification to target
         sessionService.getSession(user)?.let { session ->
-            session.pushEvent(FriendRequestReceivedPush.newBuilder().apply {
+            session.pushEvent(WebsocketFriendV1.FriendRequestReceivedPush.newBuilder().apply {
                 sender = user.toLunarClientPlayer()
                 senderLogoColor = user.role.toLunarClientColor()
                 user.lunarPlusColor?.let { color ->
@@ -206,8 +203,8 @@ class FriendServiceImpl(
      * @param status     Status
      * @return Friend response
      */
-    private fun buildResponse(targetUser: User, status: SendFriendRequestResponse_Status): SendFriendRequestResponse {
-        return SendFriendRequestResponse.newBuilder()
+    private fun buildResponse(targetUser: User, status: WebsocketFriendV1.SendFriendRequestResponse_Status): WebsocketFriendV1.SendFriendRequestResponse {
+        return WebsocketFriendV1.SendFriendRequestResponse.newBuilder()
             .setTarget(toUuidAndUsername(targetUser))
             .setStatus(status)
             .build()
@@ -220,8 +217,8 @@ class FriendServiceImpl(
      * @param status   Status
      * @return Friend response
      */
-    private fun buildResponse(username: String, status: SendFriendRequestResponse_Status): SendFriendRequestResponse {
-        return SendFriendRequestResponse.newBuilder()
+    private fun buildResponse(username: String, status: WebsocketFriendV1.SendFriendRequestResponse_Status): WebsocketFriendV1.SendFriendRequestResponse {
+        return WebsocketFriendV1.SendFriendRequestResponse.newBuilder()
             .setTarget(toUuidAndUsername(username))
             .setStatus(status)
             .build()
@@ -231,7 +228,6 @@ class FriendServiceImpl(
     fun onUserOffline(event: UserOfflineEvent) {
         // todo send
         scope.launch {
-
         }
     }
 }

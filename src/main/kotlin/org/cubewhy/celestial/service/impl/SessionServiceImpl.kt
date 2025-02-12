@@ -42,6 +42,11 @@ class SessionServiceImpl(
 
     override suspend fun saveSession(session: WebSocketSession) {
         val user = session.attributes["user"] as User
+        // close exist connection
+        getSessionLocally(user.uuid)?.let {
+            logger.info { "Close existing session ${it.id} for user ${user.uuid}" }
+            it.close().awaitFirstOrNull() // close session
+        }
         val onlineUser = OnlineUser(user.uuid, session.id)
         logger.info { "Save ${user.username} to shared session store" }
         onlineUserRedisTemplate.opsForValue().setAndAwait(SHARED_SESSION + user.uuid, onlineUser)
