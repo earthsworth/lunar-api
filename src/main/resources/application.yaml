@@ -6,7 +6,7 @@ spring:
     name: lunar-api
   data:
     mongodb:
-      uri: mongodb://root:password@localhost/lcBackend?authSource=admin
+      uri: mongodb://root:password@localhost/lunarclient?authSource=admin
     redis:
       url: redis://172.17.0.1:6379/0
   security:
