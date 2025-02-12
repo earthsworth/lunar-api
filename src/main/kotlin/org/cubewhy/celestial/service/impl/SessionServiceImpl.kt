@@ -68,6 +68,8 @@ class SessionServiceImpl(
         return this.buildWebsocketSession(onlineUser)
     }
 
+    override suspend fun getSession(user: User) = this.getSession(user.uuid)
+
     private suspend fun buildWebsocketSession(onlineUser: OnlineUser): FederationWebSocketSession {
         return FederationWebSocketSession(onlineUser, dataBufferFactory, rabbitStreamTemplate)
     }

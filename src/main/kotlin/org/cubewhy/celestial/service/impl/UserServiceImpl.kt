@@ -10,6 +10,7 @@ import org.cubewhy.celestial.service.UserService
 import org.cubewhy.celestial.util.toUUIDString
 import org.springframework.stereotype.Service
 import reactor.kotlin.core.publisher.switchIfEmpty
+import java.time.Instant
 
 @Service
 data class UserServiceImpl(
@@ -43,5 +44,12 @@ data class UserServiceImpl(
 
     override suspend fun loadUserByUuid(uuid: String): User {
         return userRepository.findByUuid(uuid).awaitFirst()
+    }
+
+    override suspend fun markOffline(user: User) {
+        user.lastSeenAt = Instant.now() // set offline timestamp
+        // push events to friends
+
+        userRepository.save(user).awaitFirst()
     }
 }

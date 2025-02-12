@@ -71,6 +71,8 @@ data class PacketServiceImpl(
         sessionService.removeSession(user)
         logger.info { "User ${user.username} disconnected" }
         logger.info { "Websocket terminated [${signalType.name}]" }
+        // save last seen timestamp
+        userService.markOffline(user)
     }
 
     override suspend fun process(

@@ -1,21 +1,24 @@
 import com.google.protobuf.ByteString
 import com.google.protobuf.GeneratedMessage
 import com.lunarclient.websocket.friend.v1.WebsocketFriendV1
+import com.lunarclient.websocket.friend.v1.WebsocketFriendV1.FriendRequestReceivedPush
 import com.lunarclient.websocket.friend.v1.WebsocketFriendV1.SendFriendRequestResponse
 import com.lunarclient.websocket.friend.v1.WebsocketFriendV1.SendFriendRequestResponse_Status
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.reactive.awaitFirst
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import org.cubewhy.celestial.entity.FriendRequest
 import org.cubewhy.celestial.entity.User
+import org.cubewhy.celestial.event.UserOfflineEvent
 import org.cubewhy.celestial.repository.FriendRepository
 import org.cubewhy.celestial.repository.FriendRequestRepository
 import org.cubewhy.celestial.repository.UserRepository
 import org.cubewhy.celestial.service.FriendService
-import org.cubewhy.celestial.util.calcTimestamp
-import org.cubewhy.celestial.util.toLunarClientColor
-import org.cubewhy.celestial.util.toProtobufType
-import org.cubewhy.celestial.util.toUuidAndUsername
+import org.cubewhy.celestial.service.SessionService
+import org.cubewhy.celestial.util.*
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.socket.WebSocketSession
 import java.time.Instant
@@ -26,6 +29,8 @@ class FriendServiceImpl(
     private val userRepository: UserRepository,
     private val friendRepository: FriendRepository,
     private val friendRequestRepository: FriendRequestRepository,
+    private val sessionService: SessionService,
+    private val scope: CoroutineScope
 ) : FriendService {
     @Value("\${lunar.friend.bot.enabled}")
     var botState = true
@@ -39,26 +44,22 @@ class FriendServiceImpl(
         session: WebSocketSession,
         user: User
     ): GeneratedMessage? {
-        when (method) {
-            "Login" -> {
-                return login(user)
-            }
+        return when (method) {
+            "Login" -> this.processLogin(user)
+            "SendFriendRequest" -> this.processAddFriendRequest(
+                WebsocketFriendV1.SendFriendRequestRequest.parseFrom(payload),
+                user
+            )
 
-            "SendFriendRequest" -> {
-                return addFriend(WebsocketFriendV1.SendFriendRequestRequest.parseFrom(payload), user)
-            }
+            else -> null
 
-            else -> {
-                return null
-            }
         }
     }
 
     /**
      * process friend login request
      */
-
-    private suspend fun login(
+    override suspend fun processLogin(
         user: User
     ): GeneratedMessage? {
         return WebsocketFriendV1.LoginResponse.newBuilder().apply {
@@ -68,7 +69,10 @@ class FriendServiceImpl(
         }.build()
     }
 
-    private suspend fun addFriend(
+    /**
+     * Process friend add request
+     * */
+    override suspend fun processAddFriendRequest(
         message: WebsocketFriendV1.SendFriendRequestRequest,
         user: User
     ): GeneratedMessage {
@@ -164,7 +168,6 @@ class FriendServiceImpl(
             isRadioPremium = targetRadioPremium
             lastVisibleOnline = targetLastSeenAt.toProtobufType()
             if (targetLunarPlusColor != null) plusColor = targetLunarPlusColor.toLunarClientColor()
-            // TODO session.isOnline
         }.build()
     }
 
@@ -182,7 +185,18 @@ class FriendServiceImpl(
 
     private suspend fun sendFriendRequest(user: User, target: User) {
         friendRequestRepository.save(FriendRequest(null, user.id!!, target.id!!, Instant.now())).awaitFirst()
-        // TODO notification add friend request
+        // send notification to target
+        sessionService.getSession(user)?.let { session ->
+            session.pushEvent(FriendRequestReceivedPush.newBuilder().apply {
+                sender = user.toLunarClientPlayer()
+                senderLogoColor = user.role.toLunarClientColor()
+                user.lunarPlusColor?.let { color ->
+                    senderPlusColor = color.toLunarClientColor()
+                }
+                senderRankName = user.role.rank
+
+            }.build())
+        }
     }
 
     /**
@@ -211,5 +225,13 @@ class FriendServiceImpl(
             .setTarget(toUuidAndUsername(username))
             .setStatus(status)
             .build()
+    }
+
+    @EventListener
+    fun onUserOffline(event: UserOfflineEvent) {
+        // todo send
+        scope.launch {
+
+        }
     }
 }

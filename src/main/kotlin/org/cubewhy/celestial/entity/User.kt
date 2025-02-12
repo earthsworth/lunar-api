@@ -1,8 +1,9 @@
 package org.cubewhy.celestial.entity
 
+import com.lunarclient.common.v1.LunarclientCommonV1.UuidAndUsername
+import org.cubewhy.celestial.util.toLunarClientUUID
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
-import org.springframework.data.redis.core.RedisHash
 import java.io.Serializable
 import java.time.Instant
 
@@ -23,7 +24,12 @@ data class User(
 
     var cosmetic: UserCosmeticSettings = UserCosmeticSettings(),
     var emote: UserEmoteSettings = UserEmoteSettings()
-)
+) {
+    fun toLunarClientPlayer(): UuidAndUsername = UuidAndUsername.newBuilder().apply {
+        this.uuid = this@User.uuid.toLunarClientUUID()
+        this.username = this@User.username
+    }.build()
+}
 
 /**
  * A entity to store user sessions between clusters, loadbalancer
@@ -31,7 +37,7 @@ data class User(
 data class OnlineUser(
     var userUuid: String,
     var websocketId: String
-): Serializable
+) : Serializable
 
 data class UserEmoteSettings(
     var equippedEmotes: List<Emote> = mutableListOf()
