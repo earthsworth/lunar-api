@@ -82,24 +82,40 @@ data class PacketServiceImpl(
     ): GeneratedMessage? {
         val user = session.attributes["user"] as User
         logger.info { "User ${user.username} send packet ${message.service}:${message.method}" }
-        when (message.service) {
-            "lunarclient.websocket.cosmetic.v1.CosmeticService" -> {
-                return cosmeticService.process(message.method, message.input, session, user)
-            }
+        return when (message.service) {
+            "lunarclient.websocket.cosmetic.v1.CosmeticService" -> cosmeticService.process(
+                message.method,
+                message.input,
+                session,
+                user
+            )
 
-            "lunarclient.websocket.subscription.v1.SubscriptionService" -> {
-                return subscriptionService.process(message.method, message.input, session, user)
-            }
 
-            "lunarclient.websocket.language.v1.LanguageService" -> {
-                languageService.process(message.method, message.input, session, user)
-                return null
-            }
+            "lunarclient.websocket.subscription.v1.SubscriptionService" -> subscriptionService.process(
+                message.method,
+                message.input,
+                session,
+                user
+            )
 
-            "lunarclient.websocket.friend.v1.FriendService" -> {
-                friendService.process(message.method, message.input, session, user)
-            }
+
+            "lunarclient.websocket.language.v1.LanguageService" -> languageService.process(
+                message.method,
+                message.input,
+                session,
+                user
+            )
+
+
+            "lunarclient.websocket.friend.v1.FriendService" -> friendService.process(
+                message.method,
+                message.input,
+                session,
+                user
+            )
+
+
+            else -> null
         }
-        return null
     }
 }
