@@ -106,7 +106,10 @@ class CosmeticServiceImpl(
         return WebsocketCosmeticV1.UpdateCosmeticSettingsResponse.getDefaultInstance()
     }
 
-    private suspend fun WebSocketSession.pushCosmeticEvent(user: User, settings: WebsocketCosmeticV1.CustomizableCosmeticSettings) {
+    private suspend fun WebSocketSession.pushCosmeticEvent(
+        user: User,
+        settings: WebsocketCosmeticV1.CustomizableCosmeticSettings
+    ) {
         // push cosmetics event
         this.pushEvent(this@CosmeticServiceImpl.buildCosmeticsPush(user, settings))
     }

@@ -47,7 +47,8 @@ class SubscriptionServiceImpl : SubscriptionService {
         val uuids = request.targetUuidsList
         logger.info { "User ${user.username} update multiplayer player list (${uuids.size} players) (unsub)" }
         @Suppress("UNCHECKED_CAST")
-        (session.attributes["multiplayer-uuids"] as MutableList<String>).removeAll(uuids.map { it.toUUIDString() }.toSet()) // set new uuid list
+        (session.attributes["multiplayer-uuids"] as MutableList<String>).removeAll(uuids.map { it.toUUIDString() }
+            .toSet()) // set new uuid list
         return WebsocketSubscriptionV1.UnsubscribeResponse.getDefaultInstance()
     }
 

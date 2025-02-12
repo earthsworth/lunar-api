@@ -33,7 +33,11 @@ class LanguageServiceImpl : LanguageService {
     ): GeneratedMessage? {
         return when (method) {
             "UpdateLanguageRequest" ->
-                this.processUpdateLanguageRequest(WebsocketLanguageV1.UpdateLanguageRequest.parseFrom(payload), session, user)
+                this.processUpdateLanguageRequest(
+                    WebsocketLanguageV1.UpdateLanguageRequest.parseFrom(payload),
+                    session,
+                    user
+                )
 
             else -> null
         }

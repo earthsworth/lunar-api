@@ -14,6 +14,26 @@ spring:
       key: 3cfa76ef14937c1c0ea519f8fc057a80fcd04a7420f8e8bcd0a7567c272e007b
       # How long will the jwt expire (unit: day)
       expire: 1
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: admin
+    password: password
+    virtual-host: lunar
+    listener:
+      simple:
+        concurrency: 5
+        max-concurrency: 10
+        prefetch: 1
+        retry:
+          enabled: true
+          max-attempts: 3
+          initial-interval: 1000
+    publisher-confirm-type: correlated
+    publisher-returns: true
+    template:
+      mandatory: true
+
 
 lunar:
   friend:

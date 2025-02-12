@@ -182,7 +182,7 @@ class FriendServiceImpl(
 
     private suspend fun sendFriendRequest(user: User, target: User) {
         friendRequestRepository.save(FriendRequest(null, user.id!!, target.id!!, Instant.now())).awaitFirst()
-        TODO("notification add friend request")
+        // TODO notification add friend request
     }
 
     /**

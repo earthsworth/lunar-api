@@ -1,0 +1,9 @@
+syntax = "proto3";
+package celestial.federation;
+
+option java_package = "org.cubewhy.celestial";
+
+message FederationRequest {
+  string uuid = 1; // Minecraft Player UUID
+  bytes payload = 3; // payload
+}

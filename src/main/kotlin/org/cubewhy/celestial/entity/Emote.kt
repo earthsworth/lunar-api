@@ -15,8 +15,4 @@ data class Emote(
             grantedAt = calcTimestamp(Instant.MIN)
         }.build()
     }
-
-    fun toId(emoteId: Int) : Int {
-        return emoteId
-    }
 }

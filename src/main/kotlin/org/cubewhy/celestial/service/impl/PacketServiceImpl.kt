@@ -8,12 +8,9 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import org.cubewhy.celestial.entity.OnlineUser
 import org.cubewhy.celestial.entity.User
 import org.cubewhy.celestial.service.*
-import org.cubewhy.celestial.util.Const.SHARED_SESSION
 import org.cubewhy.celestial.util.JwtUtil
 import org.cubewhy.celestial.util.toUUIDString
 import org.springframework.data.redis.core.ReactiveRedisTemplate
-import org.springframework.data.redis.core.deleteAndAwait
-import org.springframework.data.redis.core.setAndAwait
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.socket.WebSocketSession
 import reactor.core.publisher.SignalType
@@ -23,6 +20,7 @@ import java.time.Instant
 data class PacketServiceImpl(
     private val userService: UserService,
     private val cosmeticService: CosmeticService,
+    private val sessionService: SessionService,
     private val subscriptionService: SubscriptionService,
     private val languageService: LanguageService,
     private val jwtUtil: JwtUtil,
@@ -63,15 +61,14 @@ data class PacketServiceImpl(
         }
         val user = userService.loadUserByUuid(providedUUID)
         // add to shared store
-        val onlineUser = OnlineUser(user.id!!, session.id)
-        onlineUserRedisTemplate.opsForValue().setAndAwait(SHARED_SESSION + user.uuid, onlineUser)
+        sessionService.saveSession(session)
         logger.info { "User ${user.username} logged in to the assets service" }
         return user
     }
 
     override suspend fun processDisconnect(signalType: SignalType, session: WebSocketSession, user: User) {
         // remove user from shared store
-        onlineUserRedisTemplate.opsForValue().deleteAndAwait(SHARED_SESSION + user.uuid)
+        sessionService.removeSession(user)
         logger.info { "User ${user.username} disconnected" }
         logger.info { "Websocket terminated [${signalType.name}]" }
     }

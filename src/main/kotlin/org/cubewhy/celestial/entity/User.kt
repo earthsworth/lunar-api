@@ -21,17 +21,21 @@ data class User(
     var allowFriendRequests: Boolean = true,
     var lunarPlusColor: Int? = null,
 
-    var cosmetic: UserCosmeticSettings = UserCosmeticSettings()
+    var cosmetic: UserCosmeticSettings = UserCosmeticSettings(),
+    var emote: UserEmoteSettings = UserEmoteSettings()
 )
 
 /**
  * A entity to store user sessions between clusters, loadbalancer
  * */
-@RedisHash
 data class OnlineUser(
-    var userId: String,
+    var userUuid: String,
     var websocketId: String
 ): Serializable
+
+data class UserEmoteSettings(
+    var equippedEmotes: List<Emote> = mutableListOf()
+)
 
 data class UserCosmeticSettings(
     var lunarPlusColor: Int? = null,
