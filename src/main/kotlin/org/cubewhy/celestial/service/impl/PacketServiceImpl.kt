@@ -61,7 +61,7 @@ data class PacketServiceImpl(
         }
         val user = userService.loadUserByUuid(providedUUID)
         // add to shared store
-        sessionService.saveSession(session)
+        sessionService.saveSession(user, session)
         logger.info { "User ${user.username} logged in to the assets service" }
         return user
     }

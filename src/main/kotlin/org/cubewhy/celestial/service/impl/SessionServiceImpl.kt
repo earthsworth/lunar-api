@@ -40,8 +40,7 @@ class SessionServiceImpl(
         private val logger = KotlinLogging.logger {}
     }
 
-    override suspend fun saveSession(session: WebSocketSession) {
-        val user = session.attributes["user"] as User
+    override suspend fun saveSession(user: User, session: WebSocketSession) {
         // close exist connection
         getSessionLocally(user.uuid)?.let {
             logger.info { "Close existing session ${it.id} for user ${user.uuid}" }
