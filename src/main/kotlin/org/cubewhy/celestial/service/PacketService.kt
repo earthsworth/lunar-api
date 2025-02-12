@@ -6,6 +6,7 @@ import com.lunarclient.websocket.handshake.v1.WebsocketHandshakeV1
 import com.lunarclient.websocket.protocol.v1.WebsocketProtocolV1
 import org.cubewhy.celestial.entity.User
 import org.springframework.web.reactive.socket.WebSocketSession
+import reactor.core.publisher.SignalType
 
 interface PacketService {
     suspend fun process(
@@ -15,4 +16,5 @@ interface PacketService {
 
     suspend fun processAuthorize(message: LunarclientAuthenticatorV1.ServerboundWebSocketMessage): LunarclientAuthenticatorV1.AuthSuccessMessage?
     suspend fun processHandshake(message: WebsocketHandshakeV1.Handshake, session: WebSocketSession): User?
+    suspend fun processDisconnect(signalType: SignalType, session: WebSocketSession, user: User)
 }

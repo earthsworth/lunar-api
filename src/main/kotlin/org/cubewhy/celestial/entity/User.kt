@@ -2,6 +2,8 @@ package org.cubewhy.celestial.entity
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
+import org.springframework.data.redis.core.RedisHash
+import java.io.Serializable
 import java.time.Instant
 
 @Document
@@ -21,6 +23,15 @@ data class User(
 
     var cosmetic: UserCosmeticSettings = UserCosmeticSettings()
 )
+
+/**
+ * A entity to store user sessions between clusters, loadbalancer
+ * */
+@RedisHash
+data class OnlineUser(
+    var userId: String,
+    var websocketId: String
+): Serializable
 
 data class UserCosmeticSettings(
     var lunarPlusColor: Int? = null,

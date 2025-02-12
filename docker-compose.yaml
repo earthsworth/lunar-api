@@ -11,6 +11,12 @@ services:
     volumes:
       - mongo:/data/db
     restart: always
+  redis:
+    image: redis:latest
+    container_name: lcBackendRedis
+    ports:
+      - '6379:6379'
+    restart: always
 volumes:
   mongo:
     driver: local

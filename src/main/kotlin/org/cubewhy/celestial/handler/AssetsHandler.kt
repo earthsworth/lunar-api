@@ -12,13 +12,14 @@ import org.springframework.stereotype.Component
 import org.springframework.web.reactive.socket.WebSocketHandler
 import org.springframework.web.reactive.socket.WebSocketSession
 import reactor.core.publisher.Mono
+import reactor.core.scheduler.Schedulers
 import reactor.kotlin.core.publisher.toMono
 import reactor.netty.channel.AbortedException
 import java.util.concurrent.ConcurrentHashMap
 
 @Component
 data class AssetsHandler(
-    val packetService: PacketService
+    private val packetService: PacketService
 ) : WebSocketHandler {
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -56,14 +57,17 @@ data class AssetsHandler(
             val user = session.attributes["user"] as User?
             // remove session
             user?.let {
+                // remove from local session store
                 sessions.remove(it.uuid)
-                logger.info { "User ${it.username} disconnected" }
-                logger.info { "Websocket terminated [${signalType.name}]" }
+                // perform processDisconnect
+                mono {
+                    packetService.processDisconnect(signalType, session, it)
+                }.publishOn(Schedulers.boundedElastic()).subscribe()
             }
         }.then()
     }
 }
 
-fun getSession(uuid: String): WebSocketSession? {
+fun getSessionLocally(uuid: String): WebSocketSession? {
     return sessions[uuid]?.takeIf { it.isOpen }
 }

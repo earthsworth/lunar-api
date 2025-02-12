@@ -5,12 +5,18 @@ import com.lunarclient.authenticator.v1.LunarclientAuthenticatorV1
 import com.lunarclient.websocket.handshake.v1.WebsocketHandshakeV1
 import com.lunarclient.websocket.protocol.v1.WebsocketProtocolV1
 import io.github.oshai.kotlinlogging.KotlinLogging
+import org.cubewhy.celestial.entity.OnlineUser
 import org.cubewhy.celestial.entity.User
 import org.cubewhy.celestial.service.*
+import org.cubewhy.celestial.util.Const.SHARED_SESSION
 import org.cubewhy.celestial.util.JwtUtil
 import org.cubewhy.celestial.util.toUUIDString
+import org.springframework.data.redis.core.ReactiveRedisTemplate
+import org.springframework.data.redis.core.deleteAndAwait
+import org.springframework.data.redis.core.setAndAwait
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.socket.WebSocketSession
+import reactor.core.publisher.SignalType
 import java.time.Instant
 
 @Service
@@ -18,8 +24,9 @@ data class PacketServiceImpl(
     private val userService: UserService,
     private val cosmeticService: CosmeticService,
     private val subscriptionService: SubscriptionService,
+    private val languageService: LanguageService,
     private val jwtUtil: JwtUtil,
-    private val languageService: LanguageService
+    private val onlineUserRedisTemplate: ReactiveRedisTemplate<String, OnlineUser>,
 ) : PacketService {
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -55,8 +62,18 @@ data class PacketServiceImpl(
             return null // uuid not match
         }
         val user = userService.loadUserByUuid(providedUUID)
+        // add to shared store
+        val onlineUser = OnlineUser(user.id!!, session.id)
+        onlineUserRedisTemplate.opsForValue().setAndAwait(SHARED_SESSION + user.uuid, onlineUser)
         logger.info { "User ${user.username} logged in to the assets service" }
         return user
+    }
+
+    override suspend fun processDisconnect(signalType: SignalType, session: WebSocketSession, user: User) {
+        // remove user from shared store
+        onlineUserRedisTemplate.opsForValue().deleteAndAwait(SHARED_SESSION + user.uuid)
+        logger.info { "User ${user.username} disconnected" }
+        logger.info { "Websocket terminated [${signalType.name}]" }
     }
 
     override suspend fun process(

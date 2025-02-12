@@ -7,8 +7,8 @@ spring:
   data:
     mongodb:
       uri: mongodb://root:password@localhost/lcBackend?authSource=admin
-#    redis:
-#      url: redis://172.17.0.1:6379/0
+    redis:
+      url: redis://172.17.0.1:6379/0
   security:
     jwt:
       key: 3cfa76ef14937c1c0ea519f8fc057a80fcd04a7420f8e8bcd0a7567c272e007b

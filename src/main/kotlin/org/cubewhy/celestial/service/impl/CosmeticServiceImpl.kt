@@ -11,9 +11,9 @@ import org.cubewhy.celestial.entity.Cosmetic
 import org.cubewhy.celestial.entity.PlusColor
 import org.cubewhy.celestial.entity.User
 import org.cubewhy.celestial.entity.UserCosmetic
-import org.cubewhy.celestial.handler.getSession
 import org.cubewhy.celestial.repository.UserRepository
 import org.cubewhy.celestial.service.CosmeticService
+import org.cubewhy.celestial.service.SessionService
 import org.cubewhy.celestial.service.SubscriptionService
 import org.cubewhy.celestial.util.pushEvent
 import org.cubewhy.celestial.util.toLunarClientColor
@@ -27,7 +27,8 @@ import java.time.Instant
 @Service
 class CosmeticServiceImpl(
     private val userRepository: UserRepository,
-    private val subscriptionService: SubscriptionService
+    private val subscriptionService: SubscriptionService,
+    private val sessionService: SessionService
 ) : CosmeticService {
 
     companion object {
@@ -98,7 +99,7 @@ class CosmeticServiceImpl(
         // push settings to other players
         subscriptionService.getWorldPlayerUuids(session)
             .forEach { uuid ->
-                val targetSession = getSession(uuid)
+                val targetSession = sessionService.getSession(uuid)
                 // push cosmetics event
                 targetSession?.pushCosmeticEvent(user, message.settings)
             }

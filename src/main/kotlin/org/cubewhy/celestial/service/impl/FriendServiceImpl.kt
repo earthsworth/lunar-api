@@ -13,6 +13,7 @@ import org.cubewhy.celestial.repository.UserRepository
 import org.cubewhy.celestial.service.FriendService
 import org.cubewhy.celestial.util.calcTimestamp
 import org.cubewhy.celestial.util.toLunarClientColor
+import org.cubewhy.celestial.util.toProtobufType
 import org.cubewhy.celestial.util.toUuidAndUsername
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
@@ -61,10 +62,9 @@ class FriendServiceImpl(
         user: User
     ): GeneratedMessage? {
         return WebsocketFriendV1.LoginResponse.newBuilder().apply {
-            allowFriendRequests = user.allowFriendRequests
-            if (botState) addOfflineFriends(buildBotFriend(user))
-            addAllOfflineFriends(findFriends(user))
-
+            this.allowFriendRequests = user.allowFriendRequests
+            if (botState) this.addOfflineFriends(buildBotFriend(user))
+            this.addAllOfflineFriends(findFriends(user))
         }.build()
     }
 
@@ -155,14 +155,14 @@ class FriendServiceImpl(
         targetRadioPremium: Boolean,
         targetLunarPlusColor: Int?,
         targetLastSeenAt: Instant
-    )
-            : WebsocketFriendV1.OfflineFriend {
+    ): WebsocketFriendV1.OfflineFriend {
         return WebsocketFriendV1.OfflineFriend.newBuilder().apply {
             player = toUuidAndUsername(user.username)
             rankName = user.role.rank
             friendsSince = calcTimestamp(since)
             logoColor = targetLogoColor.toLunarClientColor()
             isRadioPremium = targetRadioPremium
+            lastVisibleOnline = targetLastSeenAt.toProtobufType()
             if (targetLunarPlusColor != null) plusColor = targetLunarPlusColor.toLunarClientColor()
             // TODO session.isOnline
         }.build()
@@ -176,11 +176,11 @@ class FriendServiceImpl(
         return friendRequestRepository.existsBySenderIdAndRecipientId(targetUser.id!!, user.id!!).awaitFirst()
     }
 
-    private suspend fun hasFriend(user: User, target:User) : Boolean{
-        return friendRepository.findFriendRelation(user.id!!, target.id!!).awaitFirstOrNull()!=null
+    private suspend fun hasFriend(user: User, target: User): Boolean {
+        return friendRepository.findFriendRelation(user.id!!, target.id!!).awaitFirstOrNull() != null
     }
 
-    private suspend fun sendFriendRequest(user:User, target:User) {
+    private suspend fun sendFriendRequest(user: User, target: User) {
         friendRequestRepository.save(FriendRequest(null, user.id!!, target.id!!, Instant.now())).awaitFirst()
         TODO("notification add friend request")
     }
