@@ -20,6 +20,7 @@ import java.time.Instant
 data class PacketServiceImpl(
     private val userService: UserService,
     private val cosmeticService: CosmeticService,
+    private val emoteService: EmoteService,
     private val friendService: FriendService,
     private val sessionService: SessionService,
     private val subscriptionService: SubscriptionService,
@@ -84,6 +85,13 @@ data class PacketServiceImpl(
         logger.info { "User ${user.username} send packet ${message.service}:${message.method}" }
         return when (message.service) {
             "lunarclient.websocket.cosmetic.v1.CosmeticService" -> cosmeticService.process(
+                message.method,
+                message.input,
+                session,
+                user
+            )
+
+            "lunarclient.websocket.emote.v1.EmoteService" -> emoteService.process(
                 message.method,
                 message.input,
                 session,
