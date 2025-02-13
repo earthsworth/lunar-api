@@ -17,4 +17,10 @@ interface EmoteService : PacketProcessor {
         session: WebSocketSession,
         user: User
     ): WebsocketEmoteV1.StopEmoteResponse
+
+    suspend fun processUpdateEquippedEmotes(
+        request: WebsocketEmoteV1.UpdateEquippedEmotesRequest,
+        session: WebSocketSession,
+        user: User
+    ): WebsocketEmoteV1.UpdateEquippedEmotesResponse
 }

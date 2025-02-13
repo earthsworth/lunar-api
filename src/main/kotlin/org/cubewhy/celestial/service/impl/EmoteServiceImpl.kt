@@ -6,8 +6,10 @@ import com.lunarclient.websocket.emote.v1.WebsocketEmoteV1
 import com.opencsv.CSVReader
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.annotation.PostConstruct
+import kotlinx.coroutines.reactive.awaitFirst
 import org.cubewhy.celestial.entity.Emote
 import org.cubewhy.celestial.entity.User
+import org.cubewhy.celestial.repository.UserRepository
 import org.cubewhy.celestial.service.EmoteService
 import org.cubewhy.celestial.service.SessionService
 import org.cubewhy.celestial.service.SubscriptionService
@@ -21,7 +23,8 @@ import java.io.InputStreamReader
 @Service
 data class EmoteServiceImpl(
     private val sessionService: SessionService,
-    private val subscriptionService: SubscriptionService
+    private val subscriptionService: SubscriptionService,
+    private val userRepository: UserRepository
 ) : EmoteService {
 
     companion object {
@@ -68,9 +71,25 @@ data class EmoteServiceImpl(
                 session,
                 user
             )
-
+            "UpdateEquippedEmotes" -> this.processUpdateEquippedEmotes(
+                WebsocketEmoteV1.UpdateEquippedEmotesRequest.parseFrom(payload),
+                session,
+                user
+            )
             else -> null
         }
+    }
+
+    override suspend fun processUpdateEquippedEmotes(
+        request: WebsocketEmoteV1.UpdateEquippedEmotesRequest,
+        session: WebSocketSession,
+        user: User
+    ): WebsocketEmoteV1.UpdateEquippedEmotesResponse {
+        user.emote.equippedEmotes = emoteList.stream().filter {
+            request.equippedEmoteIdsList.contains(it.emoteId)
+        }.toList()
+        userRepository.save(user).awaitFirst()
+        return WebsocketEmoteV1.UpdateEquippedEmotesResponse.newBuilder().build()
     }
 
     override suspend fun processLogin(user: User): GeneratedMessage {
