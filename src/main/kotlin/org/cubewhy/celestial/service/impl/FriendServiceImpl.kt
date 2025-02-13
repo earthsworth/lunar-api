@@ -2,6 +2,7 @@ package org.cubewhy.celestial.service.impl
 
 import com.google.protobuf.ByteString
 import com.google.protobuf.GeneratedMessage
+import com.lunarclient.common.v1.LunarclientCommonV1
 import com.lunarclient.websocket.friend.v1.WebsocketFriendV1
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -47,7 +48,7 @@ class FriendServiceImpl(
         user: User
     ): GeneratedMessage? {
         return when (method) {
-            "Login" -> this.processLogin(user)
+            "Login" -> this.processLogin(user, session)
             "SendFriendRequest" -> this.processAddFriendRequest(
                 WebsocketFriendV1.SendFriendRequestRequest.parseFrom(payload),
                 user
@@ -62,12 +63,46 @@ class FriendServiceImpl(
      * process friend login request
      */
     override suspend fun processLogin(
-        user: User
+        user: User,
+        session: WebSocketSession
     ): GeneratedMessage? {
+        val friends = findFriends(user)
+        val botFriend = if (botState) buildBotFriend(user) else null
+        // update friend status
+        if (botFriend != null) {
+            // push bot status
+            session.pushEvent(this.buildOnlineFriendStatusPush(botFriend))
+        }
+        friends.forEach { friend ->
+            // push friend status
+            session.pushEvent(this.buildOnlineFriendStatusPush(friend))
+        }
         return WebsocketFriendV1.LoginResponse.newBuilder().apply {
             this.allowFriendRequests = user.allowFriendRequests
-            if (botState) this.addOfflineFriends(buildBotFriend(user))
-            this.addAllOfflineFriends(findFriends(user))
+            botFriend?.let { this.addOfflineFriends(it) }
+            this.addAllOfflineFriends(friends)
+        }.build()
+    }
+
+    private suspend fun buildOnlineFriendStatusPush(friend: WebsocketFriendV1.OfflineFriend): WebsocketFriendV1.FriendStatusPush =
+        WebsocketFriendV1.FriendStatusPush.newBuilder().apply {
+            this.onlineFriend = this@FriendServiceImpl.buildOnlineFriend(friend)
+        }.build()
+
+    private suspend fun buildOnlineFriend(friend: WebsocketFriendV1.OfflineFriend): WebsocketFriendV1.OnlineFriend {
+        val friendUuid = friend.player.uuid.toUUIDString()
+        return WebsocketFriendV1.OnlineFriend.newBuilder().apply {
+            this.player = friend.player
+            this.plusColor = friend.plusColor
+            this.friendsSince = friend.friendsSince
+            this.logoColor = friend.logoColor
+            // todo modpack
+            sessionService.getMinecraftVersion(friendUuid)?.let {
+                this.minecraftVersion = LunarclientCommonV1.MinecraftVersion.newBuilder().setEnum(it).build()
+            }
+            sessionService.getLocation(friendUuid)?.let {
+                this.location = it
+            }
         }.build()
     }
 
@@ -128,9 +163,9 @@ class FriendServiceImpl(
 
     private fun buildBotFriend(user: User): WebsocketFriendV1.OfflineFriend {
         return WebsocketFriendV1.OfflineFriend.newBuilder().apply {
-            player = toUuidAndUsername(botUsername)
+            player = botUsername.toLunarClientPlayer()
             rankName = "Bot"
-            friendsSince = calcTimestamp(user.createdAt)
+            friendsSince = user.createdAt.toProtobufType()
         }.build()
     }
 
@@ -154,7 +189,7 @@ class FriendServiceImpl(
         friend: Friend
     ): WebsocketFriendV1.OfflineFriend {
         return WebsocketFriendV1.OfflineFriend.newBuilder().apply {
-            player = toUuidAndUsername(friendUser)
+            player = friendUser.toLunarClientPlayer()
             rankName = friendUser.role.rank
             friendsSince = friend.timestamp.toProtobufType()
             friendUser.lunarPlusColor?.let { plusColor = it.toLunarClientColor() }
@@ -179,7 +214,7 @@ class FriendServiceImpl(
     private suspend fun sendFriendRequest(user: User, target: User) {
         friendRequestRepository.save(FriendRequest(null, user.id!!, target.id!!, Instant.now())).awaitFirst()
         // send notification to target
-        sessionService.getSession(user)?.let { session ->
+        sessionService.getSession(target)?.let { session ->
             session.pushEvent(WebsocketFriendV1.FriendRequestReceivedPush.newBuilder().apply {
                 sender = user.toLunarClientPlayer()
                 senderLogoColor = user.role.toLunarClientColor()
@@ -204,7 +239,7 @@ class FriendServiceImpl(
         status: WebsocketFriendV1.SendFriendRequestResponse_Status
     ): WebsocketFriendV1.SendFriendRequestResponse {
         return WebsocketFriendV1.SendFriendRequestResponse.newBuilder()
-            .setTarget(toUuidAndUsername(targetUser))
+            .setTarget(targetUser.toLunarClientPlayer())
             .setStatus(status)
             .build()
     }
@@ -221,7 +256,7 @@ class FriendServiceImpl(
         status: WebsocketFriendV1.SendFriendRequestResponse_Status
     ): WebsocketFriendV1.SendFriendRequestResponse {
         return WebsocketFriendV1.SendFriendRequestResponse.newBuilder()
-            .setTarget(toUuidAndUsername(username))
+            .setTarget(username.toLunarClientPlayer())
             .setStatus(status)
             .build()
     }

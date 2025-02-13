@@ -4,21 +4,17 @@ import com.google.protobuf.Any
 import com.google.protobuf.ByteString
 import com.google.protobuf.GeneratedMessage
 import com.google.protobuf.Timestamp
+import com.google.protobuf.util.JsonFormat
 import com.lunarclient.authenticator.v1.LunarclientAuthenticatorV1
 import com.lunarclient.authenticator.v1.LunarclientAuthenticatorV1.AuthSuccessMessage
 import com.lunarclient.common.v1.LunarclientCommonV1
 import com.lunarclient.common.v1.LunarclientCommonV1.UuidAndUsername
 import com.lunarclient.websocket.protocol.v1.WebsocketProtocolV1
 import com.lunarclient.websocket.protocol.v1.WebsocketProtocolV1.WebSocketRpcResponse
-import kotlinx.coroutines.reactive.awaitFirst
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import org.springframework.web.reactive.socket.WebSocketSession
 import reactor.kotlin.core.publisher.toMono
-import org.cubewhy.celestial.entity.User
-import org.springframework.lang.Contract
 import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneId
 import java.util.*
 
 
@@ -29,10 +25,12 @@ import java.util.*
  * */
 fun GeneratedMessage.wrapCommon(requestId: ByteString): WebsocketProtocolV1.ClientboundWebSocketMessage {
     return WebsocketProtocolV1.ClientboundWebSocketMessage.newBuilder()
-        .setRpcResponse(WebSocketRpcResponse.newBuilder()
-            .setRequestId(requestId)
-            .setOutput(this.toByteString())
-            .build())
+        .setRpcResponse(
+            WebSocketRpcResponse.newBuilder()
+                .setRequestId(requestId)
+                .setOutput(this.toByteString())
+                .build()
+        )
         .build()
 }
 
@@ -77,38 +75,23 @@ suspend fun WebSocketSession.pushEvent(event: GeneratedMessage) {
     this.send(this.binaryMessage { it.wrap(payload) }.toMono()).awaitFirstOrNull()
 }
 
-fun toUuidAndUsername(username: String?): UuidAndUsername {
+fun String.toLunarClientPlayer(): UuidAndUsername {
     return UuidAndUsername.newBuilder()
-        .setUsername(username)
+        .setUsername(this)
         .build()
 }
 
-fun toUuidAndUsername(username: String?, uuid: String): UuidAndUsername {
-    val parsedUUID = UUID.fromString(uuid)
-    return UuidAndUsername.newBuilder()
-        .setUsername(username)
-        .setUuid(
-            LunarclientCommonV1.Uuid.newBuilder()
-                .setHigh64(parsedUUID.mostSignificantBits)
-                .setLow64(parsedUUID.leastSignificantBits)
-        )
-        .build()
-}
-
-fun toUuidAndUsername(user: User): UuidAndUsername {
-    return toUuidAndUsername(user.username, user.uuid)
-}
+fun GeneratedMessage.toJson(): String = JsonFormat.printer().print(this)
 
 /**
- * Convent a Instant to LunarClient timestamp
+ * Convert a JSON string to the original protobuf message.
  *
- * @param instant Instant object
- * @return timestamp message
+ * @param builder The protobuf message builder instance.
+ * @return The deserialized protobuf message.
+ * @throws JsonFormat.ParseException If the JSON string is invalid or cannot be parsed into the protobuf message.
  */
-@Contract("_ -> new")
-fun calcTimestamp(instant: Instant): Timestamp {
-    return Timestamp.newBuilder()
-        .setNanos(instant.nano)
-        .setSeconds(instant.epochSecond)
-        .build()
+fun <T : GeneratedMessage, B : GeneratedMessage.Builder<B>> String.toProtobufMessage(builder: B): T {
+    JsonFormat.parser().merge(this, builder)
+    @Suppress("UNCHECKED_CAST")
+    return builder.build() as T
 }

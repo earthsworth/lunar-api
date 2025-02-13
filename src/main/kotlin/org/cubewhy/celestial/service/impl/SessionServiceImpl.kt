@@ -1,6 +1,8 @@
 package org.cubewhy.celestial.service.impl
 
 import com.google.protobuf.kotlin.toByteString
+import com.lunarclient.common.v1.LunarclientCommonV1
+import com.lunarclient.websocket.friend.v1.WebsocketFriendV1
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import org.cubewhy.celestial.Federation.FederationRequest
@@ -9,6 +11,8 @@ import org.cubewhy.celestial.entity.User
 import org.cubewhy.celestial.handler.getSessionLocally
 import org.cubewhy.celestial.service.SessionService
 import org.cubewhy.celestial.util.Const.SHARED_SESSION
+import org.cubewhy.celestial.util.toJson
+import org.cubewhy.celestial.util.toProtobufMessage
 import org.reactivestreams.Publisher
 import org.springframework.amqp.rabbit.annotation.RabbitListener
 import org.springframework.core.io.buffer.DataBuffer
@@ -27,6 +31,7 @@ import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
 import java.nio.charset.StandardCharsets
+import java.time.Duration
 import java.util.function.Function
 
 @Service
@@ -46,10 +51,37 @@ class SessionServiceImpl(
             logger.info { "Close existing session ${it.id} for user ${user.uuid}" }
             it.close().awaitFirstOrNull() // close session
         }
-        val onlineUser = OnlineUser(user.uuid, session.id)
+        val onlineUser = OnlineUser(user.uuid, session.id, session.attributes)
         logger.info { "Save ${user.username} to shared session store" }
-        onlineUserRedisTemplate.opsForValue().setAndAwait(SHARED_SESSION + user.uuid, onlineUser)
+        saveSession(onlineUser)
     }
+
+    override suspend fun saveMinecraftVersion(user: User, version: String) {
+        // get online user object
+        getOnlineUser(user.uuid)?.let { onlineUser ->
+            logger.info { "Player ${user.username}'s Minecraft version was set to $version" }
+            onlineUser.minecraftVersion = version
+            saveSession(onlineUser)
+        }
+    }
+
+    override suspend fun getMinecraftVersion(uuid: String): String? {
+        return getOnlineUser(uuid)?.minecraftVersion
+    }
+
+    override suspend fun saveLocation(user: User, location: WebsocketFriendV1.InboundLocation) {
+        // convert to json
+        val locationJson = location.toJson()
+        getOnlineUser(user.uuid)?.let { onlineUser ->
+            onlineUser.location = locationJson
+            saveSession(onlineUser)
+        }
+    }
+
+    override suspend fun getLocation(uuid: String): LunarclientCommonV1.Location? =
+        getOnlineUser(uuid)?.let { onlineUser ->
+            onlineUser.location?.toProtobufMessage(LunarclientCommonV1.Location.newBuilder())
+        }
 
     /**
      * Remove a session from shared session store
@@ -61,6 +93,14 @@ class SessionServiceImpl(
         onlineUserRedisTemplate.opsForValue().deleteAndAwait(SHARED_SESSION + user.uuid)
     }
 
+    private suspend fun saveSession(onlineUser: OnlineUser) {
+        onlineUserRedisTemplate.opsForValue()
+            .setAndAwait(SHARED_SESSION + onlineUser.userUuid, onlineUser, Duration.ofHours(12))
+    }
+
+    private suspend fun getOnlineUser(uuid: String): OnlineUser? =
+        onlineUserRedisTemplate.opsForValue().getAndAwait(SHARED_SESSION + uuid)
+
     override suspend fun getSession(uuid: String): WebSocketSession? {
         val localSession = getSessionLocally(uuid)
         // find session locally
@@ -68,7 +108,7 @@ class SessionServiceImpl(
             return localSession
         }
         // find session from redis
-        val onlineUser = onlineUserRedisTemplate.opsForValue().getAndAwait(SHARED_SESSION + uuid) ?: return null
+        val onlineUser = getOnlineUser(uuid) ?: return null
         return this.buildWebsocketSession(onlineUser)
     }
 
@@ -109,9 +149,8 @@ class FederationWebSocketSession(
         return this.dataBufferFactory
     }
 
-    override fun getAttributes(): MutableMap<String, Any> {
-        throw UnsupportedOperationException("Shared websocket doesn't have attributes")
-    }
+    override fun getAttributes() = onlineUser.attributes
+
 
     override fun receive(): Flux<WebSocketMessage> {
         throw UnsupportedOperationException("Shared websocket doesn't support receive messages on other clusters")

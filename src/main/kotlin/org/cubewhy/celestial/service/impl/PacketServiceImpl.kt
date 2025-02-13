@@ -64,6 +64,13 @@ data class PacketServiceImpl(
         val user = userService.loadUserByUuid(providedUUID)
         // add to shared store
         sessionService.saveSession(user, session)
+        // save game info to shared store
+        if (message.hasGameHandshake()) {
+            message.gameHandshake.let {
+                sessionService.saveMinecraftVersion(user, it.minecraftVersion.enum)
+                sessionService.saveLocation(user, it.location)
+            }
+        }
         logger.info { "User ${user.username} logged in to the assets service" }
         return user
     }
