@@ -169,7 +169,7 @@ class CosmeticServiceImpl(
                 val push = this@CosmeticServiceImpl.buildCosmeticsPush(user, buildCosmeticSettings(user))
                 mono {
                     // push to websocket
-                    sessionService.getSession(user)?.pushEvent(push)
+                    event.session.pushEvent(push)
                 }
             }.then()
     }

@@ -82,7 +82,7 @@ data class SubscriptionServiceImpl(
         }
         if (uuids.size > 1) {
             // send event
-            applicationEventPublisher.publishEvent(UserJoinWorldEvent(this, uuids))
+            applicationEventPublisher.publishEvent(UserJoinWorldEvent(this, uuids, session))
         }
     }
 
