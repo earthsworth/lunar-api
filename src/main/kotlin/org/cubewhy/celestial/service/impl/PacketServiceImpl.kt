@@ -25,6 +25,7 @@ data class PacketServiceImpl(
     private val sessionService: SessionService,
     private val subscriptionService: SubscriptionService,
     private val languageService: LanguageService,
+    private val messageService: MessageService,
     private val jwtUtil: JwtUtil,
     private val onlineUserRedisTemplate: ReactiveRedisTemplate<String, OnlineUser>,
 ) : PacketService {
@@ -123,6 +124,13 @@ data class PacketServiceImpl(
 
 
             "lunarclient.websocket.friend.v1.FriendService" -> friendService.process(
+                message.method,
+                message.input,
+                session,
+                user
+            )
+
+            "lunarclient.websocket.message.v1.MessageService" -> messageService.process(
                 message.method,
                 message.input,
                 session,

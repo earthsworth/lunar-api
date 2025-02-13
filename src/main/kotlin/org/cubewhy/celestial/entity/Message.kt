@@ -7,7 +7,7 @@ import java.time.Instant
 @Document
 data class Message(
     @Id
-    val id: String?,
+    val id: String? = null,
 
     val senderId: String,
     val targetId: String,
