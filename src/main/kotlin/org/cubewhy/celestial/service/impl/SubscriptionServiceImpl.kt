@@ -80,11 +80,9 @@ data class SubscriptionServiceImpl(
             @Suppress("UNCHECKED_CAST")
             (session.attributes["multiplayer-uuids"] as MutableList<String>).addAll(uuids)
         }
-        if (uuids.size > 1) {
-            // send event
-            logger.info { "Push UserJoinWorldEvent" }
-            applicationEventPublisher.publishEvent(UserJoinWorldEvent(this, user, uuids, session))
-        }
+        // send event
+        logger.debug { "Push UserJoinWorldEvent" }
+        applicationEventPublisher.publishEvent(UserJoinWorldEvent(this, user, uuids, session))
     }
 
     override fun getWorldPlayerUuids(session: WebSocketSession): List<String> {
