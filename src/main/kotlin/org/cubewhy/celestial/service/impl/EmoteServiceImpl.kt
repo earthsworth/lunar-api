@@ -64,6 +64,10 @@ data class EmoteServiceImpl(
                 session,
                 user
             )
+            "StopEmote" -> this.processStopEmote(
+                session,
+                user
+            )
 
             else -> null
         }
@@ -96,6 +100,18 @@ data class EmoteServiceImpl(
         }.build()
     }
 
+    override suspend fun processStopEmote(
+        session: WebSocketSession,
+        user: User
+    ): WebsocketEmoteV1.StopEmoteResponse {
+        subscriptionService.getWorldPlayerUuids(session).forEach { uuid ->
+            // build push
+            val push = this.buildStopEmotePush(user)
+            sessionService.getSession(uuid)?.pushEvent(push)
+        }
+        return WebsocketEmoteV1.StopEmoteResponse.getDefaultInstance()
+    }
+
     private fun buildUseEmotePush(request: WebsocketEmoteV1.UseEmoteRequest, user: User) =
         WebsocketEmoteV1.UseEmotePush.newBuilder().apply {
             this.emoteId = request.emoteId
@@ -104,4 +120,7 @@ data class EmoteServiceImpl(
             this.emoteSoundtrackUrl = request.emoteSoundtrackUrl
         }.build()
 
+    private fun buildStopEmotePush(user: User) = WebsocketEmoteV1.StopEmotePush.newBuilder().apply {
+        this.playerUuid = user.uuid.toLunarClientUUID()
+    }.build()
 }
