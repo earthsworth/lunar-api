@@ -1,5 +1,6 @@
 package org.cubewhy.celestial.config
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.cubewhy.celestial.entity.OnlineUser
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -14,8 +15,11 @@ import org.springframework.data.redis.serializer.StringRedisSerializer
 class RedisConfig {
 
     @Bean
-    fun reactiveRedisTemplate(factory: ReactiveRedisConnectionFactory): ReactiveRedisTemplate<String, OnlineUser> {
-        val serializer = Jackson2JsonRedisSerializer(OnlineUser::class.java)
+    fun reactiveRedisTemplate(
+        objectMapper: ObjectMapper,
+        factory: ReactiveRedisConnectionFactory
+    ): ReactiveRedisTemplate<String, OnlineUser> {
+        val serializer = Jackson2JsonRedisSerializer(objectMapper, OnlineUser::class.java)
         val context = RedisSerializationContext.newSerializationContext<String, OnlineUser>(StringRedisSerializer())
             .value(serializer)
             .build()
