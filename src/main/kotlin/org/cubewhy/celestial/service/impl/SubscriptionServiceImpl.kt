@@ -5,7 +5,7 @@ import com.google.protobuf.GeneratedMessage
 import com.lunarclient.websocket.subscription.v1.WebsocketSubscriptionV1
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.cubewhy.celestial.entity.User
-import org.cubewhy.celestial.event.UserJoinWorldEvent
+import org.cubewhy.celestial.event.UserSubscribeEvent
 import org.cubewhy.celestial.service.SubscriptionService
 import org.cubewhy.celestial.util.toUUIDString
 import org.springframework.context.ApplicationEventPublisher
@@ -82,7 +82,7 @@ data class SubscriptionServiceImpl(
         }
         // send event
         logger.debug { "Push UserJoinWorldEvent" }
-        applicationEventPublisher.publishEvent(UserJoinWorldEvent(this, user, uuids, session))
+        applicationEventPublisher.publishEvent(UserSubscribeEvent(this, user, uuids, session))
     }
 
     override fun getWorldPlayerUuids(session: WebSocketSession): List<String> {

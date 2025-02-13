@@ -13,7 +13,7 @@ import org.cubewhy.celestial.entity.Cosmetic
 import org.cubewhy.celestial.entity.PlusColor
 import org.cubewhy.celestial.entity.User
 import org.cubewhy.celestial.entity.UserCosmetic
-import org.cubewhy.celestial.event.UserJoinWorldEvent
+import org.cubewhy.celestial.event.UserSubscribeEvent
 import org.cubewhy.celestial.repository.UserRepository
 import org.cubewhy.celestial.service.CosmeticService
 import org.cubewhy.celestial.service.SessionService
@@ -27,7 +27,6 @@ import org.springframework.stereotype.Service
 import org.springframework.web.reactive.socket.WebSocketSession
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toFlux
-import reactor.kotlin.core.publisher.toMono
 import java.io.InputStreamReader
 import java.time.Instant
 
@@ -162,7 +161,7 @@ class CosmeticServiceImpl(
     }
 
     @EventListener
-    fun onUserJoinWorld(event: UserJoinWorldEvent): Mono<Void> {
+    fun onUserSubscribe(event: UserSubscribeEvent): Mono<Void> {
         // push other user's cosmetic data to user
         logger.info { "Sync multiplayer cosmetics data for user ${event.user.username}" }
         return userRepository.findAllByUuidIn(event.uuids.toFlux())
