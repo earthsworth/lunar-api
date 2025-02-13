@@ -207,7 +207,7 @@ class FriendServiceImpl(
         return friendRequestRepository.existsBySenderIdAndRecipientId(targetUser.id!!, user.id!!).awaitFirst()
     }
 
-    private suspend fun hasFriend(user: User, target: User): Boolean {
+    override suspend fun hasFriend(user: User, target: User): Boolean {
         return friendRepository.findFriendRelation(user.id!!, target.id!!).awaitFirstOrNull() != null
     }
 

@@ -15,4 +15,6 @@ interface FriendService : PacketProcessor {
         message: WebsocketFriendV1.SendFriendRequestRequest,
         user: User
     ): GeneratedMessage
+
+    suspend fun hasFriend(user: User, target: User): Boolean
 }
