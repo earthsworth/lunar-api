@@ -32,12 +32,11 @@ data class User(
 }
 
 /**
- * A entity to store user sessions between clusters, loadbalancer
+ * An entity to store user sessions among clusters, loadbalancer
  * */
 data class OnlineUser(
     var userUuid: String,
     var websocketId: String,
-    var attributes: MutableMap<String, Any> = mutableMapOf(),
     var location: String? = null,
     var minecraftVersion: String? = null
 ) : Serializable

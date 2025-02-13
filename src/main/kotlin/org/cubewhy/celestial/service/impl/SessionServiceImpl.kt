@@ -149,7 +149,9 @@ class FederationWebSocketSession(
         return this.dataBufferFactory
     }
 
-    override fun getAttributes() = onlineUser.attributes
+    override fun getAttributes(): MutableMap<String, Any> {
+        throw UnsupportedOperationException("Not implemented")
+    }
 
 
     override fun receive(): Flux<WebSocketMessage> {
