@@ -51,7 +51,7 @@ class SessionServiceImpl(
             logger.info { "Close existing session ${it.id} for user ${user.uuid}" }
             it.close().awaitFirstOrNull() // close session
         }
-        val onlineUser = OnlineUser(user.uuid, session.id, session.attributes)
+        val onlineUser = OnlineUser(user.uuid, session.id)
         logger.info { "Save ${user.username} to shared session store" }
         saveSession(onlineUser)
     }
