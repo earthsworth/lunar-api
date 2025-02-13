@@ -7,6 +7,23 @@ import org.springframework.data.mongodb.core.mapping.Document
 import java.io.Serializable
 import java.time.Instant
 
+/**
+ * The web dashboard user
+ * */
+@Document
+data class WebUser(
+    @Id
+    val id: String? = null,
+    var username: String,
+    var password: String, // encrypted password
+    var gameUser: String? = null, // bind to in-game user id
+
+    var role: Role = Role.USER,
+)
+
+/**
+ * The in-game user
+ * */
 @Document
 data class User(
     @Id
@@ -14,7 +31,7 @@ data class User(
 
     var username: String,
     val uuid: String,
-    var role: Role,
+    var role: Role, // synced with web user
 
     var radioPremium: Boolean = false,
     var createdAt: Instant = Instant.now(),
