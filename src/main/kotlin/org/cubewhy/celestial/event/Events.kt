@@ -6,4 +6,5 @@ import org.springframework.web.reactive.socket.WebSocketSession
 
 class UserOfflineEvent(source: Any, val user: User) : ApplicationEvent(source)
 
-class UserJoinWorldEvent(source: Any, val uuids: List<String>, val session: WebSocketSession) : ApplicationEvent(source)
+class UserJoinWorldEvent(source: Any, val user: User, val uuids: List<String>, val session: WebSocketSession) :
+    ApplicationEvent(source)

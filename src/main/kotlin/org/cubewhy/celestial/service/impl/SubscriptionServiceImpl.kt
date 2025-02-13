@@ -82,7 +82,8 @@ data class SubscriptionServiceImpl(
         }
         if (uuids.size > 1) {
             // send event
-            applicationEventPublisher.publishEvent(UserJoinWorldEvent(this, uuids, session))
+            logger.info { "Push UserJoinWorldEvent" }
+            applicationEventPublisher.publishEvent(UserJoinWorldEvent(this, user, uuids, session))
         }
     }
 

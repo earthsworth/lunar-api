@@ -164,6 +164,7 @@ class CosmeticServiceImpl(
     @EventListener
     fun onUserJoinWorld(event: UserJoinWorldEvent): Mono<Void> {
         // push other user's cosmetic data to user
+        logger.info { "Sync multiplayer cosmetics data for user ${event.user.username}" }
         return userRepository.findAllByUuidIn(event.uuids.toFlux())
             .flatMap { user ->
                 val push = this@CosmeticServiceImpl.buildCosmeticsPush(user, buildCosmeticSettings(user))
