@@ -5,13 +5,17 @@ import com.google.protobuf.GeneratedMessage
 import com.lunarclient.websocket.subscription.v1.WebsocketSubscriptionV1
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.cubewhy.celestial.entity.User
+import org.cubewhy.celestial.event.UserJoinWorldEvent
 import org.cubewhy.celestial.service.SubscriptionService
 import org.cubewhy.celestial.util.toUUIDString
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.socket.WebSocketSession
 
 @Service
-class SubscriptionServiceImpl : SubscriptionService {
+data class SubscriptionServiceImpl(
+    private val applicationEventPublisher: ApplicationEventPublisher
+) : SubscriptionService {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
@@ -45,7 +49,7 @@ class SubscriptionServiceImpl : SubscriptionService {
         user: User
     ): WebsocketSubscriptionV1.UnsubscribeResponse {
         val uuids = request.targetUuidsList
-        logger.info { "User ${user.username} update multiplayer player list (${uuids.size} players) (unsub)" }
+        logger.info { "User ${user.username} update multiplayer player list (removed ${uuids.size} players)" }
         @Suppress("UNCHECKED_CAST")
         (session.attributes["multiplayer-uuids"] as MutableList<String>).removeAll(uuids.map { it.toUUIDString() }
             .toSet()) // set new uuid list
@@ -69,12 +73,16 @@ class SubscriptionServiceImpl : SubscriptionService {
         uuids: List<String>,
         user: User
     ) {
-        logger.info { "User ${user.username} update multiplayer player list (${uuids.size} players) (sub)" }
+        logger.info { "User ${user.username} update multiplayer player list (added ${uuids.size} players)" }
         if (!session.attributes.containsKey("multiplayer-uuids")) {
             session.attributes["multiplayer-uuids"] = uuids.toMutableList()
         } else {
             @Suppress("UNCHECKED_CAST")
             (session.attributes["multiplayer-uuids"] as MutableList<String>).addAll(uuids)
+        }
+        if (uuids.size > 1) {
+            // send event
+            applicationEventPublisher.publishEvent(UserJoinWorldEvent(this, uuids))
         }
     }
 

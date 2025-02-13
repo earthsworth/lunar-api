@@ -6,11 +6,14 @@ import com.lunarclient.websocket.cosmetic.v1.WebsocketCosmeticV1
 import com.opencsv.CSVReader
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.annotation.PostConstruct
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.reactive.awaitFirst
+import kotlinx.coroutines.reactor.mono
 import org.cubewhy.celestial.entity.Cosmetic
 import org.cubewhy.celestial.entity.PlusColor
 import org.cubewhy.celestial.entity.User
 import org.cubewhy.celestial.entity.UserCosmetic
+import org.cubewhy.celestial.event.UserJoinWorldEvent
 import org.cubewhy.celestial.repository.UserRepository
 import org.cubewhy.celestial.service.CosmeticService
 import org.cubewhy.celestial.service.SessionService
@@ -18,9 +21,13 @@ import org.cubewhy.celestial.service.SubscriptionService
 import org.cubewhy.celestial.util.pushEvent
 import org.cubewhy.celestial.util.toLunarClientColor
 import org.cubewhy.celestial.util.toLunarClientUUID
+import org.springframework.context.event.EventListener
 import org.springframework.core.io.ClassPathResource
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.socket.WebSocketSession
+import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.toFlux
+import reactor.kotlin.core.publisher.toMono
 import java.io.InputStreamReader
 import java.time.Instant
 
@@ -28,7 +35,8 @@ import java.time.Instant
 class CosmeticServiceImpl(
     private val userRepository: UserRepository,
     private val subscriptionService: SubscriptionService,
-    private val sessionService: SessionService
+    private val sessionService: SessionService,
+    private val scope: CoroutineScope
 ) : CosmeticService {
 
     companion object {
@@ -143,8 +151,26 @@ class CosmeticServiceImpl(
             clothCloak = user.cosmetic.clothCloak
             addAllActiveCosmeticIds(user.cosmetic.activeCosmetics.map { it })
             addAllEquippedCosmetics(user.cosmetic.equippedCosmetics.map { it.toEquippedCosmetic() })
-            flipShoulderPet = false
+            flipShoulderPet = user.cosmetic.flipShoulderPet
+            showHatsOverHelmet = user.cosmetic.showHatsOverHelmet
+            showHatsOverSkinLayer = user.cosmetic.showHatsOverSkinLayer
+            showOverChestplate = user.cosmetic.showOverChestplate
+            showOverLeggings = user.cosmetic.showOverLeggings
+            showOverBoots = user.cosmetic.showOverBoots
             user.cosmetic.lunarPlusColor?.let { setPlusColor(it.toLunarClientColor()) }
         }.build()
+    }
+
+    @EventListener
+    fun onUserJoinWorld(event: UserJoinWorldEvent): Mono<Void> {
+        // push other user's cosmetic data to user
+        return userRepository.findAllByUuidIn(event.uuids.toFlux())
+            .flatMap { user ->
+                val push = this@CosmeticServiceImpl.buildCosmeticsPush(user, buildCosmeticSettings(user))
+                mono {
+                    // push to websocket
+                    sessionService.getSession(user)?.pushEvent(push)
+                }
+            }.then()
     }
 }

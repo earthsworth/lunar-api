@@ -51,7 +51,6 @@ data class UserCosmeticSettings(
     var showHatsOverHelmet: Boolean = false,
     var showHatsOverSkinLayer: Boolean = false,
     var hatHeightOffsetCount: Int = 0,
-    var showHatsOverHat: Boolean = false,
     var showOverChestplate: Boolean = false,
     var showOverBoots: Boolean = false,
     var showOverLeggings: Boolean = false,

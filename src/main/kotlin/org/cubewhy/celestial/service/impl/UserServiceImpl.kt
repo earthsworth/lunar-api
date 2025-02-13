@@ -5,16 +5,19 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.reactive.awaitFirst
 import org.cubewhy.celestial.entity.Role
 import org.cubewhy.celestial.entity.User
+import org.cubewhy.celestial.event.UserOfflineEvent
 import org.cubewhy.celestial.repository.UserRepository
 import org.cubewhy.celestial.service.UserService
 import org.cubewhy.celestial.util.toUUIDString
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import reactor.kotlin.core.publisher.switchIfEmpty
 import java.time.Instant
 
 @Service
 data class UserServiceImpl(
-    val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val applicationEventPublisher: ApplicationEventPublisher
 ) : UserService {
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -49,7 +52,7 @@ data class UserServiceImpl(
     override suspend fun markOffline(user: User) {
         user.lastSeenAt = Instant.now() // set offline timestamp
         // push events to friends
-
+        applicationEventPublisher.publishEvent(UserOfflineEvent(this, user))
         userRepository.save(user).awaitFirst()
     }
 }
