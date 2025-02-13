@@ -25,6 +25,8 @@ dependencies {
 	implementation("io.github.oshai:kotlin-logging-jvm:7.0.3")
 	implementation("com.google.protobuf:protobuf-kotlin:4.30.0-RC1")
     implementation("com.google.protobuf:protobuf-java-util:4.30.0-RC1")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb-reactive")
 	implementation("org.springframework.boot:spring-boot-starter-webflux")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
