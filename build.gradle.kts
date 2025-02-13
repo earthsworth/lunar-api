@@ -23,7 +23,7 @@ dependencies {
     implementation("com.opencsv:opencsv:5.10")
     implementation("com.auth0:java-jwt:4.4.0")
 	implementation("io.github.oshai:kotlin-logging-jvm:7.0.3")
-	implementation("com.google.protobuf:protobuf-kotlin:4.29.3")
+    implementation("com.google.protobuf:protobuf-kotlin:4.30.0-RC1")
     implementation("com.google.protobuf:protobuf-java-util:4.30.0-RC1")
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb-reactive")
 	implementation("org.springframework.boot:spring-boot-starter-webflux")
@@ -53,7 +53,7 @@ kotlin {
 
 protobuf {
 	protoc {
-		artifact = "com.google.protobuf:protoc:4.29.3"
+        artifact = "com.google.protobuf:protoc:4.30.0-RC1"
 	}
 }
 

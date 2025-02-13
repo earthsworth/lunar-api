@@ -38,10 +38,9 @@ data class OnlineUser(
     var userUuid: String,
     var websocketId: String,
     var attributes: MutableMap<String, Any> = mutableMapOf(),
-    var location: String? = null
-) : Serializable {
+    var location: String? = null,
     var minecraftVersion: String? = null
-}
+) : Serializable
 
 data class UserEmoteSettings(
     var equippedEmotes: List<Emote> = mutableListOf()

@@ -9,13 +9,20 @@ import jakarta.annotation.PostConstruct
 import org.cubewhy.celestial.entity.Emote
 import org.cubewhy.celestial.entity.User
 import org.cubewhy.celestial.service.EmoteService
+import org.cubewhy.celestial.service.SessionService
+import org.cubewhy.celestial.service.SubscriptionService
+import org.cubewhy.celestial.util.pushEvent
+import org.cubewhy.celestial.util.toLunarClientUUID
 import org.springframework.core.io.ClassPathResource
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.socket.WebSocketSession
 import java.io.InputStreamReader
 
 @Service
-class EmoteServiceImpl : EmoteService {
+data class EmoteServiceImpl(
+    private val sessionService: SessionService,
+    private val subscriptionService: SubscriptionService
+) : EmoteService {
 
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -44,6 +51,24 @@ class EmoteServiceImpl : EmoteService {
         logger.info { "Loaded ${emoteList.size} emotes" }
     }
 
+    override suspend fun process(
+        method: String,
+        payload: ByteString,
+        session: WebSocketSession,
+        user: User
+    ): GeneratedMessage? {
+        return when (method) {
+            "Login" -> this.processLogin(user)
+            "UseEmote" -> this.processUseEmote(
+                WebsocketEmoteV1.UseEmoteRequest.parseFrom(payload),
+                session,
+                user
+            )
+
+            else -> null
+        }
+    }
+
     override suspend fun processLogin(user: User): GeneratedMessage {
         return WebsocketEmoteV1.LoginResponse.newBuilder().apply {
             addAllOwnedEmotes(emoteList.map { it.toOwnedEmote(it.emoteId) })
@@ -53,19 +78,30 @@ class EmoteServiceImpl : EmoteService {
         }.build()
     }
 
-
-    override suspend fun process(
-        method: String,
-        payload: ByteString,
+    override suspend fun processUseEmote(
+        request: WebsocketEmoteV1.UseEmoteRequest,
         session: WebSocketSession,
         user: User
-    ): GeneratedMessage? {
-        when (method) {
-            "Login" -> {
-                return processLogin(user)
-            }
-
-            else -> return null
+    ): WebsocketEmoteV1.UseEmoteResponse {
+        // send push to players
+        subscriptionService.getWorldPlayerUuids(session).forEach { uuid ->
+            // build push
+            val push = this.buildUseEmotePush(request, user)
+            sessionService.getSession(uuid)?.pushEvent(push)
         }
+        return WebsocketEmoteV1.UseEmoteResponse.newBuilder().apply {
+            this.emoteId = request.emoteId
+            this.emoteMetadata = request.emoteMetadata
+            this.status = WebsocketEmoteV1.UseEmoteResponse_Status.USEEMOTERESPONSE_STATUS_STATUS_OK
+        }.build()
     }
+
+    private fun buildUseEmotePush(request: WebsocketEmoteV1.UseEmoteRequest, user: User) =
+        WebsocketEmoteV1.UseEmotePush.newBuilder().apply {
+            this.emoteId = request.emoteId
+            this.emoteMetadata = request.emoteMetadata
+            this.playerUuid = user.uuid.toLunarClientUUID()
+            this.emoteSoundtrackUrl = request.emoteSoundtrackUrl
+        }.build()
+
 }

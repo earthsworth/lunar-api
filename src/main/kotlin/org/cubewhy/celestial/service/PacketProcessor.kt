@@ -6,5 +6,14 @@ import org.cubewhy.celestial.entity.User
 import org.springframework.web.reactive.socket.WebSocketSession
 
 interface PacketProcessor {
+    /**
+     * Process packet
+     *
+     * @param method request method
+     * @param payload payload
+     * @param session websocket session
+     * @param user issuer
+     * @return response message
+     * */
     suspend fun process(method: String, payload: ByteString, session: WebSocketSession, user: User): GeneratedMessage?
 }
