@@ -19,7 +19,7 @@ import reactor.core.publisher.SignalType
 import java.time.Instant
 
 @Service
-data class PacketServiceImpl(
+class PacketServiceImpl(
     private val userService: UserService,
     private val cosmeticService: CosmeticService,
     private val emoteService: EmoteService,

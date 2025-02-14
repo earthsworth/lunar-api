@@ -8,7 +8,7 @@ import org.springframework.web.reactive.HandlerMapping
 import org.springframework.web.reactive.handler.SimpleUrlHandlerMapping
 
 @Configuration
-data class WebConfig(
+class WebConfig(
     private val authorizeHandler: AuthorizeHandler,
     private val assetsHandler: AssetsHandler
 ) {

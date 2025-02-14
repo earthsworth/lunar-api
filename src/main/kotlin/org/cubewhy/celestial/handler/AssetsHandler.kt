@@ -20,7 +20,7 @@ import reactor.netty.channel.AbortedException
 import java.util.concurrent.ConcurrentHashMap
 
 @Component
-data class AssetsHandler(
+class AssetsHandler(
     private val packetService: PacketService
 ) : WebSocketHandler {
     companion object {

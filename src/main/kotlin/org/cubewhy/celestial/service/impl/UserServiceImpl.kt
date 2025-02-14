@@ -25,7 +25,7 @@ import reactor.kotlin.core.publisher.toMono
 import java.time.Instant
 
 @Service
-data class UserServiceImpl(
+class UserServiceImpl(
     private val userRepository: UserRepository,
     private val webUserRepository: WebUserRepository,
     private val applicationEventPublisher: ApplicationEventPublisher,

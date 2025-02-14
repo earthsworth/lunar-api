@@ -31,8 +31,8 @@ import reactor.kotlin.core.publisher.toMono
 
 @Configuration
 @EnableWebFluxSecurity
-data class SecurityConfig(
-    val jwtUtil: JwtUtil,
+class SecurityConfig(
+    private val jwtUtil: JwtUtil,
 ) {
     @Bean
     fun springSecurityFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain {
@@ -44,7 +44,7 @@ data class SecurityConfig(
             }
             formLogin {
                 loginPage = "/api/user/login"
-                authenticationSuccessHandler = AuthSuccessHandler
+                authenticationSuccessHandler = AuthSuccessHandler(jwtUtil)
                 authenticationFailureHandler = AuthFailureHandler
             }
             logout {
@@ -65,7 +65,7 @@ data class SecurityConfig(
         }
     }
 
-    object AuthSuccessHandler : ServerAuthenticationSuccessHandler {
+    class AuthSuccessHandler(private val jwtUtil: JwtUtil) : ServerAuthenticationSuccessHandler {
         override fun onAuthenticationSuccess(
             webFilterExchange: WebFilterExchange,
             authentication: Authentication

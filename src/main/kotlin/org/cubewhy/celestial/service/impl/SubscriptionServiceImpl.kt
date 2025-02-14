@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service
 import org.springframework.web.reactive.socket.WebSocketSession
 
 @Service
-data class SubscriptionServiceImpl(
+class SubscriptionServiceImpl(
     private val applicationEventPublisher: ApplicationEventPublisher
 ) : SubscriptionService {
     companion object {

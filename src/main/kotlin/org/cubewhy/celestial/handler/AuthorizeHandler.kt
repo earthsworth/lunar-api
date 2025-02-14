@@ -13,7 +13,7 @@ import reactor.kotlin.core.publisher.toMono
 import reactor.netty.channel.AbortedException
 
 @Component
-data class AuthorizeHandler(
+class AuthorizeHandler(
     private val packetService: PacketService
 ) : WebSocketHandler {
     companion object {

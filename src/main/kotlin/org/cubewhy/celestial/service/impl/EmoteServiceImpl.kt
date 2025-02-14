@@ -20,7 +20,7 @@ import org.springframework.web.reactive.socket.WebSocketSession
 import java.io.InputStreamReader
 
 @Service
-data class EmoteServiceImpl(
+class EmoteServiceImpl(
     private val sessionService: SessionService,
     private val subscriptionService: SubscriptionService,
     private val userRepository: UserRepository
