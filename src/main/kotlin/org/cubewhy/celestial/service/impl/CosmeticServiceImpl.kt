@@ -50,7 +50,7 @@ class CosmeticServiceImpl(
             InputStreamReader(inputStream).use { reader ->
                 CSVReader(reader).use { csvReader ->
                     csvReader.forEach { row ->
-                        if (row.size >= 4) { // 确保至少有 4 个字段
+                        if (row.size >= 4) {
                             val id = row[0].trim().toInt()
                             val name = row[3].trim()
                             cosmeticList.add(Cosmetic(id, name))
@@ -59,7 +59,7 @@ class CosmeticServiceImpl(
                 }
             }
         }
-        logger.info { "Loaded ${cosmeticList.size} cosmetics' data" }
+        logger.info { "Loaded ${cosmeticList.size} cosmetics" }
     }
 
     override suspend fun process(
@@ -137,6 +137,7 @@ class CosmeticServiceImpl(
             addAllOwnedCosmeticIds(cosmeticList.map { it.cosmeticId })
             addAllOwnedCosmetics(cosmeticList.map { it.toUserCosmetic().toOwnedCosmetic() })
             logoAlwaysShow = user.cosmetic.logoAlwaysShow
+            addLunarPlusFreeCosmeticIds(1)
             hasAllCosmeticsFlag = true
         }.build()
     }
