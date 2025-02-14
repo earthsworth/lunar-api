@@ -9,10 +9,7 @@ import jakarta.annotation.PostConstruct
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.reactive.awaitFirst
 import kotlinx.coroutines.reactor.mono
-import org.cubewhy.celestial.entity.Cosmetic
-import org.cubewhy.celestial.entity.PlusColor
-import org.cubewhy.celestial.entity.User
-import org.cubewhy.celestial.entity.UserCosmetic
+import org.cubewhy.celestial.entity.*
 import org.cubewhy.celestial.event.UserSubscribeEvent
 import org.cubewhy.celestial.repository.UserRepository
 import org.cubewhy.celestial.service.CosmeticService
@@ -70,17 +67,16 @@ class CosmeticServiceImpl(
         payload: ByteString,
         session: WebSocketSession,
         user: User
-    ): GeneratedMessage? {
+    ): WebsocketResponse {
         return when (method) {
-            "Login" -> this.processLogin(user) // process login packet
-
+            "Login" -> this.processLogin(user).toWebsocketResponse() // process login packet
             "UpdateCosmeticSettings" -> {
                 // parse payload
                 val pb = WebsocketCosmeticV1.UpdateCosmeticSettingsRequest.parseFrom(payload)
-                this.processUpdateCosmeticSettings(pb, user, session)
+                this.processUpdateCosmeticSettings(pb, user, session).toWebsocketResponse()
             }
 
-            else -> null // unknown packet
+            else -> emptyWebsocketResponse() // unknown packet
         }
     }
 
@@ -88,7 +84,7 @@ class CosmeticServiceImpl(
         message: WebsocketCosmeticV1.UpdateCosmeticSettingsRequest,
         user: User,
         session: WebSocketSession
-    ): GeneratedMessage? {
+    ): GeneratedMessage {
         user.cosmetic.clothCloak = message.settings.clothCloak
         user.cosmetic.equippedCosmetics =
             message.settings.equippedCosmeticsList.map { UserCosmetic(it.cosmeticId, Instant.now(), null, null) }

@@ -7,8 +7,7 @@ import com.opencsv.CSVReader
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.annotation.PostConstruct
 import kotlinx.coroutines.reactive.awaitFirst
-import org.cubewhy.celestial.entity.Emote
-import org.cubewhy.celestial.entity.User
+import org.cubewhy.celestial.entity.*
 import org.cubewhy.celestial.repository.UserRepository
 import org.cubewhy.celestial.service.EmoteService
 import org.cubewhy.celestial.service.SessionService
@@ -59,24 +58,24 @@ data class EmoteServiceImpl(
         payload: ByteString,
         session: WebSocketSession,
         user: User
-    ): GeneratedMessage? {
+    ): WebsocketResponse {
         return when (method) {
-            "Login" -> this.processLogin(user)
+            "Login" -> this.processLogin(user).toWebsocketResponse()
             "UseEmote" -> this.processUseEmote(
                 WebsocketEmoteV1.UseEmoteRequest.parseFrom(payload),
                 session,
                 user
-            )
+            ).toWebsocketResponse()
             "StopEmote" -> this.processStopEmote(
                 session,
                 user
-            )
+            ).toWebsocketResponse()
             "UpdateEquippedEmotes" -> this.processUpdateEquippedEmotes(
                 WebsocketEmoteV1.UpdateEquippedEmotesRequest.parseFrom(payload),
                 session,
                 user
-            )
-            else -> null
+            ).toWebsocketResponse()
+            else -> emptyWebsocketResponse()
         }
     }
 

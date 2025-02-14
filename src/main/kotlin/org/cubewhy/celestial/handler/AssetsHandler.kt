@@ -3,11 +3,12 @@ package org.cubewhy.celestial.handler
 import com.lunarclient.websocket.handshake.v1.WebsocketHandshakeV1
 import com.lunarclient.websocket.protocol.v1.WebsocketProtocolV1
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlinx.coroutines.reactive.awaitFirstOrNull
 import kotlinx.coroutines.reactor.mono
 import org.cubewhy.celestial.entity.User
 import org.cubewhy.celestial.handler.AssetsHandler.Companion.sessions
 import org.cubewhy.celestial.service.PacketService
-import org.cubewhy.celestial.util.wrapCommon
+import org.cubewhy.celestial.util.pushEvent
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.socket.WebSocketHandler
 import org.springframework.web.reactive.socket.WebSocketSession
@@ -42,11 +43,21 @@ data class AssetsHandler(
                 val pbMessage =
                     WebsocketProtocolV1.ServerboundWebSocketMessage.parseFrom(message.payload.asInputStream())
                 mono {
-                    packetService.process(pbMessage, session)?.wrapCommon(pbMessage.requestId)
+                    packetService.process(pbMessage, session).apply {
+                        requestId = pbMessage.requestId
+                    }
                 }
             }
         }.concatMap { message ->
-            session.send(session.binaryMessage { it.wrap(message.toByteArray()) }.toMono()) // send response
+            mono {
+                message.response?.let { response ->
+                    session.send(session.binaryMessage { it.wrap(response.toByteArray()) }.toMono()).awaitFirstOrNull() // send response
+                }
+                // send events
+                message.events.forEach { event ->
+                    session.pushEvent(event)
+                }
+            }
         }.doOnError { e ->
             if (e !is AbortedException) {
                 // ignore session disconnected

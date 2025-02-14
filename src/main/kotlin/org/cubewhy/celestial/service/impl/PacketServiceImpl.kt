@@ -7,6 +7,8 @@ import com.lunarclient.websocket.protocol.v1.WebsocketProtocolV1
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.cubewhy.celestial.entity.OnlineUser
 import org.cubewhy.celestial.entity.User
+import org.cubewhy.celestial.entity.WebsocketResponse
+import org.cubewhy.celestial.entity.emptyWebsocketResponse
 import org.cubewhy.celestial.service.*
 import org.cubewhy.celestial.util.JwtUtil
 import org.cubewhy.celestial.util.toUUIDString
@@ -25,7 +27,7 @@ data class PacketServiceImpl(
     private val sessionService: SessionService,
     private val subscriptionService: SubscriptionService,
     private val languageService: LanguageService,
-    private val messageService: MessageService,
+    private val conversationService: ConversationService,
     private val jwtUtil: JwtUtil,
     private val onlineUserRedisTemplate: ReactiveRedisTemplate<String, OnlineUser>,
 ) : PacketService {
@@ -88,7 +90,7 @@ data class PacketServiceImpl(
     override suspend fun process(
         message: WebsocketProtocolV1.ServerboundWebSocketMessage,
         session: WebSocketSession
-    ): GeneratedMessage? {
+    ): WebsocketResponse {
         val user = session.attributes["user"] as User
         logger.info { "User ${user.username} send packet ${message.service}:${message.method}" }
         return when (message.service) {
@@ -130,15 +132,14 @@ data class PacketServiceImpl(
                 user
             )
 
-            "lunarclient.websocket.message.v1.MessageService" -> messageService.process(
+            "lunarclient.websocket.conversation.v1.ConversationService" -> conversationService.process(
                 message.method,
                 message.input,
                 session,
                 user
             )
 
-
-            else -> null
+            else -> emptyWebsocketResponse()
         }
     }
 }

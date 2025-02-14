@@ -5,6 +5,9 @@ import com.google.protobuf.GeneratedMessage
 import com.lunarclient.websocket.language.v1.WebsocketLanguageV1
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.cubewhy.celestial.entity.User
+import org.cubewhy.celestial.entity.WebsocketResponse
+import org.cubewhy.celestial.entity.emptyWebsocketResponse
+import org.cubewhy.celestial.entity.toWebsocketResponse
 import org.cubewhy.celestial.service.LanguageService
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.socket.WebSocketSession
@@ -30,16 +33,16 @@ class LanguageServiceImpl : LanguageService {
         payload: ByteString,
         session: WebSocketSession,
         user: User
-    ): GeneratedMessage? {
+    ): WebsocketResponse {
         return when (method) {
             "UpdateLanguageRequest" ->
                 this.processUpdateLanguageRequest(
                     WebsocketLanguageV1.UpdateLanguageRequest.parseFrom(payload),
                     session,
                     user
-                )
+                ).toWebsocketResponse()
 
-            else -> null
+            else -> emptyWebsocketResponse()
         }
     }
 }

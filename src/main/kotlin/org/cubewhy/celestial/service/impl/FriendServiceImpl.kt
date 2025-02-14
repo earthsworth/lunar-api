@@ -10,9 +10,7 @@ import kotlinx.coroutines.reactive.awaitFirst
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import kotlinx.coroutines.reactive.awaitLast
 import kotlinx.coroutines.reactor.mono
-import org.cubewhy.celestial.entity.Friend
-import org.cubewhy.celestial.entity.FriendRequest
-import org.cubewhy.celestial.entity.User
+import org.cubewhy.celestial.entity.*
 import org.cubewhy.celestial.event.UserOfflineEvent
 import org.cubewhy.celestial.repository.FriendRepository
 import org.cubewhy.celestial.repository.FriendRequestRepository
@@ -46,15 +44,15 @@ class FriendServiceImpl(
         payload: ByteString,
         session: WebSocketSession,
         user: User
-    ): GeneratedMessage? {
+    ): WebsocketResponse {
         return when (method) {
             "Login" -> this.processLogin(user, session)
             "SendFriendRequest" -> this.processAddFriendRequest(
                 WebsocketFriendV1.SendFriendRequestRequest.parseFrom(payload),
                 user
-            )
+            ).toWebsocketResponse()
 
-            else -> null
+            else -> emptyWebsocketResponse()
 
         }
     }
@@ -65,31 +63,32 @@ class FriendServiceImpl(
     override suspend fun processLogin(
         user: User,
         session: WebSocketSession
-    ): GeneratedMessage? {
+    ): WebsocketResponse {
         val friends = findFriends(user)
         val botFriend = if (botState) buildBotFriend(user) else null
         // update friend status
+        val events = mutableListOf<GeneratedMessage>()
         if (botFriend != null) {
             // push bot status
-            session.pushEvent(this.buildOnlineFriendStatusPush(botFriend))
+            events.add(this.buildOnlineFriendStatusPush(botFriend, true))
         }
-        friends.forEach { friend ->
+        events.addAll(friends.map { friend ->
             // push friend status
-            session.pushEvent(this.buildOnlineFriendStatusPush(friend))
-        }
-        return WebsocketFriendV1.LoginResponse.newBuilder().apply {
+            this.buildOnlineFriendStatusPush(friend)
+        })
+        return WebsocketResponse.create(WebsocketFriendV1.LoginResponse.newBuilder().apply {
             this.allowFriendRequests = user.allowFriendRequests
             botFriend?.let { this.addOfflineFriends(it) }
             this.addAllOfflineFriends(friends)
-        }.build()
+        }.build(), events)
     }
 
-    private suspend fun buildOnlineFriendStatusPush(friend: WebsocketFriendV1.OfflineFriend): WebsocketFriendV1.FriendStatusPush =
+    private suspend fun buildOnlineFriendStatusPush(friend: WebsocketFriendV1.OfflineFriend, bot: Boolean = false): WebsocketFriendV1.FriendStatusPush =
         WebsocketFriendV1.FriendStatusPush.newBuilder().apply {
-            this.onlineFriend = this@FriendServiceImpl.buildOnlineFriend(friend)
+            this.onlineFriend = this@FriendServiceImpl.buildOnlineFriend(friend, bot)
         }.build()
 
-    private suspend fun buildOnlineFriend(friend: WebsocketFriendV1.OfflineFriend): WebsocketFriendV1.OnlineFriend {
+    private suspend fun buildOnlineFriend(friend: WebsocketFriendV1.OfflineFriend, bot: Boolean = false): WebsocketFriendV1.OnlineFriend {
         val friendUuid = friend.player.uuid.toUUIDString()
         return WebsocketFriendV1.OnlineFriend.newBuilder().apply {
             this.player = friend.player
@@ -103,8 +102,18 @@ class FriendServiceImpl(
             sessionService.getLocation(friendUuid)?.let {
                 this.location = it
             }
+            if (bot) {
+                this.location = this@FriendServiceImpl.buildBotLocation()
+            }
         }.build()
     }
+
+    private fun buildBotLocation() = LunarclientCommonV1.Location.newBuilder().apply {
+        this.publicServer = LunarclientCommonV1.PublicServer.newBuilder().apply {
+            this.serverMappingsId = "localhost"
+            this.name = "lunarclient.top"
+        }.build()
+    }.build()
 
     /**
      * Process friend add request
@@ -166,6 +175,7 @@ class FriendServiceImpl(
             player = botUsername.toLunarClientPlayer()
             rankName = "Bot"
             friendsSince = user.createdAt.toProtobufType()
+            lastVisibleOnline = Instant.now().toProtobufType()
         }.build()
     }
 

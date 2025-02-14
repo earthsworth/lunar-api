@@ -11,5 +11,5 @@ interface CosmeticService : PacketProcessor {
         message: WebsocketCosmeticV1.UpdateCosmeticSettingsRequest,
         user: User,
         session: WebSocketSession
-    ): GeneratedMessage?
+    ): GeneratedMessage
 }

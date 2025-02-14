@@ -5,6 +5,9 @@ import com.google.protobuf.GeneratedMessage
 import com.lunarclient.websocket.subscription.v1.WebsocketSubscriptionV1
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.cubewhy.celestial.entity.User
+import org.cubewhy.celestial.entity.WebsocketResponse
+import org.cubewhy.celestial.entity.emptyWebsocketResponse
+import org.cubewhy.celestial.entity.toWebsocketResponse
 import org.cubewhy.celestial.event.UserSubscribeEvent
 import org.cubewhy.celestial.service.SubscriptionService
 import org.cubewhy.celestial.util.toUUIDString
@@ -25,21 +28,20 @@ data class SubscriptionServiceImpl(
         payload: ByteString,
         session: WebSocketSession,
         user: User
-    ): GeneratedMessage? {
+    ): WebsocketResponse {
         return when (method) {
             "Subscribe" -> this.processSubscribe(
                 WebsocketSubscriptionV1.SubscribeRequest.parseFrom(payload),
                 session,
                 user
-            )
-
+            ).toWebsocketResponse()
             "Unsubscribe" -> this.processUnsubscribe(
                 WebsocketSubscriptionV1.UnsubscribeRequest.parseFrom(payload),
                 session,
                 user
-            )
+            ).toWebsocketResponse()
 
-            else -> null
+            else -> emptyWebsocketResponse()
         }
     }
 
