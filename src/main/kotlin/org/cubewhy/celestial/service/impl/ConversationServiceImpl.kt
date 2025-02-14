@@ -1,10 +1,10 @@
 package org.cubewhy.celestial.service.impl
 
 import com.google.protobuf.ByteString
-import com.google.protobuf.GeneratedMessage
 import com.lunarclient.websocket.conversation.v1.WebsocketConversationV1
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.reactive.awaitFirst
+import org.cubewhy.celestial.bot.command.CommandManager
 import org.cubewhy.celestial.entity.*
 import org.cubewhy.celestial.repository.MessageRepository
 import org.cubewhy.celestial.repository.UserRepository
@@ -17,14 +17,15 @@ import org.cubewhy.celestial.util.toProtobufType
 import org.cubewhy.celestial.util.toUUIDString
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.socket.WebSocketSession
-import java.util.UUID
+import java.util.*
 
 @Service
 class ConversationServiceImpl(
     private val userRepository: UserRepository,
     private val friendService: FriendService,
     private val messageRepository: MessageRepository,
-    private val sessionService: SessionService
+    private val sessionService: SessionService,
+    private val commandManager: CommandManager
 ) : ConversationService {
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -63,7 +64,7 @@ class ConversationServiceImpl(
                 Message(
                     senderId = user.id!!,
                     targetId = user.id,
-                    message = chatMessage,
+                    message = commandManager.process(chatMessage, user),
                 )
             ).awaitFirst()
             session.pushEvent(this.buildConversationMessagePush(savedMessage, user, request)) // push to self
