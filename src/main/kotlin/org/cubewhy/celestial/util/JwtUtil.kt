@@ -7,11 +7,16 @@ import com.auth0.jwt.interfaces.DecodedJWT
 import com.auth0.jwt.interfaces.JWTVerifier
 import org.cubewhy.celestial.entity.User
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.stereotype.Component
+import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.toMono
 import java.util.*
 
 @Component
-class JwtUtil {
+data class JwtUtil(
+    private val stringReactiveRedisTemplate: ReactiveRedisTemplate<String, String>,
+) {
     @Value("\${spring.security.jwt.key}")
     private lateinit var key: String
 
@@ -59,5 +64,17 @@ class JwtUtil {
         }
         // cut "Bearer "
         return headerToken.substring(7)
+    }
+
+    fun isInvalidToken(tokenId: String): Mono<Boolean> {
+        return stringReactiveRedisTemplate.hasKey(Const.EXPIRED_TOKEN + tokenId)
+    }
+
+    fun expireToken(token: String): Mono<Boolean> {
+        val parsedToken = convertToken(token) ?: return false.toMono()
+        // parse token
+        val jwt = this.resolveJwt(parsedToken) ?: return false.toMono()
+        // expire token
+        return stringReactiveRedisTemplate.opsForValue().set(Const.EXPIRED_TOKEN + jwt.id, "0").then(Mono.just(true))
     }
 }
