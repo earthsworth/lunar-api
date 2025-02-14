@@ -12,6 +12,7 @@ import org.cubewhy.celestial.service.AnalysisService
 import org.cubewhy.celestial.service.SessionService
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
+import java.time.Instant
 
 @Service
 class AnalysisServiceImpl(
@@ -40,5 +41,9 @@ class AnalysisServiceImpl(
             // save analysis
             analysisRepository.save(analysis).awaitFirst()
         }
+    }
+
+    override suspend fun getAnalysisAfter(timestamp: Instant): List<Analysis> {
+        return analysisRepository.getAnalysisByTimestampAfter(timestamp).collectList().awaitFirst()
     }
 }
