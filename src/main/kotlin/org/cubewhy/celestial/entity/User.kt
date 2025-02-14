@@ -19,6 +19,7 @@ data class WebUser(
     var gameUser: String? = null, // bind to in-game user id
 
     var role: Role = Role.USER,
+    val createdAt: Instant = Instant.now(),
 )
 
 /**

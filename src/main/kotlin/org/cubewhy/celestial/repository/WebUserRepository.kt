@@ -10,4 +10,5 @@ import reactor.core.publisher.Mono
 interface WebUserRepository : ReactiveMongoRepository<WebUser, String> {
     fun findByUsername(username: String): Mono<WebUser>
     fun countByRole(role: Role): Mono<Long>
+    fun existsByUsername(username: String): Mono<Boolean>
 }

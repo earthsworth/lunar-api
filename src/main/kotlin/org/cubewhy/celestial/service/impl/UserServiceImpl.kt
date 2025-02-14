@@ -9,6 +9,8 @@ import kotlinx.coroutines.reactive.awaitFirst
 import org.cubewhy.celestial.entity.Role
 import org.cubewhy.celestial.entity.User
 import org.cubewhy.celestial.entity.WebUser
+import org.cubewhy.celestial.entity.dto.RegisterUserDTO
+import org.cubewhy.celestial.entity.vo.UserVO
 import org.cubewhy.celestial.event.UserOfflineEvent
 import org.cubewhy.celestial.repository.UserRepository
 import org.cubewhy.celestial.repository.WebUserRepository
@@ -108,5 +110,25 @@ class UserServiceImpl(
 
     override fun loadWebUser(username: String): Mono<WebUser> {
         return webUserRepository.findByUsername(username)
+    }
+
+    override suspend fun registerWebUser(dto: RegisterUserDTO): UserVO? {
+        // create web user
+        if (webUserRepository.existsByUsername(dto.username).awaitFirst()) {
+            return null
+        }
+        val webUser = WebUser(
+            username = dto.username,
+            password = passwordEncoder.encode(dto.password),
+            role = Role.USER
+        )
+        // save web user
+        val saved = webUserRepository.save(webUser).awaitFirst()
+        logger.info { "Web user ${webUser.username} was registered" }
+        return UserVO(
+            id = saved.id!!,
+            username = saved.username,
+            role = saved.role.name
+        )
     }
 }
