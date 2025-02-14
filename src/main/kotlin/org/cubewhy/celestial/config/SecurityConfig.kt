@@ -1,6 +1,8 @@
 package org.cubewhy.celestial.config
 
 import org.cubewhy.celestial.entity.RestBean
+import org.cubewhy.celestial.entity.vo.AuthorizeVO
+import org.cubewhy.celestial.service.UserService
 import org.cubewhy.celestial.util.JwtUtil
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -8,21 +10,19 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.security.access.AccessDeniedException
-import org.springframework.security.authentication.ReactiveAuthenticationManager
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity
 import org.springframework.security.config.web.server.ServerHttpSecurity
 import org.springframework.security.config.web.server.invoke
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.AuthenticationException
+import org.springframework.security.core.userdetails.User
 import org.springframework.security.web.server.SecurityWebFilterChain
 import org.springframework.security.web.server.ServerAuthenticationEntryPoint
 import org.springframework.security.web.server.WebFilterExchange
-import org.springframework.security.web.server.authentication.AuthenticationWebFilter
 import org.springframework.security.web.server.authentication.ServerAuthenticationFailureHandler
 import org.springframework.security.web.server.authentication.ServerAuthenticationSuccessHandler
 import org.springframework.security.web.server.authentication.logout.ServerLogoutSuccessHandler
 import org.springframework.security.web.server.authorization.ServerAccessDeniedHandler
-import org.springframework.security.web.server.util.matcher.PathPatternParserServerWebExchangeMatcher
 import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers.pathMatchers
 import org.springframework.web.server.ServerWebExchange
 import reactor.core.publisher.Mono
@@ -33,6 +33,7 @@ import reactor.kotlin.core.publisher.toMono
 @EnableWebFluxSecurity
 class SecurityConfig(
     private val jwtUtil: JwtUtil,
+    private val userService: UserService
 ) {
     @Bean
     fun springSecurityFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain {
@@ -44,7 +45,7 @@ class SecurityConfig(
             }
             formLogin {
                 loginPage = "/api/user/login"
-                authenticationSuccessHandler = AuthSuccessHandler(jwtUtil)
+                authenticationSuccessHandler = AuthSuccessHandler(jwtUtil, userService)
                 authenticationFailureHandler = AuthFailureHandler
             }
             logout {
@@ -65,14 +66,24 @@ class SecurityConfig(
         }
     }
 
-    class AuthSuccessHandler(private val jwtUtil: JwtUtil) : ServerAuthenticationSuccessHandler {
+    class AuthSuccessHandler(private val jwtUtil: JwtUtil, private val userService: UserService) :
+        ServerAuthenticationSuccessHandler {
         override fun onAuthenticationSuccess(
             webFilterExchange: WebFilterExchange,
             authentication: Authentication
         ): Mono<Void> {
             // generate JWT
-
-            return webFilterExchange.exchange.responseSuccess(null) // success
+            val username = authentication.name
+            val details = authentication.principal as User
+            // find web user
+            return userService.loadWebUser(details.username).flatMap { webUser ->
+                val jwt = jwtUtil.createJwt(webUser)
+                // parse jwt
+                val parsedJwt = jwtUtil.resolveJwt(jwt)!!
+                AuthorizeVO(webUser.username, jwt, parsedJwt.expiresAt.time, webUser.role.name).toMono()
+            }.flatMap { vo ->
+                webFilterExchange.exchange.responseSuccess(vo)
+            }
         }
     }
 

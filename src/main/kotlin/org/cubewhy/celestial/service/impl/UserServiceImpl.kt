@@ -105,4 +105,8 @@ class UserServiceImpl(
                     .build().toMono()
             }
     }
+
+    override fun loadWebUser(username: String): Mono<WebUser> {
+        return webUserRepository.findByUsername(username)
+    }
 }
