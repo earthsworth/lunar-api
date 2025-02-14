@@ -57,6 +57,11 @@ class FriendServiceImpl(
                 user
             ).toWebsocketResponse()
 
+            "ToggleFriendRequests" -> this.processToggleFriendRequests(
+                WebsocketFriendV1.ToggleFriendRequestsRequest.parseFrom(payload),
+                user
+            ).toWebsocketResponse()
+
             else -> emptyWebsocketResponse()
 
         }
@@ -85,15 +90,22 @@ class FriendServiceImpl(
             this.allowFriendRequests = user.allowFriendRequests
             botFriend?.let { this.addOfflineFriends(it) }
             this.addAllOfflineFriends(friends)
+            // todo friend requests
         }.build(), events)
     }
 
-    private suspend fun buildOnlineFriendStatusPush(friend: WebsocketFriendV1.OfflineFriend, bot: Boolean = false): WebsocketFriendV1.FriendStatusPush =
+    private suspend fun buildOnlineFriendStatusPush(
+        friend: WebsocketFriendV1.OfflineFriend,
+        bot: Boolean = false
+    ): WebsocketFriendV1.FriendStatusPush =
         WebsocketFriendV1.FriendStatusPush.newBuilder().apply {
             this.onlineFriend = this@FriendServiceImpl.buildOnlineFriend(friend, bot)
         }.build()
 
-    private suspend fun buildOnlineFriend(friend: WebsocketFriendV1.OfflineFriend, bot: Boolean = false): WebsocketFriendV1.OnlineFriend {
+    private suspend fun buildOnlineFriend(
+        friend: WebsocketFriendV1.OfflineFriend,
+        bot: Boolean = false
+    ): WebsocketFriendV1.OnlineFriend {
         val friendUuid = friend.player.uuid.toUUIDString()
         return WebsocketFriendV1.OnlineFriend.newBuilder().apply {
             this.player = friend.player
@@ -177,6 +189,17 @@ class FriendServiceImpl(
                 )
             }
         }
+    }
+
+    override suspend fun processToggleFriendRequests(
+        message: WebsocketFriendV1.ToggleFriendRequestsRequest,
+        user: User
+    ): GeneratedMessage {
+        logger.info { "User ${if (message.allowFriendRequests) "enabled" else "disabled"} incoming friend requests" }
+        user.allowFriendRequests = message.allowFriendRequests
+        // save user
+        userRepository.save(user).awaitFirst()
+        return WebsocketFriendV1.ToggleFriendRequestsResponse.getDefaultInstance()
     }
 
     private fun buildBotFriend(user: User): WebsocketFriendV1.OfflineFriend {
