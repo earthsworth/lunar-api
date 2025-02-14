@@ -86,13 +86,46 @@ class FriendServiceImpl(
             // push friend status
             this.buildOnlineFriendStatusPush(friend)
         })
+
+        val incomingRequests = findAllIncomingFriendRequests(user)
+        val outgoingRequests = findAllOutgoingFriendRequests(user)
         return WebsocketResponse.create(WebsocketFriendV1.LoginResponse.newBuilder().apply {
             this.allowFriendRequests = user.allowFriendRequests
             botFriend?.let { this.addOfflineFriends(it) }
             this.addAllOfflineFriends(friends)
             // todo friend requests
+            this.addAllInboundFriendRequests(incomingRequests.map { request ->
+                userRepository.findById(request.senderId).awaitFirst().toLunarClientPlayer()
+            })
+            this.addAllInboundFriendAddRequests(incomingRequests.map { this@FriendServiceImpl.buildFriendRequest(it) })
+            this.addAllOutboundFriendRequests(outgoingRequests.map { request ->
+                userRepository.findById(request.senderId).awaitFirst().toLunarClientPlayer()
+            })
+            this.addAllOutboundFriendAddRequests(outgoingRequests.map { this@FriendServiceImpl.buildFriendRequest(it) })
         }.build(), events)
     }
+
+    private suspend fun buildFriendRequest(request: FriendRequest): WebsocketFriendV1.FriendRequest {
+        val recipient = userRepository.findById(request.recipientId).awaitFirst()
+        return WebsocketFriendV1.FriendRequest.newBuilder().apply {
+            this.player = recipient.toLunarClientPlayer()
+            this.sentAt = request.timestamp.toProtobufType()
+            this.playerLogoColor = recipient.role.toLunarClientColor()
+            this.playerRankName = recipient.role.rank
+            recipient.cosmetic.lunarPlusColor?.let { this.playerPlusColor = it.toLunarClientColor() }
+        }.build()
+    }
+
+    private suspend fun findAllIncomingFriendRequests(user: User) =
+        friendRequestRepository.findAllByRecipientId(user.id!!)
+            .collectList()
+            .awaitLast()
+
+    private suspend fun findAllOutgoingFriendRequests(user: User) =
+        friendRequestRepository.findAllBySenderId(user.id!!)
+            .collectList()
+            .awaitLast()
+
 
     private suspend fun buildOnlineFriendStatusPush(
         friend: WebsocketFriendV1.OfflineFriend,
