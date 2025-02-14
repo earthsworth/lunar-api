@@ -5,6 +5,7 @@ import com.lunarclient.common.v1.LunarclientCommonV1
 import com.lunarclient.websocket.friend.v1.WebsocketFriendV1
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.reactive.awaitFirstOrNull
+import kotlinx.coroutines.reactive.awaitLast
 import org.cubewhy.celestial.Federation.FederationRequest
 import org.cubewhy.celestial.entity.OnlineUser
 import org.cubewhy.celestial.entity.User
@@ -100,6 +101,10 @@ class SessionServiceImpl(
 
     private suspend fun getOnlineUser(uuid: String): OnlineUser? =
         onlineUserRedisTemplate.opsForValue().getAndAwait(SHARED_SESSION + uuid)
+
+    override suspend fun countAvailableSessions(): Int {
+        return onlineUserRedisTemplate.keys(SHARED_SESSION + "*").collectList().awaitLast().count()
+    }
 
     override suspend fun getSession(uuid: String): WebSocketSession? {
         val localSession = getSessionLocally(uuid)
