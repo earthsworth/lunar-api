@@ -4,7 +4,9 @@ import com.lunarclient.authenticator.v1.LunarclientAuthenticatorV1
 import org.cubewhy.celestial.entity.User
 import org.cubewhy.celestial.entity.WebUser
 import org.cubewhy.celestial.entity.dto.RegisterUserDTO
+import org.cubewhy.celestial.entity.dto.ResetPasswordDTO
 import org.cubewhy.celestial.entity.vo.UserVO
+import org.springframework.security.core.Authentication
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService
 import reactor.core.publisher.Mono
 
@@ -15,4 +17,5 @@ interface UserService : ReactiveUserDetailsService {
     suspend fun loadUserByUuid(uuid: String): User
     suspend fun markOffline(user: User)
     suspend fun registerWebUser(dto: RegisterUserDTO): UserVO?
+    suspend fun resetWebUserPassword(dto: ResetPasswordDTO, authentication: Authentication)
 }

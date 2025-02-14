@@ -10,6 +10,7 @@ import org.cubewhy.celestial.entity.Role
 import org.cubewhy.celestial.entity.User
 import org.cubewhy.celestial.entity.WebUser
 import org.cubewhy.celestial.entity.dto.RegisterUserDTO
+import org.cubewhy.celestial.entity.dto.ResetPasswordDTO
 import org.cubewhy.celestial.entity.vo.UserVO
 import org.cubewhy.celestial.event.UserOfflineEvent
 import org.cubewhy.celestial.repository.UserRepository
@@ -18,6 +19,7 @@ import org.cubewhy.celestial.service.UserService
 import org.cubewhy.celestial.util.toUUIDString
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.security.core.Authentication
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -130,5 +132,22 @@ class UserServiceImpl(
             username = saved.username,
             role = saved.role.name
         )
+    }
+
+    override suspend fun resetWebUserPassword(dto: ResetPasswordDTO, authentication: Authentication) {
+        // check old password
+        val user = webUserRepository.findByUsername(authentication.name).awaitFirst()
+        if (!passwordEncoder.matches(dto.oldPassword, user.password)) {
+            // password not match
+            throw IllegalArgumentException("Old password does not match new password")
+        }
+        if (dto.oldPassword == dto.password) {
+            throw IllegalArgumentException("Password cannot be same")
+        }
+        // update password
+        logger.info { "Update password for web user ${user.username}" }
+        user.password = passwordEncoder.encode(dto.password)
+        // save user
+        webUserRepository.save(user).awaitFirst()
     }
 }
