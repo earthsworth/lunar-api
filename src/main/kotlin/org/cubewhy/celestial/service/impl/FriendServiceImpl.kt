@@ -267,7 +267,7 @@ class FriendServiceImpl(
             player = friendUser.toLunarClientPlayer()
             rankName = friendUser.role.rank
             friendsSince = friend.timestamp.toProtobufType()
-            friendUser.lunarPlusColor?.let { plusColor = it.toLunarClientColor() }
+            friendUser.cosmetic.lunarPlusColor?.let { plusColor = it.toLunarClientColor() }
             logoColor = friendUser.role.toLunarClientColor()
             isRadioPremium = friendUser.radioPremium
             lastVisibleOnline = friendUser.lastSeenAt.toProtobufType()
@@ -293,7 +293,7 @@ class FriendServiceImpl(
             session.pushEvent(WebsocketFriendV1.FriendRequestReceivedPush.newBuilder().apply {
                 sender = user.toLunarClientPlayer()
                 senderLogoColor = user.role.toLunarClientColor()
-                user.lunarPlusColor?.let { color ->
+                user.cosmetic.lunarPlusColor?.let { color ->
                     senderPlusColor = color.toLunarClientColor()
                 }
                 senderRankName = user.role.rank

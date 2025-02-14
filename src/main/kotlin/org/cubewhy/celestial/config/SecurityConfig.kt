@@ -73,7 +73,6 @@ class SecurityConfig(
             authentication: Authentication
         ): Mono<Void> {
             // generate JWT
-            val username = authentication.name
             val details = authentication.principal as User
             // find web user
             return userService.loadWebUser(details.username).flatMap { webUser ->
