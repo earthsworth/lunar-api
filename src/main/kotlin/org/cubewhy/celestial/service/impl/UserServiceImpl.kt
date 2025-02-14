@@ -7,16 +7,21 @@ import org.cubewhy.celestial.entity.Role
 import org.cubewhy.celestial.entity.User
 import org.cubewhy.celestial.event.UserOfflineEvent
 import org.cubewhy.celestial.repository.UserRepository
+import org.cubewhy.celestial.repository.WebUserRepository
 import org.cubewhy.celestial.service.UserService
 import org.cubewhy.celestial.util.toUUIDString
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
+import reactor.kotlin.core.publisher.toMono
 import java.time.Instant
 
 @Service
 data class UserServiceImpl(
     private val userRepository: UserRepository,
+    private val webUserRepository: WebUserRepository,
     private val applicationEventPublisher: ApplicationEventPublisher
 ) : UserService {
     companion object {
@@ -54,5 +59,18 @@ data class UserServiceImpl(
         // push events to friends
         applicationEventPublisher.publishEvent(UserOfflineEvent(this, user))
         userRepository.save(user).awaitFirst()
+    }
+
+    override fun findByUsername(username: String): Mono<UserDetails> {
+        // find the username in webUser repository
+        return webUserRepository.findByUsername(username)
+            .flatMap { webUser ->
+                // build User details
+                org.springframework.security.core.userdetails.User.builder()
+                    .username(webUser.username)
+                    .password(webUser.password)
+                    .roles(webUser.role.toString())
+                    .build().toMono()
+            }
     }
 }
