@@ -38,7 +38,7 @@ data class User(
     var createdAt: Instant = Instant.now(),
     var lastSeenAt: Instant = Instant.now(),
     var allowFriendRequests: Boolean = true,
-    var lunarPlusColor: Int? = null,
+    var lunarPlusColor: Int? = PlusColor.AQUA.color,
 
     var cosmetic: UserCosmeticSettings = UserCosmeticSettings(),
     var emote: UserEmoteSettings = UserEmoteSettings()

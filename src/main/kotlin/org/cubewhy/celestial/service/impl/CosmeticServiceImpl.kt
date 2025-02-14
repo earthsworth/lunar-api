@@ -137,7 +137,6 @@ class CosmeticServiceImpl(
             addAllOwnedCosmeticIds(cosmeticList.map { it.cosmeticId })
             addAllOwnedCosmetics(cosmeticList.map { it.toUserCosmetic().toOwnedCosmetic() })
             logoAlwaysShow = user.cosmetic.logoAlwaysShow
-            addLunarPlusFreeCosmeticIds(1)
             hasAllCosmeticsFlag = true
         }.build()
     }
