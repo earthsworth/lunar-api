@@ -9,6 +9,7 @@ import org.cubewhy.celestial.entity.User
 import org.cubewhy.celestial.handler.AssetsHandler.Companion.sessions
 import org.cubewhy.celestial.service.PacketService
 import org.cubewhy.celestial.util.pushEvent
+import org.cubewhy.celestial.util.wrapCommon
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.socket.WebSocketHandler
 import org.springframework.web.reactive.socket.WebSocketSession
@@ -51,7 +52,7 @@ data class AssetsHandler(
         }.concatMap { message ->
             mono {
                 message.response?.let { response ->
-                    session.send(session.binaryMessage { it.wrap(response.toByteArray()) }.toMono()).awaitFirstOrNull() // send response
+                    session.send(session.binaryMessage { it.wrap(response.wrapCommon(message.requestId!!).toByteArray()) }.toMono()).awaitFirstOrNull() // send response
                 }
                 // send events
                 message.events.forEach { event ->
