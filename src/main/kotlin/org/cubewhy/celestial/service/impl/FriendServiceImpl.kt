@@ -4,6 +4,7 @@ import com.google.protobuf.ByteString
 import com.google.protobuf.GeneratedMessage
 import com.lunarclient.common.v1.LunarclientCommonV1
 import com.lunarclient.websocket.friend.v1.WebsocketFriendV1
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.reactive.awaitFirst
@@ -33,6 +34,10 @@ class FriendServiceImpl(
     private val sessionService: SessionService,
     private val scope: CoroutineScope
 ) : FriendService {
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
+
     @Value("\${lunar.friend.bot.enabled}")
     var botState = true
 
@@ -124,6 +129,8 @@ class FriendServiceImpl(
     ): GeneratedMessage {
         val targetUsername = message.targetUsername
 
+        logger.info { "User ${user.username} send friend request to $targetUsername" }
+
         if (user.username.equals(targetUsername, ignoreCase = true)) {
             return buildResponse(
                 user,
@@ -133,6 +140,8 @@ class FriendServiceImpl(
 
         val targetUser = userRepository.findByUsernameIgnoreCase(targetUsername)
             .awaitFirstOrNull()
+
+
 
         when {
             targetUser == null -> return buildResponse(
