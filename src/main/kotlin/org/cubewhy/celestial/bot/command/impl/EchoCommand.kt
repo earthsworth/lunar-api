@@ -10,6 +10,7 @@ class EchoCommand : Command {
         get() = "<message>"
 
     override fun process(command: String, sender: User): String {
+        if (command.length <= 1) return usage
         return command
     }
 }
