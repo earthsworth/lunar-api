@@ -8,6 +8,7 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.security.access.AccessDeniedException
+import org.springframework.security.authentication.ReactiveAuthenticationManager
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity
 import org.springframework.security.config.web.server.ServerHttpSecurity
 import org.springframework.security.config.web.server.invoke
@@ -16,14 +17,17 @@ import org.springframework.security.core.AuthenticationException
 import org.springframework.security.web.server.SecurityWebFilterChain
 import org.springframework.security.web.server.ServerAuthenticationEntryPoint
 import org.springframework.security.web.server.WebFilterExchange
+import org.springframework.security.web.server.authentication.AuthenticationWebFilter
 import org.springframework.security.web.server.authentication.ServerAuthenticationFailureHandler
 import org.springframework.security.web.server.authentication.ServerAuthenticationSuccessHandler
 import org.springframework.security.web.server.authentication.logout.ServerLogoutSuccessHandler
 import org.springframework.security.web.server.authorization.ServerAccessDeniedHandler
+import org.springframework.security.web.server.util.matcher.PathPatternParserServerWebExchangeMatcher
 import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers.pathMatchers
 import org.springframework.web.server.ServerWebExchange
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
+
 
 @Configuration
 @EnableWebFluxSecurity
@@ -33,6 +37,7 @@ data class SecurityConfig(
     @Bean
     fun springSecurityFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain {
         return http {
+
             authorizeExchange {
                 authorize(pathMatchers("/ws/**", "/ws"), permitAll)
                 authorize(anyExchange, authenticated)
@@ -50,6 +55,12 @@ data class SecurityConfig(
                 authenticationEntryPoint = UnauthorizedHandler
                 accessDeniedHandler = AccessDenyHandler
             }
+            csrf {
+                disable()
+            }
+            cors {
+                disable()
+            }
             httpBasic { }
         }
     }
@@ -59,16 +70,18 @@ data class SecurityConfig(
             webFilterExchange: WebFilterExchange,
             authentication: Authentication
         ): Mono<Void> {
+            // generate JWT
+
             return webFilterExchange.exchange.responseSuccess(null) // success
         }
     }
 
     object AuthFailureHandler : ServerAuthenticationFailureHandler {
         override fun onAuthenticationFailure(
-            webFilterExchange: WebFilterExchange?,
-            exception: AuthenticationException?
+            webFilterExchange: WebFilterExchange,
+            exception: AuthenticationException
         ): Mono<Void> {
-            TODO("Not yet implemented")
+            return webFilterExchange.exchange.responseFailure(401, exception.message!!)
         }
     }
 
@@ -79,7 +92,6 @@ data class SecurityConfig(
                 return webFilterExchange.exchange.responseFailure(400, "Bad Request")
             }
             // expire token
-
             return jwtUtil.expireToken(token).flatMap { result ->
                 return@flatMap if (result) {
                     webFilterExchange.exchange.responseSuccess(null) // success

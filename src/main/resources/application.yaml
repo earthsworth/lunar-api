@@ -36,6 +36,11 @@ spring:
 
 
 lunar:
+  user:
+    default:
+      # Default user details
+      username: admin
+      password: password
   friend:
     # Add a bot to user's friend list that users can use commands
     bot:
