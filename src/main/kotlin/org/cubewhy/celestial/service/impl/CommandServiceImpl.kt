@@ -51,7 +51,14 @@ class CommandServiceImpl(
         val command = parts[0].substring(1)
         val args = parts.drop(1)
 
-        val rawResponse = commands[command] ?.execute(user, args) ?: return "Unknown command, type .help for help"
+        val command1 = commands[command]?: return "Unknown command, type .help for help"
+        // check permission
+        val trigger = command1.trigger()
+        if (!command1.roles().contains(user.role)) {
+            return "[$trigger] You have no enough permission to use this command"
+        }
+        logger.info { "User ${user.username} executes command $trigger" }
+        val rawResponse = command1.execute(user, args)
         val sb = StringBuilder()
         // format result
         rawResponse.split("\n").let {
@@ -74,7 +81,7 @@ class HelpCommand(private val commands: Map<String, Command>) : Command {
     override suspend fun execute(user: User, args: List<String>): String {
         if (args.isEmpty()) {
             // return all help message
-            return joinHelpMessage()
+            return joinHelpMessage(user)
         } else if (args.size == 1) {
             val command = commands[args[0]] ?: return "Unknown command"
             return ".${command.trigger()} ${command.usage()} - ${command.description()}"
@@ -82,13 +89,15 @@ class HelpCommand(private val commands: Map<String, Command>) : Command {
         return "Unknown usage"
     }
 
-    private fun joinHelpMessage(): String {
+    private fun joinHelpMessage(user: User): String {
         val sb = StringBuilder()
         sb.append("Welcome to LunarCN! Yet another LunarClient API implementation\n")
             .append("use .help [command] to display the full information of a command\n")
         commands.values.forEach { command ->
-            sb.append(".${command.trigger()} ${command.description()}")
-                .append("\n")
+            if (command.roles().contains(user.role)) {
+                sb.append(".${command.trigger()} ${command.description()}")
+                    .append("\n")
+            }
         }
         sb.append("Have fun with cosmetics!")
         return sb.toString()
