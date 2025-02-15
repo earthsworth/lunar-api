@@ -41,6 +41,7 @@ class SecurityConfig(
 
             authorizeExchange {
                 authorize(pathMatchers("/ws/**", "/ws", "/api/user/register"), permitAll)
+                authorize(pathMatchers("/api/admin/**"), hasAuthority("ADMIN"))
                 authorize(anyExchange, authenticated)
             }
             formLogin {

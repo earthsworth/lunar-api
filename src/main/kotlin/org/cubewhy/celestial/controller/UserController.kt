@@ -35,4 +35,5 @@ class UserController(
         }
         return RestBean.success()
     }
+
 }
