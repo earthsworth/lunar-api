@@ -9,9 +9,11 @@ import com.lunarclient.authenticator.v1.LunarclientAuthenticatorV1
 import com.lunarclient.authenticator.v1.LunarclientAuthenticatorV1.AuthSuccessMessage
 import com.lunarclient.common.v1.LunarclientCommonV1
 import com.lunarclient.common.v1.LunarclientCommonV1.UuidAndUsername
+import com.lunarclient.websocket.conversation.v1.WebsocketConversationV1
 import com.lunarclient.websocket.protocol.v1.WebsocketProtocolV1
 import com.lunarclient.websocket.protocol.v1.WebsocketProtocolV1.WebSocketRpcResponse
 import kotlinx.coroutines.reactive.awaitFirstOrNull
+import org.cubewhy.celestial.entity.Message
 import org.springframework.web.reactive.socket.WebSocketSession
 import reactor.kotlin.core.publisher.toMono
 import java.time.Instant
@@ -98,4 +100,24 @@ fun <T : GeneratedMessage, B : GeneratedMessage.Builder<B>> String.toProtobufMes
     JsonFormat.parser().merge(this, builder)
     @Suppress("UNCHECKED_CAST")
     return builder.build() as T
+}
+
+fun Message.buildBotResponsePush(botUsername: String): List<WebsocketConversationV1.ConversationMessagePush> {
+    return this.content.split("\n").map { line ->
+        WebsocketConversationV1.ConversationMessagePush.newBuilder().apply {
+            this.message = WebsocketConversationV1.ConversationMessage.newBuilder().apply {
+                this.id = this@buildBotResponsePush.lunarclientId.toLunarClientUUID()
+                this.contents =
+                    WebsocketConversationV1.ConversationMessageContents.newBuilder().setPlainText(line)
+                        .build()
+                this.sender = WebsocketConversationV1.ConversationSender.newBuilder().apply {
+                    this.player = botUsername.toLunarClientPlayer(bot = true)
+                }.build()
+                this.sentAt = this@buildBotResponsePush.timestamp.toProtobufType()
+            }.build()
+            this.conversationReference = WebsocketConversationV1.ConversationReference.newBuilder().apply {
+                this.friendUuid = botUuid.toLunarClientUUID()
+            }.build()
+        }.build()
+    }
 }

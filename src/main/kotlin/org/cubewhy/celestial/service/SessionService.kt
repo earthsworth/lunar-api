@@ -15,4 +15,5 @@ interface SessionService {
     suspend fun saveLocation(user: User, location: WebsocketFriendV1.InboundLocation)
     suspend fun getMinecraftVersion(uuid: String): String?
     suspend fun getLocation(uuid: String): LunarclientCommonV1.Location?
+    suspend fun pushAll(func: suspend (User, WebSocketSession) -> Unit)
 }

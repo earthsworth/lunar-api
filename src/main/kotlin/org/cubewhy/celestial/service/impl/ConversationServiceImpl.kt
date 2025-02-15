@@ -68,14 +68,12 @@ class ConversationServiceImpl(
             ).awaitFirst()
             val events = mutableListOf(this.buildConversationMessagePush(savedMessage, user, request))
             events.addAll(
-                this.buildBotResponsePush(
-                    messageRepository.save(
-                        commandService.process(
-                            chatMessage,
-                            user
-                        )
-                    ).awaitFirst()
-                )
+                messageRepository.save(
+                    commandService.process(
+                        chatMessage,
+                        user
+                    )
+                ).awaitFirst().buildBotResponsePush(botUsername)
             )
             return WebsocketResponse.create(
                 WebsocketConversationV1.SendConversationMessageResponse.newBuilder().apply {
@@ -110,26 +108,6 @@ class ConversationServiceImpl(
             status =
                 WebsocketConversationV1.SendConversationMessageResponse_Status.SENDCONVERSATIONMESSAGERESPONSE_STATUS_STATUS_OK
         }.build().toWebsocketResponse()
-    }
-
-    private fun buildBotResponsePush(message: Message): List<WebsocketConversationV1.ConversationMessagePush> {
-        return message.content.split("\n").map { line ->
-            WebsocketConversationV1.ConversationMessagePush.newBuilder().apply {
-                this.message = WebsocketConversationV1.ConversationMessage.newBuilder().apply {
-                    this.id = message.lunarclientId.toLunarClientUUID()
-                    this.contents =
-                        WebsocketConversationV1.ConversationMessageContents.newBuilder().setPlainText(line)
-                            .build()
-                    this.sender = WebsocketConversationV1.ConversationSender.newBuilder().apply {
-                        this.player = botUsername.toLunarClientPlayer(bot = true)
-                    }.build()
-                    this.sentAt = message.timestamp.toProtobufType()
-                }.build()
-                this.conversationReference = WebsocketConversationV1.ConversationReference.newBuilder().apply {
-                    this.friendUuid = botUuid.toLunarClientUUID()
-                }.build()
-            }.build()
-        }
     }
 
     private fun buildConversationMessagePush(

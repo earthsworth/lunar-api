@@ -10,6 +10,7 @@ import org.cubewhy.celestial.Federation.FederationRequest
 import org.cubewhy.celestial.entity.OnlineUser
 import org.cubewhy.celestial.entity.User
 import org.cubewhy.celestial.handler.getSessionLocally
+import org.cubewhy.celestial.repository.UserRepository
 import org.cubewhy.celestial.service.SessionService
 import org.cubewhy.celestial.util.Const.SHARED_SESSION
 import org.cubewhy.celestial.util.toJson
@@ -18,10 +19,7 @@ import org.reactivestreams.Publisher
 import org.springframework.amqp.rabbit.annotation.RabbitListener
 import org.springframework.core.io.buffer.DataBuffer
 import org.springframework.core.io.buffer.DataBufferFactory
-import org.springframework.data.redis.core.ReactiveRedisTemplate
-import org.springframework.data.redis.core.deleteAndAwait
-import org.springframework.data.redis.core.getAndAwait
-import org.springframework.data.redis.core.setAndAwait
+import org.springframework.data.redis.core.*
 import org.springframework.rabbit.stream.producer.RabbitStreamTemplate
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.socket.CloseStatus
@@ -39,7 +37,8 @@ import java.util.function.Function
 class SessionServiceImpl(
     private val onlineUserRedisTemplate: ReactiveRedisTemplate<String, OnlineUser>,
     private val dataBufferFactory: DataBufferFactory,
-    private val rabbitStreamTemplate: RabbitStreamTemplate
+    private val rabbitStreamTemplate: RabbitStreamTemplate,
+    private val userRepository: UserRepository,
 ) : SessionService {
 
     companion object {
@@ -103,7 +102,23 @@ class SessionServiceImpl(
         onlineUserRedisTemplate.opsForValue().getAndAwait(SHARED_SESSION + uuid)
 
     override suspend fun countAvailableSessions(): Int {
-        return onlineUserRedisTemplate.keys(SHARED_SESSION + "*").collectList().awaitLast().count()
+        return onlineUserRedisTemplate.keys("$SHARED_SESSION*").collectList().awaitLast().count()
+    }
+
+    override suspend fun pushAll(func: suspend (User, WebSocketSession) -> Unit) {
+        // find all sessions
+        val sessionKeys = onlineUserRedisTemplate.keys("$SHARED_SESSION*").collectList().awaitLast()
+        onlineUserRedisTemplate.opsForValue().multiGetAndAwait(sessionKeys).forEach { onlineUser ->
+            // find user
+            val user0 = userRepository.findByUuid(onlineUser!!.userUuid).awaitFirstOrNull()
+            user0?.let { user ->
+                // find session
+                val session0 = this.getSession(onlineUser.userUuid)
+                session0?.let { session ->
+                    func.invoke(user, session)
+                }
+            }
+        }
     }
 
     override suspend fun getSession(uuid: String): WebSocketSession? {
