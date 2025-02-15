@@ -4,6 +4,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import org.cubewhy.celestial.bot.command.Command
 import org.cubewhy.celestial.bot.command.impl.EchoCommand
 import org.cubewhy.celestial.bot.command.impl.ShoutCommand
+import org.cubewhy.celestial.bot.command.impl.ToggleLunarPlusCommand
 import org.cubewhy.celestial.bot.command.impl.WhoamiCommand
 import org.cubewhy.celestial.entity.Message
 import org.cubewhy.celestial.entity.User
@@ -15,6 +16,7 @@ class CommandServiceImpl(
     echoCommand: EchoCommand,
     shoutCommand: ShoutCommand,
     whoamiCommand: WhoamiCommand,
+    toggleLunarPlusCommand: ToggleLunarPlusCommand
 ) : CommandService {
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -27,7 +29,8 @@ class CommandServiceImpl(
         val commandList = listOf(
             echoCommand,
             shoutCommand,
-            whoamiCommand
+            whoamiCommand,
+            toggleLunarPlusCommand
         )
 
         commandList.forEach {

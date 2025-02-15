@@ -10,7 +10,7 @@ class WhoamiCommand : Command {
 
     override fun usage() = ""
 
-    override fun description() = "whoami? 我是谁啊？"
+    override fun description() = "Display your login information"
 
     override suspend fun execute(user: User, args: List<String>): String {
         return "name: ${user.username}, uuid: ${user.uuid}"

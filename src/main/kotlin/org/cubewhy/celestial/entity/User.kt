@@ -63,7 +63,7 @@ data class UserEmoteSettings(
 )
 
 data class UserCosmeticSettings(
-    var lunarPlusColor: Int? = PlusColor.AQUA.color,
+    var lunarPlusColor: Int = 0,
     var clothCloak: Boolean = true,
     var flipShoulderPet: Boolean = false,
     var activeCosmetics: List<Int> = mutableListOf(),
@@ -75,4 +75,9 @@ data class UserCosmeticSettings(
     var showOverLeggings: Boolean = false,
     var equippedCosmetics: List<UserCosmetic> = emptyList(),
     var logoAlwaysShow: Boolean = true
-)
+) {
+    val lunarPlusState: Boolean
+        get() {
+            return lunarPlusColor > 0
+        }
+}

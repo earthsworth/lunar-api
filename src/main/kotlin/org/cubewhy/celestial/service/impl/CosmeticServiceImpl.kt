@@ -6,7 +6,6 @@ import com.lunarclient.websocket.cosmetic.v1.WebsocketCosmeticV1
 import com.opencsv.CSVReader
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.annotation.PostConstruct
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.reactive.awaitFirst
 import kotlinx.coroutines.reactor.mono
 import org.cubewhy.celestial.entity.*
@@ -32,7 +31,6 @@ class CosmeticServiceImpl(
     private val userRepository: UserRepository,
     private val subscriptionService: SubscriptionService,
     private val sessionService: SessionService,
-    private val scope: CoroutineScope
 ) : CosmeticService {
 
     companion object {
@@ -85,11 +83,11 @@ class CosmeticServiceImpl(
         user: User,
         session: WebSocketSession
     ): GeneratedMessage {
-        user.cosmetic.clothCloak = message.settings.clothCloak
         user.cosmetic.equippedCosmetics =
             message.settings.equippedCosmeticsList.map { UserCosmetic(it.cosmeticId, Instant.now(), null, null) }
         user.cosmetic.flipShoulderPet = message.settings.flipShoulderPet
         user.cosmetic.lunarPlusColor = message.settings.plusColor.color
+        user.cosmetic.clothCloak = message.settings.clothCloak
         user.cosmetic.showHatsOverHelmet = message.settings.showHatsOverHelmet
         user.cosmetic.showHatsOverSkinLayer = message.settings.showHatsOverSkinLayer
         user.cosmetic.hatHeightOffsetCount = message.settings.hatHeightOffsetCount
@@ -133,7 +131,9 @@ class CosmeticServiceImpl(
             settings = buildCosmeticSettings(user)
             logoColor = user.role.toLunarClientColor()
             rankName = user.role.rank
-            addAllAvailableLunarPlusColors(PlusColor.entries.map { it.toLunarClientColor() })
+            if (user.cosmetic.lunarPlusState) {
+                addAllAvailableLunarPlusColors(PlusColor.entries.map { it.toLunarClientColor() })
+            }
             addAllOwnedCosmeticIds(cosmeticList.map { it.cosmeticId })
             addAllOwnedCosmetics(cosmeticList.map { it.toUserCosmetic().toOwnedCosmetic() })
             logoAlwaysShow = user.cosmetic.logoAlwaysShow
@@ -143,7 +143,6 @@ class CosmeticServiceImpl(
 
     private fun buildCosmeticSettings(user: User): WebsocketCosmeticV1.CustomizableCosmeticSettings {
         return WebsocketCosmeticV1.CustomizableCosmeticSettings.newBuilder().apply {
-            clothCloak = user.cosmetic.clothCloak
             addAllActiveCosmeticIds(user.cosmetic.activeCosmetics.map { it })
             addAllEquippedCosmetics(user.cosmetic.equippedCosmetics.map { it.toEquippedCosmetic() })
             flipShoulderPet = user.cosmetic.flipShoulderPet
@@ -152,7 +151,10 @@ class CosmeticServiceImpl(
             showOverChestplate = user.cosmetic.showOverChestplate
             showOverLeggings = user.cosmetic.showOverLeggings
             showOverBoots = user.cosmetic.showOverBoots
-            user.cosmetic.lunarPlusColor?.let { setPlusColor(it.toLunarClientColor()) }
+            if (user.cosmetic.lunarPlusState) {
+                clothCloak = user.cosmetic.clothCloak
+                plusColor = user.cosmetic.lunarPlusColor.toLunarClientColor()
+            }
         }.build()
     }
 

@@ -112,7 +112,9 @@ class FriendServiceImpl(
             this.sentAt = request.timestamp.toProtobufType()
             this.playerLogoColor = recipient.role.toLunarClientColor()
             this.playerRankName = recipient.role.rank
-            recipient.cosmetic.lunarPlusColor?.let { this.playerPlusColor = it.toLunarClientColor() }
+            if (recipient.cosmetic.lunarPlusState) {
+                this.playerPlusColor = recipient.cosmetic.lunarPlusColor.toLunarClientColor()
+            }
         }.build()
     }
 
@@ -267,7 +269,9 @@ class FriendServiceImpl(
             player = friendUser.toLunarClientPlayer()
             rankName = friendUser.role.rank
             friendsSince = friend.timestamp.toProtobufType()
-            friendUser.cosmetic.lunarPlusColor?.let { plusColor = it.toLunarClientColor() }
+            if (friendUser.cosmetic.lunarPlusState) {
+                plusColor = friendUser.cosmetic.lunarPlusColor.toLunarClientColor()
+            }
             logoColor = friendUser.role.toLunarClientColor()
             isRadioPremium = friendUser.radioPremium
             lastVisibleOnline = friendUser.lastSeenAt.toProtobufType()
@@ -293,8 +297,8 @@ class FriendServiceImpl(
             session.pushEvent(WebsocketFriendV1.FriendRequestReceivedPush.newBuilder().apply {
                 sender = user.toLunarClientPlayer()
                 senderLogoColor = user.role.toLunarClientColor()
-                user.cosmetic.lunarPlusColor?.let { color ->
-                    senderPlusColor = color.toLunarClientColor()
+                if (user.cosmetic.lunarPlusState) {
+                    senderPlusColor = user.cosmetic.lunarPlusColor.toLunarClientColor()
                 }
                 senderRankName = user.role.rank
 
