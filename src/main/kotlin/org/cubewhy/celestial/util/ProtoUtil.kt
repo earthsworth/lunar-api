@@ -75,10 +75,15 @@ suspend fun WebSocketSession.pushEvent(event: GeneratedMessage) {
     this.send(this.binaryMessage { it.wrap(payload) }.toMono()).awaitFirstOrNull()
 }
 
-fun String.toLunarClientPlayer(): UuidAndUsername {
-    return UuidAndUsername.newBuilder()
-        .setUsername(this)
-        .build()
+val botUuid: UUID = UUID.fromString("1f133c76-fc28-463c-9611-f0013e68e529")
+
+fun String.toLunarClientPlayer(bot: Boolean = false): UuidAndUsername {
+    return UuidAndUsername.newBuilder().apply {
+        username = this@toLunarClientPlayer
+        if (bot) {
+            uuid = botUuid.toLunarClientUUID()
+        }
+    }.build()
 }
 
 fun GeneratedMessage.toJson(): String = JsonFormat.printer().print(this)
@@ -88,7 +93,6 @@ fun GeneratedMessage.toJson(): String = JsonFormat.printer().print(this)
  *
  * @param builder The protobuf message builder instance.
  * @return The deserialized protobuf message.
- * @throws JsonFormat.ParseException If the JSON string is invalid or cannot be parsed into the protobuf message.
  */
 fun <T : GeneratedMessage, B : GeneratedMessage.Builder<B>> String.toProtobufMessage(builder: B): T {
     JsonFormat.parser().merge(this, builder)

@@ -3,16 +3,11 @@ package org.cubewhy.celestial.bot.command
 import org.cubewhy.celestial.entity.User
 
 interface Command {
-    val name: String
+    fun trigger(): String
+    fun usage(): String
+    fun description(): String
 
-    /**
-     * @sample <user> (user)
-     */
-    val usage: String
+    fun help() = "${trigger()} - ${description()}\n${usage()}"
 
-    /**
-     * process command
-     * @param command full command
-     */
-    fun process(command: String, sender: User): String
+    suspend fun execute(user: User, args: List<String>): String
 }

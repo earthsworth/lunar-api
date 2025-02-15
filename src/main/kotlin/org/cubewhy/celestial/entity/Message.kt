@@ -12,10 +12,16 @@ data class Message(
 
     val lunarclientId: String = UUID.randomUUID().toString(),
 
-    val senderId: String,
+    val senderId: String?, // null to bots
     val targetId: String,
 
-    val message: String,
+    val content: String,
 
     val timestamp: Instant = Instant.now(),
-)
+) {
+    companion object {
+        fun createBotResponse(content: String, recipient: User): Message {
+            return Message(content = content, targetId = recipient.id!!, senderId = null)
+        }
+    }
+}

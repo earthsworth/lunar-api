@@ -161,7 +161,7 @@ class FriendServiceImpl(
     private fun buildBotLocation() = LunarclientCommonV1.Location.newBuilder().apply {
         this.publicServer = LunarclientCommonV1.PublicServer.newBuilder().apply {
             this.serverMappingsId = "localhost"
-            this.name = "lunarclient.top"
+            this.name = "type .help for help"
         }.build()
     }.build()
 
@@ -237,7 +237,7 @@ class FriendServiceImpl(
 
     private fun buildBotFriend(user: User): WebsocketFriendV1.OfflineFriend {
         return WebsocketFriendV1.OfflineFriend.newBuilder().apply {
-            player = botUsername.toLunarClientPlayer()
+            player = botUsername.toLunarClientPlayer(bot = true)
             rankName = "Bot"
             friendsSince = user.createdAt.toProtobufType()
             lastVisibleOnline = Instant.now().toProtobufType()

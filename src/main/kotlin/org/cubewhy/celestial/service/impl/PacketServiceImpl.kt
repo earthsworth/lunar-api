@@ -1,18 +1,15 @@
 package org.cubewhy.celestial.service.impl
 
-import com.google.protobuf.GeneratedMessage
 import com.lunarclient.authenticator.v1.LunarclientAuthenticatorV1
 import com.lunarclient.websocket.handshake.v1.WebsocketHandshakeV1
 import com.lunarclient.websocket.protocol.v1.WebsocketProtocolV1
 import io.github.oshai.kotlinlogging.KotlinLogging
-import org.cubewhy.celestial.entity.OnlineUser
 import org.cubewhy.celestial.entity.User
 import org.cubewhy.celestial.entity.WebsocketResponse
 import org.cubewhy.celestial.entity.emptyWebsocketResponse
 import org.cubewhy.celestial.service.*
 import org.cubewhy.celestial.util.JwtUtil
 import org.cubewhy.celestial.util.toUUIDString
-import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.socket.WebSocketSession
 import reactor.core.publisher.SignalType
@@ -29,7 +26,6 @@ class PacketServiceImpl(
     private val languageService: LanguageService,
     private val conversationService: ConversationService,
     private val jwtUtil: JwtUtil,
-    private val onlineUserRedisTemplate: ReactiveRedisTemplate<String, OnlineUser>,
 ) : PacketService {
     companion object {
         private val logger = KotlinLogging.logger {}
