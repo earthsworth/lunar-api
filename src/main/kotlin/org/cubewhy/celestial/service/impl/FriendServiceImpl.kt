@@ -87,9 +87,11 @@ class FriendServiceImpl(
             // push bot status
             events.add(this.buildOnlineFriendStatusPush(botFriend, bot = true))
         }
-        events.addAll(friends.map { friend ->
+        events.addAll(friends.mapNotNull { friend ->
             // push friend status
-            this.buildOnlineFriendStatusPush(friend.lunarType, friend.friendUser)
+            if (friend.friendUser.status != UserStatus.INVISIBLE) {
+                this.buildOnlineFriendStatusPush(friend.lunarType, friend.friendUser)
+            } else null
         })
 
         val incomingRequests = findAllIncomingFriendRequests(user)
