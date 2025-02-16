@@ -39,6 +39,8 @@ data class User(
     var lastSeenAt: Instant = Instant.now(),
     var allowFriendRequests: Boolean = true,
 
+    var status: UserStatus = UserStatus.ONLINE,
+
     var cosmetic: UserCosmeticSettings = UserCosmeticSettings(),
     var emote: UserEmoteSettings = UserEmoteSettings()
 ) {

@@ -15,7 +15,7 @@ import "google/protobuf/source_context.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/type.proto";
 import "google/protobuf/wrappers.proto";
-        
+
 import "generated/lunarclient_common_v1.proto";
 
 option java_package = "com.lunarclient.authenticator.v1";
@@ -24,14 +24,14 @@ option java_package = "com.lunarclient.authenticator.v1";
 // Analysis
 // 7 packets stored.
 // File name (Generated): lunarclient_authenticator_v1.proto
-        
+
 // Message struct
-        
+
 // From com.lunarclient.authenticator.v1.AuthSuccessMessage
 message AuthSuccessMessage {
-  
-    string jwt = 1; // Type: string
-  
+
+  string jwt = 1; // Type: string
+
 }
 
 // From com.lunarclient.authenticator.v1.ClientboundWebSocketMessage
@@ -44,32 +44,32 @@ message ClientboundWebSocketMessage {
 
 // From com.lunarclient.authenticator.v1.EncryptionFailMessage
 message EncryptionFailMessage {
-  
-    string reason = 1; // Type: string
-  
+
+  string reason = 1; // Type: string
+
 }
 
 // From com.lunarclient.authenticator.v1.EncryptionRequestMessage
 message EncryptionRequestMessage {
-  
-    bytes public_key = 1; // Type: bytes
-    bytes random_bytes = 2; // Type: bytes
-  
+
+  bytes public_key = 1; // Type: bytes
+  bytes random_bytes = 2; // Type: bytes
+
 }
 
 // From com.lunarclient.authenticator.v1.EncryptionResponseMessage
 message EncryptionResponseMessage {
-  
-    bytes secret_key = 1; // Type: bytes
-    bytes public_key = 2; // Type: bytes
-  
+
+  bytes secret_key = 1; // Type: bytes
+  bytes public_key = 2; // Type: bytes
+
 }
 
 // From com.lunarclient.authenticator.v1.HelloMessage
 message HelloMessage {
-  
-  optional  common.v1.UuidAndUsername identity = 1; // Type: com.lunarclient.common.v1.UuidAndUsername
-  
+
+  optional common.v1.UuidAndUsername identity = 1; // Type: com.lunarclient.common.v1.UuidAndUsername
+
 }
 
 // From com.lunarclient.authenticator.v1.ServerboundWebSocketMessage

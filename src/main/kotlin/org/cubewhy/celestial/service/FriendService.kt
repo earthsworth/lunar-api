@@ -19,4 +19,8 @@ interface FriendService : PacketProcessor {
 
     suspend fun hasFriend(user: User, target: User): Boolean
     suspend fun processToggleFriendRequests(message: WebsocketFriendV1.ToggleFriendRequestsRequest, user: User): GeneratedMessage
+    suspend fun processBroadcastStatusChange(
+        message: WebsocketFriendV1.BroadcastStatusChangeRequest,
+        user: User
+    ): GeneratedMessage
 }

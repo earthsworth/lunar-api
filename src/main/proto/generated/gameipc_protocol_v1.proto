@@ -15,7 +15,7 @@ import "google/protobuf/source_context.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/type.proto";
 import "google/protobuf/wrappers.proto";
-        
+
 
 
 option java_package = "com.lunarclient.gameipc.protocol.v1";
@@ -24,9 +24,9 @@ option java_package = "com.lunarclient.gameipc.protocol.v1";
 // Analysis
 // 3 packets stored.
 // File name (Generated): gameipc_protocol_v1.proto
-        
+
 // Message struct
-        
+
 // From com.lunarclient.gameipc.protocol.v1.GameboundIPCMessage
 message GameboundIPCMessage {
   oneof contents {
@@ -37,21 +37,21 @@ message GameboundIPCMessage {
 
 // From com.lunarclient.gameipc.protocol.v1.IPCRpcResponse
 message IPCRpcResponse {
-  
-    bytes request_id = 1; // Type: bytes
-    bytes output = 2; // Type: bytes
-  
+
+  bytes request_id = 1; // Type: bytes
+  bytes output = 2; // Type: bytes
+
 }
 
 // From com.lunarclient.gameipc.protocol.v1.LauncherboundIPCMessage
 message LauncherboundIPCMessage {
-  
-    bytes request_id = 1; // Type: bytes
-    string service = 2; // Type: string
-    string method = 3; // Type: string
-    bytes input = 4; // Type: bytes
-    string full_method = 6; // Type: string
-    string input_name = 7; // Type: string
-    string input_full_name = 8; // Type: string
-  
+
+  bytes request_id = 1; // Type: bytes
+  string service = 2; // Type: string
+  string method = 3; // Type: string
+  bytes input = 4; // Type: bytes
+  string full_method = 6; // Type: string
+  string input_name = 7; // Type: string
+  string input_full_name = 8; // Type: string
+
 }

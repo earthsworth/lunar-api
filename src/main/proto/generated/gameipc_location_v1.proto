@@ -15,7 +15,7 @@ import "google/protobuf/source_context.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/type.proto";
 import "google/protobuf/wrappers.proto";
-        
+
 import "generated/lunarclient_common_v1.proto";
 
 option java_package = "com.lunarclient.gameipc.location.v1";
@@ -24,40 +24,37 @@ option java_package = "com.lunarclient.gameipc.location.v1";
 // Analysis
 // 5 packets stored.
 // File name (Generated): gameipc_location_v1.proto
-        
+
 // Message struct
-        
+
 // From com.lunarclient.gameipc.location.v1.FocusGamePush
 message FocusGamePush {
-  
-  
-  
+
+
 }
 
 // From com.lunarclient.gameipc.location.v1.UpdateFocusRequest
 message UpdateFocusRequest {
-  
-    bool focused = 1; // Type: bool
-  
+
+  bool focused = 1; // Type: bool
+
 }
 
 // From com.lunarclient.gameipc.location.v1.UpdateFocusResponse
 message UpdateFocusResponse {
-  
-  
-  
+
+
 }
 
 // From com.lunarclient.gameipc.location.v1.UpdateLocationRequest
 message UpdateLocationRequest {
-  
-  optional  common.v1.Location location = 1; // Type: com.lunarclient.common.v1.Location
-  
+
+  optional common.v1.Location location = 1; // Type: com.lunarclient.common.v1.Location
+
 }
 
 // From com.lunarclient.gameipc.location.v1.UpdateLocationResponse
 message UpdateLocationResponse {
-  
-  
-  
+
+
 }

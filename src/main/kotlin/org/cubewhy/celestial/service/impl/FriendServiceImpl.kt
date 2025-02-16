@@ -62,6 +62,11 @@ class FriendServiceImpl(
                 user
             ).toWebsocketResponse()
 
+            "BroadcastStatusChange" -> this.processBroadcastStatusChange(
+                WebsocketFriendV1.BroadcastStatusChangeRequest.parseFrom(payload),
+                user
+            ).toWebsocketResponse()
+
             else -> emptyWebsocketResponse()
 
         }
@@ -80,11 +85,11 @@ class FriendServiceImpl(
         val events = mutableListOf<GeneratedMessage>()
         if (botFriend != null) {
             // push bot status
-            events.add(this.buildOnlineFriendStatusPush(botFriend, true))
+            events.add(this.buildOnlineFriendStatusPush(botFriend, bot = true))
         }
         events.addAll(friends.map { friend ->
             // push friend status
-            this.buildOnlineFriendStatusPush(friend)
+            this.buildOnlineFriendStatusPush(friend.lunarType, friend.friendUser)
         })
 
         val incomingRequests = findAllIncomingFriendRequests(user)
@@ -92,7 +97,8 @@ class FriendServiceImpl(
         return WebsocketResponse.create(WebsocketFriendV1.LoginResponse.newBuilder().apply {
             this.allowFriendRequests = user.allowFriendRequests
             botFriend?.let { this.addOfflineFriends(it) }
-            this.addAllOfflineFriends(friends)
+            this.addAllOfflineFriends(friends.map { it.lunarType })
+            this.currentStatus = user.status.protoType
             // todo friend requests
             this.addAllInboundFriendRequests(incomingRequests.map { request ->
                 userRepository.findById(request.senderId).awaitFirst().toLunarClientPlayer()
@@ -128,17 +134,18 @@ class FriendServiceImpl(
             .collectList()
             .awaitLast()
 
-
     private suspend fun buildOnlineFriendStatusPush(
         friend: WebsocketFriendV1.OfflineFriend,
+        friendUser: User? = null,
         bot: Boolean = false
     ): WebsocketFriendV1.FriendStatusPush =
         WebsocketFriendV1.FriendStatusPush.newBuilder().apply {
-            this.onlineFriend = this@FriendServiceImpl.buildOnlineFriend(friend, bot)
+            this.onlineFriend = this@FriendServiceImpl.buildOnlineFriend(friend, friendUser, bot)
         }.build()
 
     private suspend fun buildOnlineFriend(
         friend: WebsocketFriendV1.OfflineFriend,
+        friendUser: User? = null,
         bot: Boolean = false
     ): WebsocketFriendV1.OnlineFriend {
         val friendUuid = friend.player.uuid.toUUIDString()
@@ -147,6 +154,12 @@ class FriendServiceImpl(
             this.plusColor = friend.plusColor
             this.friendsSince = friend.friendsSince
             this.logoColor = friend.logoColor
+            friendUser?.let {
+                this.status = it.status.protoType
+            }
+            if (bot) {
+                this.status = UserStatus.ONLINE.protoType
+            }
             // todo modpack
             sessionService.getMinecraftVersion(friendUuid)?.let {
                 this.minecraftVersion = LunarclientCommonV1.MinecraftVersion.newBuilder().setEnum(it).build()
@@ -237,6 +250,23 @@ class FriendServiceImpl(
         return WebsocketFriendV1.ToggleFriendRequestsResponse.getDefaultInstance()
     }
 
+    override suspend fun processBroadcastStatusChange(
+        message: WebsocketFriendV1.BroadcastStatusChangeRequest,
+        user: User
+    ): GeneratedMessage {
+        // save status
+        user.status = UserStatus.resolve(message.newStatus)
+        userRepository.save(user).awaitFirst()
+        logger.info { "User ${user.username} updated its status ${user.status}" }
+        // broadcast to other users
+        this.findFriends(user).forEach { target ->
+            // push event
+            sessionService.getSession(target.friendUser)
+                ?.pushEvent(this.buildOnlineFriendStatusPush(target.lunarType, user))
+        }
+        return WebsocketFriendV1.BroadcastStatusChangeResponse.getDefaultInstance()
+    }
+
     private fun buildBotFriend(user: User): WebsocketFriendV1.OfflineFriend {
         return WebsocketFriendV1.OfflineFriend.newBuilder().apply {
             player = botUsername.toLunarClientPlayer(bot = true)
@@ -246,14 +276,17 @@ class FriendServiceImpl(
         }.build()
     }
 
-    private suspend fun findFriends(user: User): List<WebsocketFriendV1.OfflineFriend> {
+    private suspend fun findFriends(user: User): List<InternalFriendDTO> {
         return friendRepository.findFriendRelations(user.id!!)
             .flatMap { friend ->
                 userRepository.findById(friend.getTargetId(user))
                     .map { targetUser ->
-                        buildOfflineFriend(
-                            targetUser,
-                            friend
+                        InternalFriendDTO(
+                            lunarType = buildOfflineFriend(
+                                targetUser,
+                                friend
+                            ),
+                            friendUser = targetUser
                         )
                     }
             }
@@ -361,3 +394,8 @@ class FriendServiceImpl(
         }
     }
 }
+
+private data class InternalFriendDTO(
+    val lunarType: WebsocketFriendV1.OfflineFriend,
+    val friendUser: User
+)

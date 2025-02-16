@@ -15,7 +15,7 @@ import "google/protobuf/source_context.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/type.proto";
 import "google/protobuf/wrappers.proto";
-        
+
 
 
 option java_package = "com.lunarclient.apollo.common.v1";
@@ -24,77 +24,77 @@ option java_package = "com.lunarclient.apollo.common.v1";
 // Analysis
 // 18 packets stored.
 // File name (Generated): apollo_common_v1.proto
-        
+
 // Message struct
-        
+
 // From com.lunarclient.apollo.common.v1.AdvancedResourceLocationIcon
 message AdvancedResourceLocationIcon {
-  
-    string resource_location = 1; // Type: string
-    float width = 2; // Type: float
-    float height = 3; // Type: float
-    float min_u = 4; // Type: float
-    float max_u = 5; // Type: float
-    float min_v = 6; // Type: float
-    float max_v = 7; // Type: float
-  
+
+  string resource_location = 1; // Type: string
+  float width = 2; // Type: float
+  float height = 3; // Type: float
+  float min_u = 4; // Type: float
+  float max_u = 5; // Type: float
+  float min_v = 6; // Type: float
+  float max_v = 7; // Type: float
+
 }
 
 // From com.lunarclient.apollo.common.v1.BlockLocation
 message BlockLocation {
-  
-    string world = 1; // Type: string
-    int32 x = 2; // Type: int32
-    int32 y = 3; // Type: int32
-    int32 z = 4; // Type: int32
-  
+
+  string world = 1; // Type: string
+  int32 x = 2; // Type: int32
+  int32 y = 3; // Type: int32
+  int32 z = 4; // Type: int32
+
 }
 
 // From com.lunarclient.apollo.common.v1.Color
 message Color {
-  
-    int32 color = 1; // Type: int32
-  
+
+  int32 color = 1; // Type: int32
+
 }
 
 // From com.lunarclient.apollo.common.v1.Component
 message Component {
-  
-    string content = 1; // Type: string
-  optional  common.v1.Color color = 2; // Type: com.lunarclient.apollo.common.v1.Color
-   repeated common.v1.Component_TextDecorator decorators = 3; // Type: com.lunarclient.apollo.common.v1.Component_TextDecorator
-   repeated common.v1.Component children = 4; // Type: com.lunarclient.apollo.common.v1.Component
-  
+
+  string content = 1; // Type: string
+  optional common.v1.Color color = 2; // Type: com.lunarclient.apollo.common.v1.Color
+  repeated common.v1.Component_TextDecorator decorators = 3; // Type: com.lunarclient.apollo.common.v1.Component_TextDecorator
+  repeated common.v1.Component children = 4; // Type: com.lunarclient.apollo.common.v1.Component
+
 }
 
 // From com.lunarclient.apollo.common.v1.Cuboid2D
 message Cuboid2D {
-  
-    double min_x = 1; // Type: double
-    double min_z = 2; // Type: double
-    double max_x = 3; // Type: double
-    double max_z = 4; // Type: double
-  
+
+  double min_x = 1; // Type: double
+  double min_z = 2; // Type: double
+  double max_x = 3; // Type: double
+  double max_z = 4; // Type: double
+
 }
 
 // From com.lunarclient.apollo.common.v1.Cuboid3D
 message Cuboid3D {
-  
-    double min_x = 1; // Type: double
-    double min_y = 2; // Type: double
-    double min_z = 3; // Type: double
-    double max_x = 4; // Type: double
-    double max_y = 5; // Type: double
-    double max_z = 6; // Type: double
-  
+
+  double min_x = 1; // Type: double
+  double min_y = 2; // Type: double
+  double min_z = 3; // Type: double
+  double max_x = 4; // Type: double
+  double max_y = 5; // Type: double
+  double max_z = 6; // Type: double
+
 }
 
 // From com.lunarclient.apollo.common.v1.EntityId
 message EntityId {
-  
-    int32 entity_id = 1; // Type: int32
-  optional  common.v1.Uuid entity_uuid = 2; // Type: com.lunarclient.apollo.common.v1.Uuid
-  
+
+  int32 entity_id = 1; // Type: int32
+  optional common.v1.Uuid entity_uuid = 2; // Type: com.lunarclient.apollo.common.v1.Uuid
+
 }
 
 // From com.lunarclient.apollo.common.v1.Icon
@@ -117,52 +117,52 @@ message ItemStackIcon {
 
 // From com.lunarclient.apollo.common.v1.Location
 message Location {
-  
-    string world = 1; // Type: string
-    double x = 2; // Type: double
-    double y = 3; // Type: double
-    double z = 4; // Type: double
-  
+
+  string world = 1; // Type: string
+  double x = 2; // Type: double
+  double y = 3; // Type: double
+  double z = 4; // Type: double
+
 }
 
 // From com.lunarclient.apollo.common.v1.LunarClientVersion
 message LunarClientVersion {
-  
-    string git_branch = 1; // Type: string
-    string git_commit = 2; // Type: string
-    string semver = 3; // Type: string
-  
+
+  string git_branch = 1; // Type: string
+  string git_commit = 2; // Type: string
+  string semver = 3; // Type: string
+
 }
 
 // From com.lunarclient.apollo.common.v1.MinecraftVersion
 message MinecraftVersion {
-  
-    string enum = 1; // Type: string
-  
+
+  string enum = 1; // Type: string
+
 }
 
 // From com.lunarclient.apollo.common.v1.PlayerLocation
 message PlayerLocation {
-  
-  optional  common.v1.Location location = 1; // Type: com.lunarclient.apollo.common.v1.Location
-    float yaw = 2; // Type: float
-    float pitch = 3; // Type: float
-  
+
+  optional common.v1.Location location = 1; // Type: com.lunarclient.apollo.common.v1.Location
+  float yaw = 2; // Type: float
+  float pitch = 3; // Type: float
+
 }
 
 // From com.lunarclient.apollo.common.v1.SimpleResourceLocationIcon
 message SimpleResourceLocationIcon {
-  
-    string resource_location = 1; // Type: string
-    int32 size = 2; // Type: int32
-  
+
+  string resource_location = 1; // Type: string
+  int32 size = 2; // Type: int32
+
 }
 
 // From com.lunarclient.apollo.common.v1.SimpleResourceLocationSound
 message SimpleResourceLocationSound {
-  
-    string resource_location = 1; // Type: string
-  
+
+  string resource_location = 1; // Type: string
+
 }
 
 // From com.lunarclient.apollo.common.v1.Sound
@@ -174,10 +174,10 @@ message Sound {
 
 // From com.lunarclient.apollo.common.v1.Uuid
 message Uuid {
-  
-    fixed64 high64 = 1; // Type: fixed64
-    fixed64 low64 = 2; // Type: fixed64
-  
+
+  fixed64 high64 = 1; // Type: fixed64
+  fixed64 low64 = 2; // Type: fixed64
+
 }
 
 // From com.lunarclient.apollo.common.v1.Component$TextDecorator

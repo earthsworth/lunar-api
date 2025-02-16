@@ -15,7 +15,7 @@ import "google/protobuf/source_context.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/type.proto";
 import "google/protobuf/wrappers.proto";
-        
+
 
 
 option java_package = "com.lunarclient.websocket.performance.v1";
@@ -24,147 +24,143 @@ option java_package = "com.lunarclient.websocket.performance.v1";
 // Analysis
 // 19 packets stored.
 // File name (Generated): websocket_performance_v1.proto
-        
+
 // Message struct
-        
+
 // From com.lunarclient.websocket.performance.v1.CompleteJfrUploadRequest
 message CompleteJfrUploadRequest {
-  
-    string upload_id = 1; // Type: string
-  
+
+  string upload_id = 1; // Type: string
+
 }
 
 // From com.lunarclient.websocket.performance.v1.CompleteJfrUploadResponse
 message CompleteJfrUploadResponse {
-  
-  
-  
+
+
 }
 
 // From com.lunarclient.websocket.performance.v1.RecordPerfSettingsRequest
 message RecordPerfSettingsRequest {
-  
-    int32 width = 1; // Type: int32
-    int32 height = 2; // Type: int32
-    bool fullscreen = 3; // Type: bool
-    bool vsync = 4; // Type: bool
-    bool smooth_lighting = 5; // Type: bool
-    bool entity_shadows = 6; // Type: bool
-    int32 max_framerate = 7; // Type: int32
-    performance.v1.RecordPerfSettingsRequest_GraphicsStatus graphics_status = 8; // Type: com.lunarclient.websocket.performance.v1.RecordPerfSettingsRequest_GraphicsStatus
-    performance.v1.RecordPerfSettingsRequest_ChunkBuilder chunk_builder = 9; // Type: com.lunarclient.websocket.performance.v1.RecordPerfSettingsRequest_ChunkBuilder
-    performance.v1.RecordPerfSettingsRequest_CloudsMode clouds = 10; // Type: com.lunarclient.websocket.performance.v1.RecordPerfSettingsRequest_CloudsMode
-    performance.v1.RecordPerfSettingsRequest_ParticlesMode particles = 11; // Type: com.lunarclient.websocket.performance.v1.RecordPerfSettingsRequest_ParticlesMode
-    int32 render_distance = 12; // Type: int32
-    int32 simulated_distance = 13; // Type: int32
-    int32 entity_distance = 14; // Type: int32
-    int32 biome_blend = 15; // Type: int32
-    int32 fov = 16; // Type: int32
-    bool hud_caching = 17; // Type: bool
-    bool particle_physics = 18; // Type: bool
-    performance.v1.RecordPerfSettingsRequest_LazyChunkLoading lazy_chunk_loading = 19; // Type: com.lunarclient.websocket.performance.v1.RecordPerfSettingsRequest_LazyChunkLoading
-    bool turbo_entities = 20; // Type: bool
-    int32 turbo_entities_rate = 21; // Type: int32
-    bool turbo_block_entities = 22; // Type: bool
-    int32 turbo_block_entities_rate = 23; // Type: int32
-    bool turbo_block_entities_far = 24; // Type: bool
-  
+
+  int32 width = 1; // Type: int32
+  int32 height = 2; // Type: int32
+  bool fullscreen = 3; // Type: bool
+  bool vsync = 4; // Type: bool
+  bool smooth_lighting = 5; // Type: bool
+  bool entity_shadows = 6; // Type: bool
+  int32 max_framerate = 7; // Type: int32
+  performance.v1.RecordPerfSettingsRequest_GraphicsStatus graphics_status = 8; // Type: com.lunarclient.websocket.performance.v1.RecordPerfSettingsRequest_GraphicsStatus
+  performance.v1.RecordPerfSettingsRequest_ChunkBuilder chunk_builder = 9; // Type: com.lunarclient.websocket.performance.v1.RecordPerfSettingsRequest_ChunkBuilder
+  performance.v1.RecordPerfSettingsRequest_CloudsMode clouds = 10; // Type: com.lunarclient.websocket.performance.v1.RecordPerfSettingsRequest_CloudsMode
+  performance.v1.RecordPerfSettingsRequest_ParticlesMode particles = 11; // Type: com.lunarclient.websocket.performance.v1.RecordPerfSettingsRequest_ParticlesMode
+  int32 render_distance = 12; // Type: int32
+  int32 simulated_distance = 13; // Type: int32
+  int32 entity_distance = 14; // Type: int32
+  int32 biome_blend = 15; // Type: int32
+  int32 fov = 16; // Type: int32
+  bool hud_caching = 17; // Type: bool
+  bool particle_physics = 18; // Type: bool
+  performance.v1.RecordPerfSettingsRequest_LazyChunkLoading lazy_chunk_loading = 19; // Type: com.lunarclient.websocket.performance.v1.RecordPerfSettingsRequest_LazyChunkLoading
+  bool turbo_entities = 20; // Type: bool
+  int32 turbo_entities_rate = 21; // Type: int32
+  bool turbo_block_entities = 22; // Type: bool
+  int32 turbo_block_entities_rate = 23; // Type: int32
+  bool turbo_block_entities_far = 24; // Type: bool
+
 }
 
 // From com.lunarclient.websocket.performance.v1.RecordPerfSettingsResponse
 message RecordPerfSettingsResponse {
-  
-  
-  
+
+
 }
 
 // From com.lunarclient.websocket.performance.v1.RecordPerfSnapshotRequest$AverageGroup
 message RecordPerfSnapshotRequest_AverageGroup {
-  
-    float average = 1; // Type: float
-    int32 high = 2; // Type: int32
-    int32 low = 3; // Type: int32
-  
+
+  float average = 1; // Type: float
+  int32 high = 2; // Type: int32
+  int32 low = 3; // Type: int32
+
 }
 
 // From com.lunarclient.websocket.performance.v1.RecordPerfSnapshotRequest
 message RecordPerfSnapshotRequest {
-  
-    int32 fps = 1; // Type: int32
-    int32 rendered_chunk_sections = 2; // Type: int32
-    int32 loaded_chunks = 3; // Type: int32
-    int32 rendered_entities = 4; // Type: int32
-    int32 rendered_players = 5; // Type: int32
-    int32 rendered_particles = 6; // Type: int32
-    int32 rendered_block_entities = 22; // Type: int32
-    int32 free_memory_kb = 7; // Type: int32
-    int32 total_memory_kb = 8; // Type: int32
-    int32 max_memory_kb = 9; // Type: int32
-    float gpu_usage = 10; // Type: float
-    float frametime = 15; // Type: float
-    int32 direct_memory_kb = 17; // Type: int32
-    int32 off_heap_memory_kb = 18; // Type: int32
-    int32 lunar_huds = 11; // Type: int32
-    int32 rendered_geckolib_cosmetics = 12; // Type: int32
-    int32 rendered_cosmetics = 13; // Type: int32
-    int32 rendered_emotes = 14; // Type: int32
-    int32 rendered_turbo_entities = 16; // Type: int32
-    int32 rendered_turbo_block_entities = 21; // Type: int32
-    bool using_external_shaders = 19; // Type: bool
-  optional  performance.v1.RecordPerfSnapshotRequest_AverageGroup average_fps = 20; // Type: com.lunarclient.websocket.performance.v1.RecordPerfSnapshotRequest_AverageGroup
-  
+
+  int32 fps = 1; // Type: int32
+  int32 rendered_chunk_sections = 2; // Type: int32
+  int32 loaded_chunks = 3; // Type: int32
+  int32 rendered_entities = 4; // Type: int32
+  int32 rendered_players = 5; // Type: int32
+  int32 rendered_particles = 6; // Type: int32
+  int32 rendered_block_entities = 22; // Type: int32
+  int32 free_memory_kb = 7; // Type: int32
+  int32 total_memory_kb = 8; // Type: int32
+  int32 max_memory_kb = 9; // Type: int32
+  float gpu_usage = 10; // Type: float
+  float frametime = 15; // Type: float
+  int32 direct_memory_kb = 17; // Type: int32
+  int32 off_heap_memory_kb = 18; // Type: int32
+  int32 lunar_huds = 11; // Type: int32
+  int32 rendered_geckolib_cosmetics = 12; // Type: int32
+  int32 rendered_cosmetics = 13; // Type: int32
+  int32 rendered_emotes = 14; // Type: int32
+  int32 rendered_turbo_entities = 16; // Type: int32
+  int32 rendered_turbo_block_entities = 21; // Type: int32
+  bool using_external_shaders = 19; // Type: bool
+  optional performance.v1.RecordPerfSnapshotRequest_AverageGroup average_fps = 20; // Type: com.lunarclient.websocket.performance.v1.RecordPerfSnapshotRequest_AverageGroup
+
 }
 
 // From com.lunarclient.websocket.performance.v1.RecordPerfSnapshotResponse
 message RecordPerfSnapshotResponse {
-  
-  
-  
+
+
 }
 
 // From com.lunarclient.websocket.performance.v1.StartJfrProfilePush
 message StartJfrProfilePush {
-  
-  optional  google.protobuf.Duration duration = 1; // Type: google.protobuf.Duration
-  
+
+  optional google.protobuf.Duration duration = 1; // Type: google.protobuf.Duration
+
 }
 
 // From com.lunarclient.websocket.performance.v1.StartJfrUploadRequest$File
 message StartJfrUploadRequest_File {
-  
-    string name = 1; // Type: string
-  
+
+  string name = 1; // Type: string
+
 }
 
 // From com.lunarclient.websocket.performance.v1.StartJfrUploadRequest
 message StartJfrUploadRequest {
-  
-   repeated performance.v1.StartJfrUploadRequest_File files = 1; // Type: com.lunarclient.websocket.performance.v1.StartJfrUploadRequest_File
-  
+
+  repeated performance.v1.StartJfrUploadRequest_File files = 1; // Type: com.lunarclient.websocket.performance.v1.StartJfrUploadRequest_File
+
 }
 
 // From com.lunarclient.websocket.performance.v1.StartJfrUploadResponse$File
 message StartJfrUploadResponse_File {
-  
-    string name = 1; // Type: string
-    string upload_url = 2; // Type: string
-  
+
+  string name = 1; // Type: string
+  string upload_url = 2; // Type: string
+
 }
 
 // From com.lunarclient.websocket.performance.v1.StartJfrUploadResponse
 message StartJfrUploadResponse {
-  
-   repeated performance.v1.StartJfrUploadResponse_File files = 1; // Type: com.lunarclient.websocket.performance.v1.StartJfrUploadResponse_File
-    string upload_id = 2; // Type: string
-    performance.v1.StartJfrUploadResponse_Status status = 3; // Type: com.lunarclient.websocket.performance.v1.StartJfrUploadResponse_Status
-  
+
+  repeated performance.v1.StartJfrUploadResponse_File files = 1; // Type: com.lunarclient.websocket.performance.v1.StartJfrUploadResponse_File
+  string upload_id = 2; // Type: string
+  performance.v1.StartJfrUploadResponse_Status status = 3; // Type: com.lunarclient.websocket.performance.v1.StartJfrUploadResponse_Status
+
 }
 
 // From com.lunarclient.websocket.performance.v1.StopJfrProfilePush
 message StopJfrProfilePush {
-  
-  
-  
+
+
 }
 
 // From com.lunarclient.websocket.performance.v1.RecordPerfSettingsRequest$ChunkBuilder

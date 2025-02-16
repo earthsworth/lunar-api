@@ -15,7 +15,7 @@ import "google/protobuf/source_context.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/type.proto";
 import "google/protobuf/wrappers.proto";
-        
+
 
 
 option java_package = "com.lunarclient.websocket.analytics.v1";
@@ -24,44 +24,42 @@ option java_package = "com.lunarclient.websocket.analytics.v1";
 // Analysis
 // 6 packets stored.
 // File name (Generated): websocket_analytics_v1.proto
-        
+
 // Message struct
-        
+
 // From com.lunarclient.websocket.analytics.v1.CounterUpdate
 message CounterUpdate {
-  
-    string counter = 1; // Type: string
-    int32 delta = 2; // Type: int32
-  
+
+  string counter = 1; // Type: string
+  int32 delta = 2; // Type: int32
+
 }
 
 // From com.lunarclient.websocket.analytics.v1.RecordCountersRequest
 message RecordCountersRequest {
-  
-   repeated analytics.v1.CounterUpdate updates = 1; // Type: com.lunarclient.websocket.analytics.v1.CounterUpdate
-  
+
+  repeated analytics.v1.CounterUpdate updates = 1; // Type: com.lunarclient.websocket.analytics.v1.CounterUpdate
+
 }
 
 // From com.lunarclient.websocket.analytics.v1.RecordCountersResponse
 message RecordCountersResponse {
-  
-  
-  
+
+
 }
 
 // From com.lunarclient.websocket.analytics.v1.RecordPinnedServerInteractionRequest
 message RecordPinnedServerInteractionRequest {
-  
-    string server_ip = 1; // Type: string
-    analytics.v1.RecordPinnedServerInteractionRequest_InteractionType interaction_type = 2; // Type: com.lunarclient.websocket.analytics.v1.RecordPinnedServerInteractionRequest_InteractionType
-  
+
+  string server_ip = 1; // Type: string
+  analytics.v1.RecordPinnedServerInteractionRequest_InteractionType interaction_type = 2; // Type: com.lunarclient.websocket.analytics.v1.RecordPinnedServerInteractionRequest_InteractionType
+
 }
 
 // From com.lunarclient.websocket.analytics.v1.RecordPinnedServerInteractionResponse
 message RecordPinnedServerInteractionResponse {
-  
-  
-  
+
+
 }
 
 // From com.lunarclient.websocket.analytics.v1.RecordPinnedServerInteractionRequest$InteractionType

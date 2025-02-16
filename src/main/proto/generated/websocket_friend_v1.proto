@@ -15,7 +15,7 @@ import "google/protobuf/source_context.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/type.proto";
 import "google/protobuf/wrappers.proto";
-        
+
 import "generated/lunarclient_common_v1.proto";
 import "generated/websocket_hostedworld_v1.proto";
 
@@ -25,173 +25,169 @@ option java_package = "com.lunarclient.websocket.friend.v1";
 // Analysis
 // 53 packets stored.
 // File name (Generated): websocket_friend_v1.proto
-        
+
 // Message struct
-        
+
 // From com.lunarclient.websocket.friend.v1.AcceptFriendRequestRequest
 message AcceptFriendRequestRequest {
-  
-  optional  common.v1.Uuid sender_uuid = 1; // Type: com.lunarclient.common.v1.Uuid
-  
+
+  optional common.v1.Uuid sender_uuid = 1; // Type: com.lunarclient.common.v1.Uuid
+
 }
 
 // From com.lunarclient.websocket.friend.v1.AcceptFriendRequestResponse
 message AcceptFriendRequestResponse {
-  
-    friend.v1.AcceptFriendRequestResponse_Status status = 1; // Type: com.lunarclient.websocket.friend.v1.AcceptFriendRequestResponse_Status
-  optional  friend.v1.OfflineFriend offline_friend = 2; // Type: com.lunarclient.websocket.friend.v1.OfflineFriend
-  
+
+  friend.v1.AcceptFriendRequestResponse_Status status = 1; // Type: com.lunarclient.websocket.friend.v1.AcceptFriendRequestResponse_Status
+  optional friend.v1.OfflineFriend offline_friend = 2; // Type: com.lunarclient.websocket.friend.v1.OfflineFriend
+
 }
 
 // From com.lunarclient.websocket.friend.v1.AddFriendPinRequest
 message AddFriendPinRequest {
-  
-  optional  common.v1.Uuid target_uuid = 1; // Type: com.lunarclient.common.v1.Uuid
-  
+
+  optional common.v1.Uuid target_uuid = 1; // Type: com.lunarclient.common.v1.Uuid
+
 }
 
 // From com.lunarclient.websocket.friend.v1.AddFriendPinResponse
 message AddFriendPinResponse {
-  
-    friend.v1.AddFriendPinResponse_Status status = 1; // Type: com.lunarclient.websocket.friend.v1.AddFriendPinResponse_Status
-  
+
+  friend.v1.AddFriendPinResponse_Status status = 1; // Type: com.lunarclient.websocket.friend.v1.AddFriendPinResponse_Status
+
 }
 
 // From com.lunarclient.websocket.friend.v1.BroadcastLocationChangeRequest
 message BroadcastLocationChangeRequest {
-  
-  optional  friend.v1.InboundLocation new_location = 1; // Type: com.lunarclient.websocket.friend.v1.InboundLocation
-    friend.v1.BroadcastLocationChangeRequest_Trigger trigger = 2; // Type: com.lunarclient.websocket.friend.v1.BroadcastLocationChangeRequest_Trigger
-  
+
+  optional friend.v1.InboundLocation new_location = 1; // Type: com.lunarclient.websocket.friend.v1.InboundLocation
+  friend.v1.BroadcastLocationChangeRequest_Trigger trigger = 2; // Type: com.lunarclient.websocket.friend.v1.BroadcastLocationChangeRequest_Trigger
+
 }
 
 // From com.lunarclient.websocket.friend.v1.BroadcastLocationChangeResponse
 message BroadcastLocationChangeResponse {
-  
-  optional  common.v1.Location new_location = 1; // Type: com.lunarclient.common.v1.Location
-  
+
+  optional common.v1.Location new_location = 1; // Type: com.lunarclient.common.v1.Location
+
 }
 
 // From com.lunarclient.websocket.friend.v1.BroadcastServerKickRequest
 message BroadcastServerKickRequest {
-  
-    string kick_reason = 1; // Type: string
-  
+
+  string kick_reason = 1; // Type: string
+
 }
 
 // From com.lunarclient.websocket.friend.v1.BroadcastServerKickResponse
 message BroadcastServerKickResponse {
-  
-  
-  
+
+
 }
 
 // From com.lunarclient.websocket.friend.v1.BroadcastStatusChangeRequest
 message BroadcastStatusChangeRequest {
-  
-    friend.v1.OnlineFriendStatus new_status = 1; // Type: com.lunarclient.websocket.friend.v1.OnlineFriendStatus
-  
+
+  friend.v1.OnlineFriendStatus new_status = 1; // Type: com.lunarclient.websocket.friend.v1.OnlineFriendStatus
+
 }
 
 // From com.lunarclient.websocket.friend.v1.BroadcastStatusChangeResponse
 message BroadcastStatusChangeResponse {
-  
-  
-  
+
+
 }
 
 // From com.lunarclient.websocket.friend.v1.CancelFriendRequestRequest
 message CancelFriendRequestRequest {
-  
-  optional  common.v1.Uuid target_uuid = 1; // Type: com.lunarclient.common.v1.Uuid
-  
+
+  optional common.v1.Uuid target_uuid = 1; // Type: com.lunarclient.common.v1.Uuid
+
 }
 
 // From com.lunarclient.websocket.friend.v1.CancelFriendRequestResponse
 message CancelFriendRequestResponse {
-  
-  
-  
+
+
 }
 
 // From com.lunarclient.websocket.friend.v1.DenyFriendRequestRequest
 message DenyFriendRequestRequest {
-  
-  optional  common.v1.Uuid sender_uuid = 1; // Type: com.lunarclient.common.v1.Uuid
-  
+
+  optional common.v1.Uuid sender_uuid = 1; // Type: com.lunarclient.common.v1.Uuid
+
 }
 
 // From com.lunarclient.websocket.friend.v1.DenyFriendRequestResponse
 message DenyFriendRequestResponse {
-  
-  
-  
+
+
 }
 
 // From com.lunarclient.websocket.friend.v1.FriendRadioInfoPush
 message FriendRadioInfoPush {
-  
-  optional  common.v1.Uuid friend_uuid = 1; // Type: com.lunarclient.common.v1.Uuid
-  optional  common.v1.RadioInfo radio_info = 2; // Type: com.lunarclient.common.v1.RadioInfo
-  
+
+  optional common.v1.Uuid friend_uuid = 1; // Type: com.lunarclient.common.v1.Uuid
+  optional common.v1.RadioInfo radio_info = 2; // Type: com.lunarclient.common.v1.RadioInfo
+
 }
 
 // From com.lunarclient.websocket.friend.v1.FriendRemovedYouPush
 message FriendRemovedYouPush {
-  
-  optional  common.v1.Uuid friend_uuid = 1; // Type: com.lunarclient.common.v1.Uuid
-  
+
+  optional common.v1.Uuid friend_uuid = 1; // Type: com.lunarclient.common.v1.Uuid
+
 }
 
 // From com.lunarclient.websocket.friend.v1.FriendRequest
 message FriendRequest {
-  
-  optional  common.v1.UuidAndUsername player = 1; // Type: com.lunarclient.common.v1.UuidAndUsername
-  optional  google.protobuf.Timestamp sent_at = 2; // Type: google.protobuf.Timestamp
-  optional  common.v1.Color player_logo_color = 3; // Type: com.lunarclient.common.v1.Color
-  optional  common.v1.Color player_plus_color = 4; // Type: com.lunarclient.common.v1.Color
-    string player_rank_name = 5; // Type: string
-  
+
+  optional common.v1.UuidAndUsername player = 1; // Type: com.lunarclient.common.v1.UuidAndUsername
+  optional google.protobuf.Timestamp sent_at = 2; // Type: google.protobuf.Timestamp
+  optional common.v1.Color player_logo_color = 3; // Type: com.lunarclient.common.v1.Color
+  optional common.v1.Color player_plus_color = 4; // Type: com.lunarclient.common.v1.Color
+  string player_rank_name = 5; // Type: string
+
 }
 
 // From com.lunarclient.websocket.friend.v1.FriendRequestAcceptedPush
 message FriendRequestAcceptedPush {
-  
-  optional  common.v1.Uuid new_friend_uuid = 1; // Type: com.lunarclient.common.v1.Uuid
-  optional  common.v1.UuidAndUsername new_friend = 2; // Type: com.lunarclient.common.v1.UuidAndUsername
-  
+
+  optional common.v1.Uuid new_friend_uuid = 1; // Type: com.lunarclient.common.v1.Uuid
+  optional common.v1.UuidAndUsername new_friend = 2; // Type: com.lunarclient.common.v1.UuidAndUsername
+
 }
 
 // From com.lunarclient.websocket.friend.v1.FriendRequestCanceledPush
 message FriendRequestCanceledPush {
-  
-  optional  common.v1.Uuid sender_uuid = 1; // Type: com.lunarclient.common.v1.Uuid
-  
+
+  optional common.v1.Uuid sender_uuid = 1; // Type: com.lunarclient.common.v1.Uuid
+
 }
 
 // From com.lunarclient.websocket.friend.v1.FriendRequestDeniedPush
 message FriendRequestDeniedPush {
-  
-  optional  common.v1.Uuid denier_uuid = 1; // Type: com.lunarclient.common.v1.Uuid
-  
+
+  optional common.v1.Uuid denier_uuid = 1; // Type: com.lunarclient.common.v1.Uuid
+
 }
 
 // From com.lunarclient.websocket.friend.v1.FriendRequestReceivedPush
 message FriendRequestReceivedPush {
-  
-  optional  common.v1.UuidAndUsername sender = 1; // Type: com.lunarclient.common.v1.UuidAndUsername
-  optional  common.v1.Color sender_logo_color = 3; // Type: com.lunarclient.common.v1.Color
-  optional  common.v1.Color sender_plus_color = 4; // Type: com.lunarclient.common.v1.Color
-    string sender_rank_name = 5; // Type: string
-  
+
+  optional common.v1.UuidAndUsername sender = 1; // Type: com.lunarclient.common.v1.UuidAndUsername
+  optional common.v1.Color sender_logo_color = 3; // Type: com.lunarclient.common.v1.Color
+  optional common.v1.Color sender_plus_color = 4; // Type: com.lunarclient.common.v1.Color
+  string sender_rank_name = 5; // Type: string
+
 }
 
 // From com.lunarclient.websocket.friend.v1.FriendSocials
 message FriendSocials {
-  
-    bool hidden = 1; // Type: bool
-   repeated common.v1.UserSocial linked = 2; // Type: com.lunarclient.common.v1.UserSocial
-  
+
+  bool hidden = 1; // Type: bool
+  repeated common.v1.UserSocial linked = 2; // Type: com.lunarclient.common.v1.UserSocial
+
 }
 
 // From com.lunarclient.websocket.friend.v1.FriendStatusPush
@@ -204,31 +200,29 @@ message FriendStatusPush {
 
 // From com.lunarclient.websocket.friend.v1.InboundHostedWorld
 message InboundHostedWorld {
-  
-  optional  common.v1.Uuid world_host = 1; // Type: com.lunarclient.common.v1.Uuid
-  
+
+  optional common.v1.Uuid world_host = 1; // Type: com.lunarclient.common.v1.Uuid
+
 }
 
 // From com.lunarclient.websocket.friend.v1.InboundInGame
 message InboundInGame {
-  
-  optional  common.v1.MinecraftVersion minecraft_version = 1; // Type: com.lunarclient.common.v1.MinecraftVersion
-    bool is_launch = 2; // Type: bool
-  
+
+  optional common.v1.MinecraftVersion minecraft_version = 1; // Type: com.lunarclient.common.v1.MinecraftVersion
+  bool is_launch = 2; // Type: bool
+
 }
 
 // From com.lunarclient.websocket.friend.v1.InboundInLauncher
 message InboundInLauncher {
-  
-  
-  
+
+
 }
 
 // From com.lunarclient.websocket.friend.v1.InboundInMenus
 message InboundInMenus {
-  
-  
-  
+
+
 }
 
 // From com.lunarclient.websocket.friend.v1.InboundLocation
@@ -247,157 +241,150 @@ message InboundLocation {
 
 // From com.lunarclient.websocket.friend.v1.InboundMinecraftRealms
 message InboundMinecraftRealms {
-  
-  
-  
+
+
 }
 
 // From com.lunarclient.websocket.friend.v1.InboundReplayWorld
 message InboundReplayWorld {
-  
-  
-  
+
+
 }
 
 // From com.lunarclient.websocket.friend.v1.InboundServer
 message InboundServer {
-  
-    string server_ip = 1; // Type: string
-  optional  common.v1.ServerRichStatus rich_status = 2; // Type: com.lunarclient.common.v1.ServerRichStatus
-  
+
+  string server_ip = 1; // Type: string
+  optional common.v1.ServerRichStatus rich_status = 2; // Type: com.lunarclient.common.v1.ServerRichStatus
+
 }
 
 // From com.lunarclient.websocket.friend.v1.InboundSinglePlayer
 message InboundSinglePlayer {
-  
-  
-  
+
+
 }
 
 // From com.lunarclient.websocket.friend.v1.LoginRequest
 message LoginRequest {
-  
-  
-  
+
+
 }
 
 // From com.lunarclient.websocket.friend.v1.LoginResponse
 message LoginResponse {
-  
-    friend.v1.OnlineFriendStatus current_status = 1; // Type: com.lunarclient.websocket.friend.v1.OnlineFriendStatus
-   repeated friend.v1.OfflineFriend offline_friends = 2; // Type: com.lunarclient.websocket.friend.v1.OfflineFriend
-    bool allow_friend_requests = 3; // Type: bool
-   repeated common.v1.UuidAndUsername outbound_friend_requests = 4; // Type: com.lunarclient.common.v1.UuidAndUsername
-   repeated common.v1.UuidAndUsername inbound_friend_requests = 5; // Type: com.lunarclient.common.v1.UuidAndUsername
-   repeated friend.v1.FriendRequest outbound_friend_add_requests = 6; // Type: com.lunarclient.websocket.friend.v1.FriendRequest
-   repeated friend.v1.FriendRequest inbound_friend_add_requests = 7; // Type: com.lunarclient.websocket.friend.v1.FriendRequest
-   repeated common.v1.Uuid pinned_friends = 8; // Type: com.lunarclient.common.v1.Uuid
-    friend.v1.LastSeenVisibility last_seen_visibility = 9; // Type: com.lunarclient.websocket.friend.v1.LastSeenVisibility
-  
+
+  friend.v1.OnlineFriendStatus current_status = 1; // Type: com.lunarclient.websocket.friend.v1.OnlineFriendStatus
+  repeated friend.v1.OfflineFriend offline_friends = 2; // Type: com.lunarclient.websocket.friend.v1.OfflineFriend
+  bool allow_friend_requests = 3; // Type: bool
+  repeated common.v1.UuidAndUsername outbound_friend_requests = 4; // Type: com.lunarclient.common.v1.UuidAndUsername
+  repeated common.v1.UuidAndUsername inbound_friend_requests = 5; // Type: com.lunarclient.common.v1.UuidAndUsername
+  repeated friend.v1.FriendRequest outbound_friend_add_requests = 6; // Type: com.lunarclient.websocket.friend.v1.FriendRequest
+  repeated friend.v1.FriendRequest inbound_friend_add_requests = 7; // Type: com.lunarclient.websocket.friend.v1.FriendRequest
+  repeated common.v1.Uuid pinned_friends = 8; // Type: com.lunarclient.common.v1.Uuid
+  friend.v1.LastSeenVisibility last_seen_visibility = 9; // Type: com.lunarclient.websocket.friend.v1.LastSeenVisibility
+
 }
 
 // From com.lunarclient.websocket.friend.v1.OfflineFriend
 message OfflineFriend {
-  
-  optional  common.v1.UuidAndUsername player = 1; // Type: com.lunarclient.common.v1.UuidAndUsername
-  optional  google.protobuf.Timestamp last_visible_online = 2; // Type: google.protobuf.Timestamp
-  optional  common.v1.Color logo_color = 3; // Type: com.lunarclient.common.v1.Color
-  optional  common.v1.Color plus_color = 4; // Type: com.lunarclient.common.v1.Color
-    bool is_radio_premium = 5; // Type: bool
-  optional  google.protobuf.Timestamp friends_since = 6; // Type: google.protobuf.Timestamp
-  optional  friend.v1.FriendSocials socials = 7; // Type: com.lunarclient.websocket.friend.v1.FriendSocials
-    string rank_name = 8; // Type: string
-  
+
+  optional common.v1.UuidAndUsername player = 1; // Type: com.lunarclient.common.v1.UuidAndUsername
+  optional google.protobuf.Timestamp last_visible_online = 2; // Type: google.protobuf.Timestamp
+  optional common.v1.Color logo_color = 3; // Type: com.lunarclient.common.v1.Color
+  optional common.v1.Color plus_color = 4; // Type: com.lunarclient.common.v1.Color
+  bool is_radio_premium = 5; // Type: bool
+  optional google.protobuf.Timestamp friends_since = 6; // Type: google.protobuf.Timestamp
+  optional friend.v1.FriendSocials socials = 7; // Type: com.lunarclient.websocket.friend.v1.FriendSocials
+  string rank_name = 8; // Type: string
+
 }
 
 // From com.lunarclient.websocket.friend.v1.OnlineFriend
 message OnlineFriend {
-  
-  optional  common.v1.UuidAndUsername player = 1; // Type: com.lunarclient.common.v1.UuidAndUsername
-    friend.v1.OnlineFriendStatus status = 2; // Type: com.lunarclient.websocket.friend.v1.OnlineFriendStatus
-  optional  common.v1.Location location = 3; // Type: com.lunarclient.common.v1.Location
-  optional  common.v1.MinecraftVersion minecraft_version = 4; // Type: com.lunarclient.common.v1.MinecraftVersion
-    bool just_came_online = 5; // Type: bool
-    hostedworld.v1.Joinability hosted_world_joinability = 6; // Type: com.lunarclient.websocket.hostedworld.v1.Joinability
-  optional  common.v1.Color logo_color = 7; // Type: com.lunarclient.common.v1.Color
-  optional  common.v1.PlayerModpack modpack = 8; // Type: com.lunarclient.common.v1.PlayerModpack
-  optional  common.v1.Color plus_color = 9; // Type: com.lunarclient.common.v1.Color
-    bool is_radio_premium = 10; // Type: bool
-  optional  google.protobuf.Timestamp friends_since = 11; // Type: google.protobuf.Timestamp
-  optional  friend.v1.FriendSocials socials = 12; // Type: com.lunarclient.websocket.friend.v1.FriendSocials
-    string rank_name = 13; // Type: string
-  
+
+  optional common.v1.UuidAndUsername player = 1; // Type: com.lunarclient.common.v1.UuidAndUsername
+  friend.v1.OnlineFriendStatus status = 2; // Type: com.lunarclient.websocket.friend.v1.OnlineFriendStatus
+  optional common.v1.Location location = 3; // Type: com.lunarclient.common.v1.Location
+  optional common.v1.MinecraftVersion minecraft_version = 4; // Type: com.lunarclient.common.v1.MinecraftVersion
+  bool just_came_online = 5; // Type: bool
+  hostedworld.v1.Joinability hosted_world_joinability = 6; // Type: com.lunarclient.websocket.hostedworld.v1.Joinability
+  optional common.v1.Color logo_color = 7; // Type: com.lunarclient.common.v1.Color
+  optional common.v1.PlayerModpack modpack = 8; // Type: com.lunarclient.common.v1.PlayerModpack
+  optional common.v1.Color plus_color = 9; // Type: com.lunarclient.common.v1.Color
+  bool is_radio_premium = 10; // Type: bool
+  optional google.protobuf.Timestamp friends_since = 11; // Type: google.protobuf.Timestamp
+  optional friend.v1.FriendSocials socials = 12; // Type: com.lunarclient.websocket.friend.v1.FriendSocials
+  string rank_name = 13; // Type: string
+
 }
 
 // From com.lunarclient.websocket.friend.v1.RemoveFriendPinRequest
 message RemoveFriendPinRequest {
-  
-  optional  common.v1.Uuid target_uuid = 1; // Type: com.lunarclient.common.v1.Uuid
-  
+
+  optional common.v1.Uuid target_uuid = 1; // Type: com.lunarclient.common.v1.Uuid
+
 }
 
 // From com.lunarclient.websocket.friend.v1.RemoveFriendPinResponse
 message RemoveFriendPinResponse {
-  
-    friend.v1.RemoveFriendPinResponse_Status status = 1; // Type: com.lunarclient.websocket.friend.v1.RemoveFriendPinResponse_Status
-  
+
+  friend.v1.RemoveFriendPinResponse_Status status = 1; // Type: com.lunarclient.websocket.friend.v1.RemoveFriendPinResponse_Status
+
 }
 
 // From com.lunarclient.websocket.friend.v1.RemoveFriendRequest
 message RemoveFriendRequest {
-  
-  optional  common.v1.Uuid friend_uuid = 1; // Type: com.lunarclient.common.v1.Uuid
-  
+
+  optional common.v1.Uuid friend_uuid = 1; // Type: com.lunarclient.common.v1.Uuid
+
 }
 
 // From com.lunarclient.websocket.friend.v1.RemoveFriendResponse
 message RemoveFriendResponse {
-  
-  
-  
+
+
 }
 
 // From com.lunarclient.websocket.friend.v1.SendFriendRequestRequest
 message SendFriendRequestRequest {
-  
-    string target_username = 1; // Type: string
-  
+
+  string target_username = 1; // Type: string
+
 }
 
 // From com.lunarclient.websocket.friend.v1.SendFriendRequestResponse
 message SendFriendRequestResponse {
-  
-    friend.v1.SendFriendRequestResponse_Status status = 1; // Type: com.lunarclient.websocket.friend.v1.SendFriendRequestResponse_Status
-  optional  common.v1.UuidAndUsername target = 2; // Type: com.lunarclient.common.v1.UuidAndUsername
-  
+
+  friend.v1.SendFriendRequestResponse_Status status = 1; // Type: com.lunarclient.websocket.friend.v1.SendFriendRequestResponse_Status
+  optional common.v1.UuidAndUsername target = 2; // Type: com.lunarclient.common.v1.UuidAndUsername
+
 }
 
 // From com.lunarclient.websocket.friend.v1.SetLastSeenVisibilityRequest
 message SetLastSeenVisibilityRequest {
-  
-    friend.v1.LastSeenVisibility visibility = 1; // Type: com.lunarclient.websocket.friend.v1.LastSeenVisibility
-  
+
+  friend.v1.LastSeenVisibility visibility = 1; // Type: com.lunarclient.websocket.friend.v1.LastSeenVisibility
+
 }
 
 // From com.lunarclient.websocket.friend.v1.SetLastSeenVisibilityResponse
 message SetLastSeenVisibilityResponse {
-  
-  
-  
+
+
 }
 
 // From com.lunarclient.websocket.friend.v1.ToggleFriendRequestsRequest
 message ToggleFriendRequestsRequest {
-  
-    bool allow_friend_requests = 1; // Type: bool
-  
+
+  bool allow_friend_requests = 1; // Type: bool
+
 }
 
 // From com.lunarclient.websocket.friend.v1.ToggleFriendRequestsResponse
 message ToggleFriendRequestsResponse {
-  
-  
-  
+
+
 }
 
 // From com.lunarclient.websocket.friend.v1.AcceptFriendRequestResponse$Status

@@ -15,7 +15,7 @@ import "google/protobuf/source_context.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/type.proto";
 import "google/protobuf/wrappers.proto";
-        
+
 
 
 option java_package = "com.lunarclient.websocket.liveexperience.v1";
@@ -24,22 +24,22 @@ option java_package = "com.lunarclient.websocket.liveexperience.v1";
 // Analysis
 // 6 packets stored.
 // File name (Generated): websocket_liveexperience_v1.proto
-        
+
 // Message struct
-        
+
 // From com.lunarclient.websocket.liveexperience.v1.AddressAndPort
 message AddressAndPort {
-  
-    string address = 1; // Type: string
-    int32 port = 2; // Type: int32
-  
+
+  string address = 1; // Type: string
+  int32 port = 2; // Type: int32
+
 }
 
 // From com.lunarclient.websocket.liveexperience.v1.JoinLiveExperienceRequest
 message JoinLiveExperienceRequest {
-  
-    string experience_id = 1; // Type: string
-  
+
+  string experience_id = 1; // Type: string
+
 }
 
 // From com.lunarclient.websocket.liveexperience.v1.JoinLiveExperienceResponse
@@ -52,24 +52,23 @@ message JoinLiveExperienceResponse {
 
 // From com.lunarclient.websocket.liveexperience.v1.LiveExperience
 message LiveExperience {
-  
-    string id = 1; // Type: string
-    string name = 2; // Type: string
-    string background_image = 3; // Type: string
-    string foreground_image = 4; // Type: string
-  
+
+  string id = 1; // Type: string
+  string name = 2; // Type: string
+  string background_image = 3; // Type: string
+  string foreground_image = 4; // Type: string
+
 }
 
 // From com.lunarclient.websocket.liveexperience.v1.LoadLiveExperienceRequest
 message LoadLiveExperienceRequest {
-  
-  
-  
+
+
 }
 
 // From com.lunarclient.websocket.liveexperience.v1.LoadLiveExperienceResponse
 message LoadLiveExperienceResponse {
-  
-  optional  liveexperience.v1.LiveExperience experience = 1; // Type: com.lunarclient.websocket.liveexperience.v1.LiveExperience
-  
+
+  optional liveexperience.v1.LiveExperience experience = 1; // Type: com.lunarclient.websocket.liveexperience.v1.LiveExperience
+
 }

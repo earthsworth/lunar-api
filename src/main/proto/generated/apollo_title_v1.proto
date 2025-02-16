@@ -15,7 +15,7 @@ import "google/protobuf/source_context.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/type.proto";
 import "google/protobuf/wrappers.proto";
-        
+
 import "generated/apollo_common_v1.proto";
 
 option java_package = "com.lunarclient.apollo.title.v1";
@@ -24,29 +24,28 @@ option java_package = "com.lunarclient.apollo.title.v1";
 // Analysis
 // 3 packets stored.
 // File name (Generated): apollo_title_v1.proto
-        
+
 // Message struct
-        
+
 // From com.lunarclient.apollo.title.v1.DisplayTitleMessage
 message DisplayTitleMessage {
-  
-    title.v1.TitleType title_type = 1; // Type: com.lunarclient.apollo.title.v1.TitleType
-  optional  common.v1.Component message = 2; // Type: com.lunarclient.apollo.common.v1.Component
-    float scale = 3; // Type: float
-  optional  google.protobuf.Duration fade_in_time = 4; // Type: google.protobuf.Duration
-  optional  google.protobuf.Duration display_time = 5; // Type: google.protobuf.Duration
-  optional  google.protobuf.Duration fade_out_time = 6; // Type: google.protobuf.Duration
-    string adventure_json_message = 7; // Type: string
-    float interpolation_scale = 8; // Type: float
-    float interpolation_rate = 9; // Type: float
-  
+
+  title.v1.TitleType title_type = 1; // Type: com.lunarclient.apollo.title.v1.TitleType
+  optional common.v1.Component message = 2; // Type: com.lunarclient.apollo.common.v1.Component
+  float scale = 3; // Type: float
+  optional google.protobuf.Duration fade_in_time = 4; // Type: google.protobuf.Duration
+  optional google.protobuf.Duration display_time = 5; // Type: google.protobuf.Duration
+  optional google.protobuf.Duration fade_out_time = 6; // Type: google.protobuf.Duration
+  string adventure_json_message = 7; // Type: string
+  float interpolation_scale = 8; // Type: float
+  float interpolation_rate = 9; // Type: float
+
 }
 
 // From com.lunarclient.apollo.title.v1.ResetTitlesMessage
 message ResetTitlesMessage {
-  
-  
-  
+
+
 }
 
 // From com.lunarclient.apollo.title.v1.TitleType

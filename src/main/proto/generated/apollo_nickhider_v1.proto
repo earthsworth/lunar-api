@@ -15,7 +15,7 @@ import "google/protobuf/source_context.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/type.proto";
 import "google/protobuf/wrappers.proto";
-        
+
 
 
 option java_package = "com.lunarclient.apollo.nickhider.v1";
@@ -24,19 +24,18 @@ option java_package = "com.lunarclient.apollo.nickhider.v1";
 // Analysis
 // 2 packets stored.
 // File name (Generated): apollo_nickhider_v1.proto
-        
+
 // Message struct
-        
+
 // From com.lunarclient.apollo.nickhider.v1.OverrideNickHiderMessage
 message OverrideNickHiderMessage {
-  
-    string nick = 1; // Type: string
-  
+
+  string nick = 1; // Type: string
+
 }
 
 // From com.lunarclient.apollo.nickhider.v1.ResetNickHiderMessage
 message ResetNickHiderMessage {
-  
-  
-  
+
+
 }

@@ -15,7 +15,7 @@ import "google/protobuf/source_context.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/type.proto";
 import "google/protobuf/wrappers.proto";
-        
+
 
 
 option java_package = "com.lunarclient.apollo.tebex.v1";
@@ -24,13 +24,13 @@ option java_package = "com.lunarclient.apollo.tebex.v1";
 // Analysis
 // 1 packets stored.
 // File name (Generated): apollo_tebex_v1.proto
-        
+
 // Message struct
-        
+
 // From com.lunarclient.apollo.tebex.v1.OpenTebexEmbeddedCheckoutMessage
 message OpenTebexEmbeddedCheckoutMessage {
-  
-    string basket_ident = 1; // Type: string
-    string locale = 2; // Type: string
-  
+
+  string basket_ident = 1; // Type: string
+  string locale = 2; // Type: string
+
 }

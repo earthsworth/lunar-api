@@ -15,7 +15,7 @@ import "google/protobuf/source_context.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/type.proto";
 import "google/protobuf/wrappers.proto";
-        
+
 import "generated/apollo_common_v1.proto";
 
 option java_package = "com.lunarclient.apollo.limb.v1";
@@ -24,39 +24,39 @@ option java_package = "com.lunarclient.apollo.limb.v1";
 // Analysis
 // 6 packets stored.
 // File name (Generated): apollo_limb_v1.proto
-        
+
 // Message struct
-        
+
 // From com.lunarclient.apollo.limb.v1.HideArmorPiecesMessage
 message HideArmorPiecesMessage {
-  
-  optional  common.v1.Uuid player_uuid = 1; // Type: com.lunarclient.apollo.common.v1.Uuid
-   repeated limb.v1.ArmorPiece armor_pieces = 2; // Type: com.lunarclient.apollo.limb.v1.ArmorPiece
-  
+
+  optional common.v1.Uuid player_uuid = 1; // Type: com.lunarclient.apollo.common.v1.Uuid
+  repeated limb.v1.ArmorPiece armor_pieces = 2; // Type: com.lunarclient.apollo.limb.v1.ArmorPiece
+
 }
 
 // From com.lunarclient.apollo.limb.v1.HideBodyPartMessage
 message HideBodyPartMessage {
-  
-  optional  common.v1.Uuid player_uuid = 1; // Type: com.lunarclient.apollo.common.v1.Uuid
-   repeated limb.v1.BodyPart body_parts = 2; // Type: com.lunarclient.apollo.limb.v1.BodyPart
-  
+
+  optional common.v1.Uuid player_uuid = 1; // Type: com.lunarclient.apollo.common.v1.Uuid
+  repeated limb.v1.BodyPart body_parts = 2; // Type: com.lunarclient.apollo.limb.v1.BodyPart
+
 }
 
 // From com.lunarclient.apollo.limb.v1.ResetArmorPiecesMessage
 message ResetArmorPiecesMessage {
-  
-  optional  common.v1.Uuid player_uuid = 1; // Type: com.lunarclient.apollo.common.v1.Uuid
-   repeated limb.v1.ArmorPiece armor_pieces = 2; // Type: com.lunarclient.apollo.limb.v1.ArmorPiece
-  
+
+  optional common.v1.Uuid player_uuid = 1; // Type: com.lunarclient.apollo.common.v1.Uuid
+  repeated limb.v1.ArmorPiece armor_pieces = 2; // Type: com.lunarclient.apollo.limb.v1.ArmorPiece
+
 }
 
 // From com.lunarclient.apollo.limb.v1.ResetBodyPartMessage
 message ResetBodyPartMessage {
-  
-  optional  common.v1.Uuid player_uuid = 1; // Type: com.lunarclient.apollo.common.v1.Uuid
-   repeated limb.v1.BodyPart body_parts = 2; // Type: com.lunarclient.apollo.limb.v1.BodyPart
-  
+
+  optional common.v1.Uuid player_uuid = 1; // Type: com.lunarclient.apollo.common.v1.Uuid
+  repeated limb.v1.BodyPart body_parts = 2; // Type: com.lunarclient.apollo.limb.v1.BodyPart
+
 }
 
 // From com.lunarclient.apollo.limb.v1.ArmorPiece

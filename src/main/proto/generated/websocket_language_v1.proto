@@ -15,7 +15,7 @@ import "google/protobuf/source_context.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/type.proto";
 import "google/protobuf/wrappers.proto";
-        
+
 
 
 option java_package = "com.lunarclient.websocket.language.v1";
@@ -24,9 +24,9 @@ option java_package = "com.lunarclient.websocket.language.v1";
 // Analysis
 // 3 packets stored.
 // File name (Generated): websocket_language_v1.proto
-        
+
 // Message struct
-        
+
 // From com.lunarclient.websocket.language.v1.Language
 message Language {
   oneof language {
@@ -36,14 +36,13 @@ message Language {
 
 // From com.lunarclient.websocket.language.v1.UpdateLanguageRequest
 message UpdateLanguageRequest {
-  
-  optional  language.v1.Language new_language = 1; // Type: com.lunarclient.websocket.language.v1.Language
-  
+
+  optional language.v1.Language new_language = 1; // Type: com.lunarclient.websocket.language.v1.Language
+
 }
 
 // From com.lunarclient.websocket.language.v1.UpdateLanguageResponse
 message UpdateLanguageResponse {
-  
-  
-  
+
+
 }

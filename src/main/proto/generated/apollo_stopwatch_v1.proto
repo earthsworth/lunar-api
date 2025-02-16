@@ -15,7 +15,7 @@ import "google/protobuf/source_context.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/type.proto";
 import "google/protobuf/wrappers.proto";
-        
+
 
 
 option java_package = "com.lunarclient.apollo.stopwatch.v1";
@@ -24,26 +24,23 @@ option java_package = "com.lunarclient.apollo.stopwatch.v1";
 // Analysis
 // 3 packets stored.
 // File name (Generated): apollo_stopwatch_v1.proto
-        
+
 // Message struct
-        
+
 // From com.lunarclient.apollo.stopwatch.v1.ResetStopwatchMessage
 message ResetStopwatchMessage {
-  
-  
-  
+
+
 }
 
 // From com.lunarclient.apollo.stopwatch.v1.StartStopwatchMessage
 message StartStopwatchMessage {
-  
-  
-  
+
+
 }
 
 // From com.lunarclient.apollo.stopwatch.v1.StopStopwatchMessage
 message StopStopwatchMessage {
-  
-  
-  
+
+
 }
