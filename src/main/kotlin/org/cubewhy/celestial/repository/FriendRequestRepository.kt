@@ -11,4 +11,5 @@ interface FriendRequestRepository : ReactiveCrudRepository<FriendRequest, String
     fun existsBySenderIdAndRecipientId(senderId: String, recipientId: String): Mono<Boolean>
     fun findAllByRecipientId(recipientId: String): Flux<FriendRequest>
     fun findAllBySenderId(senderId: String): Flux<FriendRequest>
+    fun deleteBySenderIdAndRecipientId(senderId: String, recipientId: String): Mono<Boolean>
 }

@@ -38,6 +38,7 @@ data class User(
     var createdAt: Instant = Instant.now(),
     var lastSeenAt: Instant = Instant.now(),
     var allowFriendRequests: Boolean = true,
+    var pinFriends: List<String>,
 
     var cosmetic: UserCosmeticSettings = UserCosmeticSettings(),
     var emote: UserEmoteSettings = UserEmoteSettings()

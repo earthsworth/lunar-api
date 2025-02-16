@@ -19,4 +19,24 @@ interface FriendService : PacketProcessor {
 
     suspend fun hasFriend(user: User, target: User): Boolean
     suspend fun processToggleFriendRequests(message: WebsocketFriendV1.ToggleFriendRequestsRequest, user: User): GeneratedMessage
+    suspend fun processAcceptFriendRequestRequest(
+        message: WebsocketFriendV1.AcceptFriendRequestRequest,
+        user: User
+    ): GeneratedMessage
+
+    suspend fun processRemoveFriendPinRequest(
+        message: WebsocketFriendV1.RemoveFriendPinRequest,
+        user: User
+    ): GeneratedMessage
+
+    suspend fun processAddFriendPinRequest(message: WebsocketFriendV1.AddFriendPinRequest, user: User): GeneratedMessage
+    suspend fun processDenyFriendRequest(
+        message: WebsocketFriendV1.DenyFriendRequestRequest,
+        user: User
+    ): GeneratedMessage
+
+    suspend fun processCancelFriendRequest(
+        message: WebsocketFriendV1.CancelFriendRequestRequest,
+        user: User
+    ): GeneratedMessage
 }

@@ -44,6 +44,9 @@ class FriendServiceImpl(
     @Value("\${lunar.friend.bot.username}")
     var botUsername = "lunar_cn"
 
+    @Value("\${lunar.friend.max}")
+    var maxFriend = 50
+
     override suspend fun process(
         method: String,
         payload: ByteString,
@@ -62,9 +65,136 @@ class FriendServiceImpl(
                 user
             ).toWebsocketResponse()
 
+            "AcceptFriendRequest" -> this.processAcceptFriendRequestRequest(
+                WebsocketFriendV1.AcceptFriendRequestRequest.parseFrom(payload),
+                user
+            ).toWebsocketResponse()
+
+            "DenyFriendRequest" -> this.processDenyFriendRequest(
+                WebsocketFriendV1.DenyFriendRequestRequest.parseFrom(payload),
+                user
+            ).toWebsocketResponse()
+
+            "CancelFriendRequest" -> this.processCancelFriendRequest(
+                WebsocketFriendV1.CancelFriendRequestRequest.parseFrom(payload),
+                user
+            ).toWebsocketResponse()
+
+            "RemoveFriendPinRequest" -> this.processRemoveFriendPinRequest(
+                WebsocketFriendV1.RemoveFriendPinRequest.parseFrom(payload),
+                user
+            ).toWebsocketResponse()
+
+            "AddFriendPinRequest" -> this.processAddFriendPinRequest(
+                WebsocketFriendV1.AddFriendPinRequest.parseFrom(payload),
+                user
+            ).toWebsocketResponse()
+
             else -> emptyWebsocketResponse()
 
         }
+    }
+
+    override suspend fun processCancelFriendRequest(
+        message: WebsocketFriendV1.CancelFriendRequestRequest,
+        user: User
+    ): GeneratedMessage {
+        val target = userRepository.findByUuid(message.targetUuid.toUUIDString()).awaitFirst()
+        friendRequestRepository.deleteBySenderIdAndRecipientId(user.id!!, target.id!!).awaitFirst()
+        return WebsocketFriendV1.CancelFriendRequestResponse.getDefaultInstance()
+    }
+
+    override suspend fun processDenyFriendRequest(
+        message: WebsocketFriendV1.DenyFriendRequestRequest,
+        user: User
+    ): GeneratedMessage {
+        val target = userRepository.findByUuid(message.senderUuid.toUUIDString()).awaitFirst()
+        friendRequestRepository.deleteBySenderIdAndRecipientId(target.id!!, user.id!!).awaitFirst()
+        val targetSession = sessionService.getSession(target)
+        targetSession?.pushEvent(WebsocketFriendV1.FriendRequestDeniedPush.newBuilder().apply {
+            denierUuid = user.uuid.toLunarClientUUID()
+        }.build())
+        return WebsocketFriendV1.DenyFriendRequestResponse.getDefaultInstance()
+    }
+
+    override suspend fun processRemoveFriendPinRequest(
+        message: WebsocketFriendV1.RemoveFriendPinRequest,
+        user: User
+    ): GeneratedMessage {
+        val builder = WebsocketFriendV1.RemoveFriendPinResponse.newBuilder()
+        val target = userRepository.findByUuid(message.targetUuid.toUUIDString()).awaitFirst()
+        if (target == null) {
+            builder.status =
+                WebsocketFriendV1.RemoveFriendPinResponse_Status.REMOVEFRIENDPINRESPONSE_STATUS_STATUS_TARGET_NOT_FOUND
+        } else if (friendRepository.findFriendRelation(user.id!!, target.id!!).awaitFirst() == null) {
+            builder.status =
+                WebsocketFriendV1.RemoveFriendPinResponse_Status.REMOVEFRIENDPINRESPONSE_STATUS_STATUS_TARGET_IS_NOT_FRIEND
+        } else if (!target.pinFriends.contains(user.id)) {
+            builder.status =
+                WebsocketFriendV1.RemoveFriendPinResponse_Status.REMOVEFRIENDPINRESPONSE_STATUS_STATUS_FRIEND_NOT_PINNED
+        } else {
+            builder.status = WebsocketFriendV1.RemoveFriendPinResponse_Status.REMOVEFRIENDPINRESPONSE_STATUS_STATUS_OK
+        }
+        return builder.build()
+    }
+
+    override suspend fun processAddFriendPinRequest(
+        message: WebsocketFriendV1.AddFriendPinRequest,
+        user: User
+    ): GeneratedMessage {
+        val builder = WebsocketFriendV1.AddFriendPinResponse.newBuilder()
+        val target = userRepository.findByUuid(message.targetUuid.toUUIDString()).awaitFirst()
+        if (target == null) {
+            builder.status =
+                WebsocketFriendV1.AddFriendPinResponse_Status.ADDFRIENDPINRESPONSE_STATUS_STATUS_TARGET_NOT_FOUND
+        } else if (friendRepository.findFriendRelation(user.id!!, target.id!!).awaitFirst() == null) {
+            builder.status =
+                WebsocketFriendV1.AddFriendPinResponse_Status.ADDFRIENDPINRESPONSE_STATUS_STATUS_TARGET_IS_NOT_FRIEND
+        } else if (target.pinFriends.contains(user.id)) {
+            builder.status =
+                WebsocketFriendV1.AddFriendPinResponse_Status.ADDFRIENDPINRESPONSE_STATUS_STATUS_FRIEND_ALREADY_PINNED
+        } else {
+            builder.status = WebsocketFriendV1.AddFriendPinResponse_Status.ADDFRIENDPINRESPONSE_STATUS_STATUS_OK
+        }
+        return builder.build()
+    }
+
+    override suspend fun processAcceptFriendRequestRequest(
+        message: WebsocketFriendV1.AcceptFriendRequestRequest,
+        user: User
+    ): GeneratedMessage {
+        val builder = WebsocketFriendV1.AcceptFriendRequestResponse.newBuilder()
+        val target = userRepository.findByUuid(message.senderUuid.toUUIDString()).awaitFirst()
+        val targetSession = sessionService.getSession(target)
+        if (friendRepository.findFriendRelation(user.id!!, target.id!!).awaitFirst() != null) {
+            builder.status =
+                WebsocketFriendV1.AcceptFriendRequestResponse_Status.ACCEPTFRIENDREQUESTRESPONSE_STATUS_STATUS_ALREADY_FRIENDS
+            return builder.build()
+        }
+        if (friendRequestRepository.existsBySenderIdAndRecipientId(target.id, user.id).awaitFirst()) {
+            val userFriend = friendRepository.countByUser1(user.id).awaitFirst()
+            val targetFriend = friendRepository.countByUser1(target.id).awaitFirst()
+            if (userFriend >= maxFriend) {
+                builder.status =
+                    WebsocketFriendV1.AcceptFriendRequestResponse_Status.ACCEPTFRIENDREQUESTRESPONSE_STATUS_STATUS_YOUR_FRIEND_LIST_FULL
+            } else if (targetFriend >= maxFriend) {
+                builder.status =
+                    WebsocketFriendV1.AcceptFriendRequestResponse_Status.ACCEPTFRIENDREQUESTRESPONSE_STATUS_STATUS_TARGET_FRIEND_LIST_FULL
+            } else {
+                builder.status =
+                    WebsocketFriendV1.AcceptFriendRequestResponse_Status.ACCEPTFRIENDREQUESTRESPONSE_STATUS_STATUS_OK
+                builder.offlineFriend =
+                    buildOfflineFriend(target, friendRepository.save(Friend(null, target.id, user.id)).awaitFirst())
+                targetSession?.pushEvent(WebsocketFriendV1.FriendRequestAcceptedPush.newBuilder().apply {
+                    newFriendUuid = user.uuid.toLunarClientUUID()
+                    newFriend = user.toLunarClientPlayer()
+                }.build())
+            }
+        } else {
+            builder.status =
+                WebsocketFriendV1.AcceptFriendRequestResponse_Status.ACCEPTFRIENDREQUESTRESPONSE_STATUS_STATUS_FRIEND_REQUEST_NOT_FOUND
+        }
+        return builder.build()
     }
 
     /**

@@ -6,7 +6,7 @@ import java.time.Instant
 
 @Document
 data class Friend(
-    @Id val id: String,
+    @Id val id: String?,
     val user1: String,
     val user2: String,
     val timestamp: Instant = Instant.now()

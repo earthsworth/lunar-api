@@ -46,3 +46,5 @@ lunar:
     bot:
       enabled: true
       username: lunar_bot
+    # max number have friend
+    max: 50
