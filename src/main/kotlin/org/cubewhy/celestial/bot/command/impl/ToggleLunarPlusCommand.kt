@@ -6,15 +6,15 @@ import kotlinx.coroutines.reactive.awaitFirst
 import org.cubewhy.celestial.bot.command.Command
 import org.cubewhy.celestial.entity.PlusColor
 import org.cubewhy.celestial.entity.User
-import org.cubewhy.celestial.handler.getSessionLocally
 import org.cubewhy.celestial.repository.UserRepository
-import org.cubewhy.celestial.util.wrapPush
+import org.cubewhy.celestial.service.SessionService
+import org.cubewhy.celestial.util.pushEvent
 import org.springframework.stereotype.Component
-import reactor.kotlin.core.publisher.toMono
 
 @Component
 class ToggleLunarPlusCommand(
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val sessionService: SessionService
 ) : Command {
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -33,12 +33,8 @@ class ToggleLunarPlusCommand(
         // save user
         userRepository.save(user).awaitFirst()
 
-        getSessionLocally(user.uuid)?.let { session ->
-            session.send(session.binaryMessage{
-                it.wrap(WebsocketCosmeticV1.RefreshCosmeticsPush.getDefaultInstance().wrapPush().toByteArray())
-            }.toMono())
-        }
-
-        return "Success ${if (newState) "enabled" else "disabled"}."
+        // push event
+        sessionService.getSession(user)?.pushEvent(WebsocketCosmeticV1.RefreshCosmeticsPush.getDefaultInstance())
+        return "Success ${if (newState) "enabled" else "disabled"} Lunar+ feature."
     }
 }
