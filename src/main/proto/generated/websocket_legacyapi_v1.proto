@@ -15,7 +15,7 @@ import "google/protobuf/source_context.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/type.proto";
 import "google/protobuf/wrappers.proto";
-        
+
 
 
 option java_package = "com.lunarclient.websocket.legacyapi.v1";
@@ -24,21 +24,20 @@ option java_package = "com.lunarclient.websocket.legacyapi.v1";
 // Analysis
 // 3 packets stored.
 // File name (Generated): websocket_legacyapi_v1.proto
-        
+
 // Message struct
-        
+
 // From com.lunarclient.websocket.legacyapi.v1.RecordDeprecatedApiUsageRequest
 message RecordDeprecatedApiUsageRequest {
-  
-    legacyapi.v1.RecordDeprecatedApiUsageRequest_Feature feature = 1; // Type: com.lunarclient.websocket.legacyapi.v1.RecordDeprecatedApiUsageRequest_Feature
-  
+
+  legacyapi.v1.RecordDeprecatedApiUsageRequest_Feature feature = 1; // Type: com.lunarclient.websocket.legacyapi.v1.RecordDeprecatedApiUsageRequest_Feature
+
 }
 
 // From com.lunarclient.websocket.legacyapi.v1.RecordDeprecatedApiUsageResponse
 message RecordDeprecatedApiUsageResponse {
-  
-  
-  
+
+
 }
 
 // From com.lunarclient.websocket.legacyapi.v1.RecordDeprecatedApiUsageRequest$Feature

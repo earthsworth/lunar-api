@@ -33,12 +33,12 @@ option java_package = "com.lunarclient.websocket.handshake.v1";
 // From com.lunarclient.websocket.handshake.v1.GameHandshake
 message GameHandshake {
 
-  optional  common.v1.MinecraftVersion minecraft_version = 1; // Type: com.lunarclient.common.v1.MinecraftVersion
-  optional  common.v1.LunarClientVersion lunar_client_version = 2; // Type: com.lunarclient.common.v1.LunarClientVersion
-  optional  friend.v1.InboundLocation location = 3; // Type: com.lunarclient.websocket.friend.v1.InboundLocation
+  optional common.v1.MinecraftVersion minecraft_version = 1; // Type: com.lunarclient.common.v1.MinecraftVersion
+  optional common.v1.LunarClientVersion lunar_client_version = 2; // Type: com.lunarclient.common.v1.LunarClientVersion
+  optional friend.v1.InboundLocation location = 3; // Type: com.lunarclient.websocket.friend.v1.InboundLocation
   repeated string ichor_modules = 4; // Type: string
   repeated handshake.v1.InstalledMod installed_mods = 5; // Type: com.lunarclient.websocket.handshake.v1.InstalledMod
-  optional  common.v1.PlayerModpack modpack = 6; // Type: com.lunarclient.common.v1.PlayerModpack
+  optional common.v1.PlayerModpack modpack = 6; // Type: com.lunarclient.common.v1.PlayerModpack
   repeated string gl_extensions = 7; // Type: string
   string launch_id = 8; // Type: string
 
@@ -79,11 +79,11 @@ message LauncherHandshake {
   bool elevated = 5; // Type: bool
   bool silent_start = 6; // Type: bool
   int32 uptime_since_start = 7; // Type: int32
-  optional  google.protobuf.Timestamp started_at = 8; // Type: google.protobuf.Timestamp
+  optional google.protobuf.Timestamp started_at = 8; // Type: google.protobuf.Timestamp
   int32 build_number = 9; // Type: int32
   string git_commit_hash = 10; // Type: string
   string git_short_commit_hash = 11; // Type: string
-  optional  radio.v1.InboundRadioInfo radio_info = 12; // Type: com.lunarclient.websocket.radio.v1.InboundRadioInfo
+  optional radio.v1.InboundRadioInfo radio_info = 12; // Type: com.lunarclient.websocket.radio.v1.InboundRadioInfo
   bool optimized_ads = 13; // Type: bool
   bool analytics = 14; // Type: bool
 
@@ -92,7 +92,7 @@ message LauncherHandshake {
 // From com.lunarclient.websocket.handshake.v1.MinecraftIdentity
 message MinecraftIdentity {
 
-  optional  common.v1.UuidAndUsername player = 1; // Type: com.lunarclient.common.v1.UuidAndUsername
+  optional common.v1.UuidAndUsername player = 1; // Type: com.lunarclient.common.v1.UuidAndUsername
   handshake.v1.MinecraftIdentity_Type type = 2; // Type: com.lunarclient.websocket.handshake.v1.MinecraftIdentity_Type
   string authenticator_jwt = 3; // Type: string
 

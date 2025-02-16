@@ -15,7 +15,7 @@ import "google/protobuf/source_context.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/type.proto";
 import "google/protobuf/wrappers.proto";
-        
+
 import "generated/lunarclient_common_v1.proto";
 
 option java_package = "com.lunarclient.websocket.party.v1";
@@ -24,98 +24,94 @@ option java_package = "com.lunarclient.websocket.party.v1";
 // Analysis
 // 17 packets stored.
 // File name (Generated): websocket_party_v1.proto
-        
+
 // Message struct
-        
+
 // From com.lunarclient.websocket.party.v1.AcceptPartyInviteRequest
 message AcceptPartyInviteRequest {
-  
-  optional  common.v1.Uuid leader_uuid = 1; // Type: com.lunarclient.common.v1.Uuid
-  
+
+  optional common.v1.Uuid leader_uuid = 1; // Type: com.lunarclient.common.v1.Uuid
+
 }
 
 // From com.lunarclient.websocket.party.v1.AcceptPartyInviteResponse
 message AcceptPartyInviteResponse {
-  
-  
-  
+
+
 }
 
 // From com.lunarclient.websocket.party.v1.CreatePartyRequest
 message CreatePartyRequest {
-  
-    int32 chat_id = 1; // Type: int32
-  
+
+  int32 chat_id = 1; // Type: int32
+
 }
 
 // From com.lunarclient.websocket.party.v1.CreatePartyResponse
 message CreatePartyResponse {
-  
-    party.v1.CreatePartyResponse_Status status = 1; // Type: com.lunarclient.websocket.party.v1.CreatePartyResponse_Status
-  
+
+  party.v1.CreatePartyResponse_Status status = 1; // Type: com.lunarclient.websocket.party.v1.CreatePartyResponse_Status
+
 }
 
 // From com.lunarclient.websocket.party.v1.InviteToPartyRequest
 message InviteToPartyRequest {
-  
-  optional  common.v1.Uuid player_uuid = 1; // Type: com.lunarclient.common.v1.Uuid
-  
+
+  optional common.v1.Uuid player_uuid = 1; // Type: com.lunarclient.common.v1.Uuid
+
 }
 
 // From com.lunarclient.websocket.party.v1.InviteToPartyResponse
 message InviteToPartyResponse {
-  
-    party.v1.InviteToPartyResponse_Status status = 1; // Type: com.lunarclient.websocket.party.v1.InviteToPartyResponse_Status
-  
+
+  party.v1.InviteToPartyResponse_Status status = 1; // Type: com.lunarclient.websocket.party.v1.InviteToPartyResponse_Status
+
 }
 
 // From com.lunarclient.websocket.party.v1.LeavePartyRequest
 message LeavePartyRequest {
-  
-  
-  
+
+
 }
 
 // From com.lunarclient.websocket.party.v1.LeavePartyResponse
 message LeavePartyResponse {
-  
-  
-  
+
+
 }
 
 // From com.lunarclient.websocket.party.v1.PartyInvitePush
 message PartyInvitePush {
-  
-  
-  
+
+
 }
 
 // From com.lunarclient.websocket.party.v1.TransferPartyLeadershipRequest
 message TransferPartyLeadershipRequest {
-  
-  optional  common.v1.Uuid new_leader_uuid = 1; // Type: com.lunarclient.common.v1.Uuid
-  
+
+  optional common.v1.Uuid new_leader_uuid = 1; // Type: com.lunarclient.common.v1.Uuid
+
 }
 
 // From com.lunarclient.websocket.party.v1.TransferPartyLeadershipResponse
 message TransferPartyLeadershipResponse {
-  
-    party.v1.TransferPartyLeadershipResponse_Status status = 1; // Type: com.lunarclient.websocket.party.v1.TransferPartyLeadershipResponse_Status
-  
+
+  party.v1.TransferPartyLeadershipResponse_Status status = 1; // Type: com.lunarclient.websocket.party.v1.TransferPartyLeadershipResponse_Status
+
 }
 
 // From com.lunarclient.websocket.party.v1.WarpPartyRequest
 message WarpPartyRequest {
-  
-    string server_ip = 1; // Type: string
-  
+
+  string server_ip = 1; // Type: string
+
 }
 
 // From com.lunarclient.websocket.party.v1.WarpPartyResponse
 message WarpPartyResponse {
-  
-    party.v1.WarpPartyResponse_Status status = 1; // Type: com.lunarclient.websocket.party.v1.WarpPartyResponse_Status
-  
+
+  party.v1.WarpPartyResponse_Status status = 1; // Type: com.lunarclient.websocket.party.v1.WarpPartyResponse_Status
+
 }
 
 // From com.lunarclient.websocket.party.v1.CreatePartyResponse$Status

@@ -15,7 +15,7 @@ import "google/protobuf/source_context.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/type.proto";
 import "google/protobuf/wrappers.proto";
-        
+
 
 
 option java_package = "com.lunarclient.websocket.apollo.v1";
@@ -24,20 +24,19 @@ option java_package = "com.lunarclient.websocket.apollo.v1";
 // Analysis
 // 2 packets stored.
 // File name (Generated): websocket_apollo_v1.proto
-        
+
 // Message struct
-        
+
 // From com.lunarclient.websocket.apollo.v1.TrackFeatureAdoptionRequest
 message TrackFeatureAdoptionRequest {
-  
-    string module = 1; // Type: string
-    string feature = 2; // Type: string
-  
+
+  string module = 1; // Type: string
+  string feature = 2; // Type: string
+
 }
 
 // From com.lunarclient.websocket.apollo.v1.TrackFeatureAdoptionResponse
 message TrackFeatureAdoptionResponse {
-  
-  
-  
+
+
 }

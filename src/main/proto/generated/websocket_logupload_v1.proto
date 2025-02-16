@@ -15,7 +15,7 @@ import "google/protobuf/source_context.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/type.proto";
 import "google/protobuf/wrappers.proto";
-        
+
 
 
 option java_package = "com.lunarclient.websocket.logupload.v1";
@@ -24,54 +24,53 @@ option java_package = "com.lunarclient.websocket.logupload.v1";
 // Analysis
 // 7 packets stored.
 // File name (Generated): websocket_logupload_v1.proto
-        
+
 // Message struct
-        
+
 // From com.lunarclient.websocket.logupload.v1.CompleteLogUploadRequest
 message CompleteLogUploadRequest {
-  
-    string upload_id = 1; // Type: string
-  
+
+  string upload_id = 1; // Type: string
+
 }
 
 // From com.lunarclient.websocket.logupload.v1.CompleteLogUploadResponse
 message CompleteLogUploadResponse {
-  
-  
-  
+
+
 }
 
 // From com.lunarclient.websocket.logupload.v1.StartLogUploadRequest$File
 message StartLogUploadRequest_File {
-  
-    string name = 1; // Type: string
-  
+
+  string name = 1; // Type: string
+
 }
 
 // From com.lunarclient.websocket.logupload.v1.StartLogUploadRequest
 message StartLogUploadRequest {
-  
-   repeated logupload.v1.StartLogUploadRequest_File files = 1; // Type: com.lunarclient.websocket.logupload.v1.StartLogUploadRequest_File
-    string sentry_crash_id = 2; // Type: string
-    string solution_id = 3; // Type: string
-  
+
+  repeated logupload.v1.StartLogUploadRequest_File files = 1; // Type: com.lunarclient.websocket.logupload.v1.StartLogUploadRequest_File
+  string sentry_crash_id = 2; // Type: string
+  string solution_id = 3; // Type: string
+
 }
 
 // From com.lunarclient.websocket.logupload.v1.StartLogUploadResponse$File
 message StartLogUploadResponse_File {
-  
-    string name = 1; // Type: string
-    string upload_url = 2; // Type: string
-  
+
+  string name = 1; // Type: string
+  string upload_url = 2; // Type: string
+
 }
 
 // From com.lunarclient.websocket.logupload.v1.StartLogUploadResponse
 message StartLogUploadResponse {
-  
-   repeated logupload.v1.StartLogUploadResponse_File files = 1; // Type: com.lunarclient.websocket.logupload.v1.StartLogUploadResponse_File
-    string upload_id = 2; // Type: string
-    logupload.v1.StartLogUploadResponse_Status status = 3; // Type: com.lunarclient.websocket.logupload.v1.StartLogUploadResponse_Status
-  
+
+  repeated logupload.v1.StartLogUploadResponse_File files = 1; // Type: com.lunarclient.websocket.logupload.v1.StartLogUploadResponse_File
+  string upload_id = 2; // Type: string
+  logupload.v1.StartLogUploadResponse_Status status = 3; // Type: com.lunarclient.websocket.logupload.v1.StartLogUploadResponse_Status
+
 }
 
 // From com.lunarclient.websocket.logupload.v1.StartLogUploadResponse$Status

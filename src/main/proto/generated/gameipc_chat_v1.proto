@@ -15,7 +15,7 @@ import "google/protobuf/source_context.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/type.proto";
 import "google/protobuf/wrappers.proto";
-        
+
 import "generated/lunarclient_common_v1.proto";
 
 option java_package = "com.lunarclient.gameipc.chat.v1";
@@ -24,27 +24,26 @@ option java_package = "com.lunarclient.gameipc.chat.v1";
 // Analysis
 // 3 packets stored.
 // File name (Generated): gameipc_chat_v1.proto
-        
+
 // Message struct
-        
+
 // From com.lunarclient.gameipc.chat.v1.ReceiveMessageRequest
 message ReceiveMessageRequest {
-  
-  optional  common.v1.UuidAndUsername sender = 1; // Type: com.lunarclient.common.v1.UuidAndUsername
-    string content = 2; // Type: string
-  
+
+  optional common.v1.UuidAndUsername sender = 1; // Type: com.lunarclient.common.v1.UuidAndUsername
+  string content = 2; // Type: string
+
 }
 
 // From com.lunarclient.gameipc.chat.v1.ReceiveMessageResponse
 message ReceiveMessageResponse {
-  
-  
-  
+
+
 }
 
 // From com.lunarclient.gameipc.chat.v1.SendChatPush
 message SendChatPush {
-  
-    string message = 1; // Type: string
-  
+
+  string message = 1; // Type: string
+
 }

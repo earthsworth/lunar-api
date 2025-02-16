@@ -15,7 +15,7 @@ import "google/protobuf/source_context.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/type.proto";
 import "google/protobuf/wrappers.proto";
-        
+
 import "generated/apollo_common_v1.proto";
 
 option java_package = "com.lunarclient.apollo.evnt.v1";
@@ -24,159 +24,158 @@ option java_package = "com.lunarclient.apollo.evnt.v1";
 // Analysis
 // 19 packets stored.
 // File name (Generated): apollo_evnt_v1.proto
-        
+
 // Message struct
-        
+
 // From com.lunarclient.apollo.evnt.v1.CharacterAbilityMessage
 message CharacterAbilityMessage {
-  
-    evnt.v1.CharacterType character_type = 1; // Type: com.lunarclient.apollo.evnt.v1.CharacterType
-   repeated string abilities_adventure = 2; // Type: string
-  
+
+  evnt.v1.CharacterType character_type = 1; // Type: com.lunarclient.apollo.evnt.v1.CharacterType
+  repeated string abilities_adventure = 2; // Type: string
+
 }
 
 // From com.lunarclient.apollo.evnt.v1.CloseGuiMessage
 message CloseGuiMessage {
-  
-    evnt.v1.GuiType gui_type = 1; // Type: com.lunarclient.apollo.evnt.v1.GuiType
-  
+
+  evnt.v1.GuiType gui_type = 1; // Type: com.lunarclient.apollo.evnt.v1.GuiType
+
 }
 
 // From com.lunarclient.apollo.evnt.v1.EventGameOverviewMessage
 message EventGameOverviewMessage {
-  
-  optional  evnt.v1.EventTeamStatusMessage team_one_status = 1; // Type: com.lunarclient.apollo.evnt.v1.EventTeamStatusMessage
-  optional  evnt.v1.EventTeamStatusMessage team_two_status = 2; // Type: com.lunarclient.apollo.evnt.v1.EventTeamStatusMessage
-    float tier_three_health = 3; // Type: float
-    fixed64 game_start_time = 4; // Type: fixed64
-    bool wither_shields = 5; // Type: bool
-    bool lock_game_time = 6; // Type: bool
-    fixed64 mid_respawn_time = 7; // Type: fixed64
-  
+
+  optional evnt.v1.EventTeamStatusMessage team_one_status = 1; // Type: com.lunarclient.apollo.evnt.v1.EventTeamStatusMessage
+  optional evnt.v1.EventTeamStatusMessage team_two_status = 2; // Type: com.lunarclient.apollo.evnt.v1.EventTeamStatusMessage
+  float tier_three_health = 3; // Type: float
+  fixed64 game_start_time = 4; // Type: fixed64
+  bool wither_shields = 5; // Type: bool
+  bool lock_game_time = 6; // Type: bool
+  fixed64 mid_respawn_time = 7; // Type: fixed64
+
 }
 
 // From com.lunarclient.apollo.evnt.v1.EventOverviewMessage
 message EventOverviewMessage {
-  
-   repeated evnt.v1.EventPlayerMessage players = 1; // Type: com.lunarclient.apollo.evnt.v1.EventPlayerMessage
-  
+
+  repeated evnt.v1.EventPlayerMessage players = 1; // Type: com.lunarclient.apollo.evnt.v1.EventPlayerMessage
+
 }
 
 // From com.lunarclient.apollo.evnt.v1.EventPlayerMessage
 message EventPlayerMessage {
-  
-  optional  common.v1.Uuid player_uuid = 1; // Type: com.lunarclient.apollo.common.v1.Uuid
-    string player_name_adventure = 2; // Type: string
-    evnt.v1.CharacterType character_type = 3; // Type: com.lunarclient.apollo.evnt.v1.CharacterType
-    bool team_one = 4; // Type: bool
-  
+
+  optional common.v1.Uuid player_uuid = 1; // Type: com.lunarclient.apollo.common.v1.Uuid
+  string player_name_adventure = 2; // Type: string
+  evnt.v1.CharacterType character_type = 3; // Type: com.lunarclient.apollo.evnt.v1.CharacterType
+  bool team_one = 4; // Type: bool
+
 }
 
 // From com.lunarclient.apollo.evnt.v1.EventPlayerStatusMessage
 message EventPlayerStatusMessage {
-  
-  optional  common.v1.Uuid player_uuid = 1; // Type: com.lunarclient.apollo.common.v1.Uuid
-    float health = 2; // Type: float
-    float ultimate_percentage = 3; // Type: float
-    fixed64 respawn_at = 4; // Type: fixed64
-  
+
+  optional common.v1.Uuid player_uuid = 1; // Type: com.lunarclient.apollo.common.v1.Uuid
+  float health = 2; // Type: float
+  float ultimate_percentage = 3; // Type: float
+  fixed64 respawn_at = 4; // Type: fixed64
+
 }
 
 // From com.lunarclient.apollo.evnt.v1.EventStatusOverviewMessage
 message EventStatusOverviewMessage {
-  
-   repeated evnt.v1.EventPlayerStatusMessage team_one_status = 1; // Type: com.lunarclient.apollo.evnt.v1.EventPlayerStatusMessage
-   repeated evnt.v1.EventPlayerStatusMessage team_two_status = 2; // Type: com.lunarclient.apollo.evnt.v1.EventPlayerStatusMessage
-  
+
+  repeated evnt.v1.EventPlayerStatusMessage team_one_status = 1; // Type: com.lunarclient.apollo.evnt.v1.EventPlayerStatusMessage
+  repeated evnt.v1.EventPlayerStatusMessage team_two_status = 2; // Type: com.lunarclient.apollo.evnt.v1.EventPlayerStatusMessage
+
 }
 
 // From com.lunarclient.apollo.evnt.v1.EventTeamStatusMessage
 message EventTeamStatusMessage {
-  
-    float top_wither_health = 1; // Type: float
-    float top_crystal_health = 2; // Type: float
-    float middle_wither_health = 3; // Type: float
-    float middle_crystal_health = 4; // Type: float
-    float bottom_wither_health = 5; // Type: float
-    float bottom_crystal_health = 6; // Type: float
-    float dragon_health = 7; // Type: float
-  
+
+  float top_wither_health = 1; // Type: float
+  float top_crystal_health = 2; // Type: float
+  float middle_wither_health = 3; // Type: float
+  float middle_crystal_health = 4; // Type: float
+  float bottom_wither_health = 5; // Type: float
+  float bottom_crystal_health = 6; // Type: float
+  float dragon_health = 7; // Type: float
+
 }
 
 // From com.lunarclient.apollo.evnt.v1.OpenGuiMessage
 message OpenGuiMessage {
-  
-    evnt.v1.GuiType gui_type = 1; // Type: com.lunarclient.apollo.evnt.v1.GuiType
-  
+
+  evnt.v1.GuiType gui_type = 1; // Type: com.lunarclient.apollo.evnt.v1.GuiType
+
 }
 
 // From com.lunarclient.apollo.evnt.v1.OverrideCharacterAbilityMessage
 message OverrideCharacterAbilityMessage {
-  
-   repeated evnt.v1.CharacterAbilityMessage abilities = 1; // Type: com.lunarclient.apollo.evnt.v1.CharacterAbilityMessage
-  
+
+  repeated evnt.v1.CharacterAbilityMessage abilities = 1; // Type: com.lunarclient.apollo.evnt.v1.CharacterAbilityMessage
+
 }
 
 // From com.lunarclient.apollo.evnt.v1.OverrideCharacterCosmeticMessage
 message OverrideCharacterCosmeticMessage {
-  
-  optional  common.v1.Uuid player_uuid = 1; // Type: com.lunarclient.apollo.common.v1.Uuid
-    evnt.v1.CharacterType character_type = 2; // Type: com.lunarclient.apollo.evnt.v1.CharacterType
-    string suit_name = 3; // Type: string
-  
+
+  optional common.v1.Uuid player_uuid = 1; // Type: com.lunarclient.apollo.common.v1.Uuid
+  evnt.v1.CharacterType character_type = 2; // Type: com.lunarclient.apollo.evnt.v1.CharacterType
+  string suit_name = 3; // Type: string
+
 }
 
 // From com.lunarclient.apollo.evnt.v1.OverrideCharacterMessage
 message OverrideCharacterMessage {
-  
-    evnt.v1.CharacterType character_type = 1; // Type: com.lunarclient.apollo.evnt.v1.CharacterType
-  optional  common.v1.Uuid player_uuid = 2; // Type: com.lunarclient.apollo.common.v1.Uuid
-  optional  common.v1.Color color = 3; // Type: com.lunarclient.apollo.common.v1.Color
-    bool equipped = 4; // Type: bool
-    string suit_name = 5; // Type: string
-  
+
+  evnt.v1.CharacterType character_type = 1; // Type: com.lunarclient.apollo.evnt.v1.CharacterType
+  optional common.v1.Uuid player_uuid = 2; // Type: com.lunarclient.apollo.common.v1.Uuid
+  optional common.v1.Color color = 3; // Type: com.lunarclient.apollo.common.v1.Color
+  bool equipped = 4; // Type: bool
+  string suit_name = 5; // Type: string
+
 }
 
 // From com.lunarclient.apollo.evnt.v1.OverrideCharacterSuitResourcesMessage
 message OverrideCharacterSuitResourcesMessage {
-  
-    evnt.v1.CharacterType character_type = 1; // Type: com.lunarclient.apollo.evnt.v1.CharacterType
-   repeated string suit_names = 2; // Type: string
-  
+
+  evnt.v1.CharacterType character_type = 1; // Type: com.lunarclient.apollo.evnt.v1.CharacterType
+  repeated string suit_names = 2; // Type: string
+
 }
 
 // From com.lunarclient.apollo.evnt.v1.OverrideCosmeticResourcesMessage
 message OverrideCosmeticResourcesMessage {
-  
-  optional  common.v1.Uuid player_uuid = 1; // Type: com.lunarclient.apollo.common.v1.Uuid
-    evnt.v1.CharacterType character_type = 2; // Type: com.lunarclient.apollo.evnt.v1.CharacterType
-    string model_path = 3; // Type: string
-    string animation_path = 4; // Type: string
-    string texture_path = 5; // Type: string
-  
+
+  optional common.v1.Uuid player_uuid = 1; // Type: com.lunarclient.apollo.common.v1.Uuid
+  evnt.v1.CharacterType character_type = 2; // Type: com.lunarclient.apollo.evnt.v1.CharacterType
+  string model_path = 3; // Type: string
+  string animation_path = 4; // Type: string
+  string texture_path = 5; // Type: string
+
 }
 
 // From com.lunarclient.apollo.evnt.v1.OverrideHeartTextureMessage
 message OverrideHeartTextureMessage {
-  
-    int32 location_x = 1; // Type: int32
-    bool hardcore = 2; // Type: bool
-  
+
+  int32 location_x = 1; // Type: int32
+  bool hardcore = 2; // Type: bool
+
 }
 
 // From com.lunarclient.apollo.evnt.v1.ResetHeartTextureMessage
 message ResetHeartTextureMessage {
-  
-  
-  
+
+
 }
 
 // From com.lunarclient.apollo.evnt.v1.UpdateCosmeticsMessage
 message UpdateCosmeticsMessage {
-  
-   repeated string model_locations = 1; // Type: string
-   repeated string animation_locations = 2; // Type: string
-  
+
+  repeated string model_locations = 1; // Type: string
+  repeated string animation_locations = 2; // Type: string
+
 }
 
 // From com.lunarclient.apollo.evnt.v1.CharacterType

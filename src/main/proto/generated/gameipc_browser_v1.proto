@@ -15,7 +15,7 @@ import "google/protobuf/source_context.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/type.proto";
 import "google/protobuf/wrappers.proto";
-        
+
 
 
 option java_package = "com.lunarclient.gameipc.browser.v1";
@@ -24,23 +24,22 @@ option java_package = "com.lunarclient.gameipc.browser.v1";
 // Analysis
 // 4 packets stored.
 // File name (Generated): gameipc_browser_v1.proto
-        
+
 // Message struct
-        
+
 // From com.lunarclient.gameipc.browser.v1.OpenUrlRequest
 message OpenUrlRequest {
-  
-    string url = 1; // Type: string
-    browser.v1.OpenUrlRequest_Initiator initiator = 2; // Type: com.lunarclient.gameipc.browser.v1.OpenUrlRequest_Initiator
-    browser.v1.OpenUrlRequest_OpenType open_type = 3; // Type: com.lunarclient.gameipc.browser.v1.OpenUrlRequest_OpenType
-  
+
+  string url = 1; // Type: string
+  browser.v1.OpenUrlRequest_Initiator initiator = 2; // Type: com.lunarclient.gameipc.browser.v1.OpenUrlRequest_Initiator
+  browser.v1.OpenUrlRequest_OpenType open_type = 3; // Type: com.lunarclient.gameipc.browser.v1.OpenUrlRequest_OpenType
+
 }
 
 // From com.lunarclient.gameipc.browser.v1.OpenUrlResponse
 message OpenUrlResponse {
-  
-  
-  
+
+
 }
 
 // From com.lunarclient.gameipc.browser.v1.OpenUrlRequest$Initiator

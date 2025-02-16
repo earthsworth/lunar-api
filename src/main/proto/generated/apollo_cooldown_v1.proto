@@ -15,7 +15,7 @@ import "google/protobuf/source_context.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/type.proto";
 import "google/protobuf/wrappers.proto";
-        
+
 import "generated/apollo_common_v1.proto";
 
 option java_package = "com.lunarclient.apollo.cooldown.v1";
@@ -24,28 +24,27 @@ option java_package = "com.lunarclient.apollo.cooldown.v1";
 // Analysis
 // 3 packets stored.
 // File name (Generated): apollo_cooldown_v1.proto
-        
+
 // Message struct
-        
+
 // From com.lunarclient.apollo.cooldown.v1.DisplayCooldownMessage
 message DisplayCooldownMessage {
-  
-    string name = 1; // Type: string
-  optional  google.protobuf.Duration duration = 2; // Type: google.protobuf.Duration
-  optional  common.v1.Icon icon = 3; // Type: com.lunarclient.apollo.common.v1.Icon
-  
+
+  string name = 1; // Type: string
+  optional google.protobuf.Duration duration = 2; // Type: google.protobuf.Duration
+  optional common.v1.Icon icon = 3; // Type: com.lunarclient.apollo.common.v1.Icon
+
 }
 
 // From com.lunarclient.apollo.cooldown.v1.RemoveCooldownMessage
 message RemoveCooldownMessage {
-  
-    string name = 1; // Type: string
-  
+
+  string name = 1; // Type: string
+
 }
 
 // From com.lunarclient.apollo.cooldown.v1.ResetCooldownsMessage
 message ResetCooldownsMessage {
-  
-  
-  
+
+
 }

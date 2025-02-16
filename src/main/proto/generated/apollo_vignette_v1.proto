@@ -15,7 +15,7 @@ import "google/protobuf/source_context.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/type.proto";
 import "google/protobuf/wrappers.proto";
-        
+
 
 
 option java_package = "com.lunarclient.apollo.vignette.v1";
@@ -24,20 +24,19 @@ option java_package = "com.lunarclient.apollo.vignette.v1";
 // Analysis
 // 2 packets stored.
 // File name (Generated): apollo_vignette_v1.proto
-        
+
 // Message struct
-        
+
 // From com.lunarclient.apollo.vignette.v1.DisplayVignetteMessage
 message DisplayVignetteMessage {
-  
-    string resource_location = 1; // Type: string
-    float opacity = 2; // Type: float
-  
+
+  string resource_location = 1; // Type: string
+  float opacity = 2; // Type: float
+
 }
 
 // From com.lunarclient.apollo.vignette.v1.ResetVignetteMessage
 message ResetVignetteMessage {
-  
-  
-  
+
+
 }

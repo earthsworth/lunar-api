@@ -15,7 +15,7 @@ import "google/protobuf/source_context.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/type.proto";
 import "google/protobuf/wrappers.proto";
-        
+
 import "generated/lunarclient_common_v1.proto";
 
 option java_package = "com.lunarclient.websocket.chat.v1";
@@ -24,28 +24,27 @@ option java_package = "com.lunarclient.websocket.chat.v1";
 // Analysis
 // 3 packets stored.
 // File name (Generated): websocket_chat_v1.proto
-        
+
 // Message struct
-        
+
 // From com.lunarclient.websocket.chat.v1.ReceiveChatPush
 message ReceiveChatPush {
-  
-  optional  common.v1.Uuid sender_uuid = 1; // Type: com.lunarclient.common.v1.Uuid
-    string chat_message = 2; // Type: string
-  
+
+  optional common.v1.Uuid sender_uuid = 1; // Type: com.lunarclient.common.v1.Uuid
+  string chat_message = 2; // Type: string
+
 }
 
 // From com.lunarclient.websocket.chat.v1.SendChatRequest
 message SendChatRequest {
-  
-  optional  common.v1.Uuid target_uuid = 1; // Type: com.lunarclient.common.v1.Uuid
-    string chat_message = 2; // Type: string
-  
+
+  optional common.v1.Uuid target_uuid = 1; // Type: com.lunarclient.common.v1.Uuid
+  string chat_message = 2; // Type: string
+
 }
 
 // From com.lunarclient.websocket.chat.v1.SendChatResponse
 message SendChatResponse {
-  
-  
-  
+
+
 }

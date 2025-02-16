@@ -40,6 +40,8 @@ data class User(
     var allowFriendRequests: Boolean = true,
     var pinFriends: List<String>,
 
+    var status: UserStatus = UserStatus.ONLINE,
+
     var cosmetic: UserCosmeticSettings = UserCosmeticSettings(),
     var emote: UserEmoteSettings = UserEmoteSettings()
 ) {
