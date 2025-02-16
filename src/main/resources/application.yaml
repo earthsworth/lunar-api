@@ -1,48 +1,44 @@
 server:
-  port: 8888
+  port: ${SERVER_PORT:8888}
 
 spring:
   application:
     name: lunar-api
   data:
     mongodb:
-      uri: mongodb://root:password@localhost/lunarclient?authSource=admin
+      uri: ${MONGODB_URI:mongodb://root:password@localhost/lunarclient?authSource=admin}
     redis:
-      url: redis://127.0.0.1:6379/0
+      url: ${REDIS_URL:redis://127.0.0.1:6379/0}
   security:
     jwt:
-      key: 3cfa76ef14937c1c0ea519f8fc057a80fcd04a7420f8e8bcd0a7567c272e007b
-      # How long will the jwt expire (unit: day)
-      expire: 1
+      key: ${JWT_KEY:3cfa76ef14937c1c0ea519f8fc057a80fcd04a7420f8e8bcd0a7567c272e007b}
+      expire: ${JWT_EXPIRE:1}
   rabbitmq:
-    host: localhost
-    port: 5672
-    username: admin
-    password: password
-    virtual-host: lunar
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:admin}
+    password: ${RABBITMQ_PASSWORD:password}
+    virtual-host: ${RABBITMQ_VIRTUAL_HOST:lunar}
     listener:
       simple:
-        concurrency: 5
-        max-concurrency: 10
-        prefetch: 1
+        concurrency: ${RABBITMQ_CONCURRENCY:5}
+        max-concurrency: ${RABBITMQ_MAX_CONCURRENCY:10}
+        prefetch: ${RABBITMQ_PREFETCH:1}
         retry:
-          enabled: true
-          max-attempts: 3
-          initial-interval: 1000
-    publisher-confirm-type: correlated
-    publisher-returns: true
+          enabled: ${RABBITMQ_RETRY_ENABLED:true}
+          max-attempts: ${RABBITMQ_RETRY_MAX_ATTEMPTS:3}
+          initial-interval: ${RABBITMQ_RETRY_INITIAL_INTERVAL:1000}
+    publisher-confirm-type: ${RABBITMQ_PUBLISHER_CONFIRM_TYPE:correlated}
+    publisher-returns: ${RABBITMQ_PUBLISHER_RETURNS:true}
     template:
-      mandatory: true
-
+      mandatory: ${RABBITMQ_TEMPLATE_MANDATORY:true}
 
 lunar:
   user:
     default:
-      # Default user details
-      username: admin
-      password: password
+      username: ${LUNAR_DEFAULT_USERNAME:admin}
+      password: ${LUNAR_DEFAULT_PASSWORD:password}
   friend:
-    # Add a bot to user's friend list that users can use commands
     bot:
-      enabled: true
-      username: lunar_bot
+      enabled: ${LUNAR_BOT_ENABLED:true}
+      username: ${LUNAR_BOT_USERNAME:lunar_bot}
