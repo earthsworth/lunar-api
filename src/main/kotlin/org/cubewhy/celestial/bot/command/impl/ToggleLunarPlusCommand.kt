@@ -29,7 +29,7 @@ class ToggleLunarPlusCommand(
     override suspend fun execute(user: User, args: List<String>): String {
         val newState = !user.cosmetic.lunarPlusState
         logger.info { "User ${user.username} ${if (newState) "enabled" else "disabled"} Lunar+ feature" }
-        user.cosmetic.lunarPlusColor = if (newState) PlusColor.AQUA.color else PlusColor.NONE.color
+        user.cosmetic.lunarPlusColor = if (newState) PlusColor.AQUA.color else 0
         // save user
         userRepository.save(user).awaitFirst()
 

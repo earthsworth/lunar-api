@@ -23,7 +23,7 @@ class AdminServiceImpl(
     }
 
     override suspend fun togglePlus(playerName: String): RestBean<Void> {
-        var user = userRepository.findByUsernameIgnoreCase(playerName).awaitFirst()
+        val user = userRepository.findByUsernameIgnoreCase(playerName).awaitFirst()
         val newState = !user.cosmetic.lunarPlusState
         logger.info { "User ${user.username} ${if (newState) "enabled" else "disabled"} Lunar+ feature" }
         user.cosmetic.lunarPlusColor = if (newState) PlusColor.AQUA.color else 0
