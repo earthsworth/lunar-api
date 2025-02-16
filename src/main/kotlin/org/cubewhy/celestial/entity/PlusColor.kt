@@ -3,6 +3,7 @@ package org.cubewhy.celestial.entity
 import com.lunarclient.common.v1.LunarclientCommonV1
 
 enum class PlusColor(val color: Int) {
+    NONE(-1),
     PURPLE(0x7F00D9),
     AMBER(0xFCB423),
     AQUA(0x00FFF0),

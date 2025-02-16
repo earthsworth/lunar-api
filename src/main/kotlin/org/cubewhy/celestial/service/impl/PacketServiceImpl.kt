@@ -57,6 +57,7 @@ class PacketServiceImpl(
             return null // bad jwt
         }
         val providedUUID = message.identity.player.uuid.toUUIDString()
+
         if (decodedJWT.claims["mcuuid"]?.asString() != providedUUID) {
             return null // uuid not match
         }
