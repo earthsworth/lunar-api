@@ -52,7 +52,11 @@ class AssetsHandler(
         }.concatMap { message ->
             mono {
                 message.response?.let { response ->
-                    session.send(session.binaryMessage { it.wrap(response.wrapCommon(message.requestId!!).toByteArray()) }.toMono()).awaitFirstOrNull() // send response
+                    session.send(session.binaryMessage {
+                        it.wrap(
+                            response.wrapCommon(message.requestId!!).toByteArray()
+                        )
+                    }.toMono()).awaitFirstOrNull() // send response
                 }
                 // send events
                 message.events.forEach { event ->

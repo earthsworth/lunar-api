@@ -1,7 +1,6 @@
 package org.cubewhy.celestial.service.impl
 
 import com.google.protobuf.ByteString
-import com.google.protobuf.GeneratedMessage
 import com.lunarclient.websocket.language.v1.WebsocketLanguageV1
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.cubewhy.celestial.entity.User

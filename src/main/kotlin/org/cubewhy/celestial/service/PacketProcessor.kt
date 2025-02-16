@@ -1,7 +1,6 @@
 package org.cubewhy.celestial.service
 
 import com.google.protobuf.ByteString
-import com.google.protobuf.GeneratedMessage
 import org.cubewhy.celestial.entity.User
 import org.cubewhy.celestial.entity.WebsocketResponse
 import org.springframework.web.reactive.socket.WebSocketSession

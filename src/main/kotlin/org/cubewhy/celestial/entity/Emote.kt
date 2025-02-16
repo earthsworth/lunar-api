@@ -7,8 +7,8 @@ import java.time.Instant
 data class Emote(
     val emoteId: Int,
     val name: String,
-){
-    fun toOwnedEmote(emote: Int) : WebsocketEmoteV1.OwnedEmote {
+) {
+    fun toOwnedEmote(emote: Int): WebsocketEmoteV1.OwnedEmote {
         return WebsocketEmoteV1.OwnedEmote.newBuilder().apply {
             emoteId = emote
             grantedAt = Instant.now().toProtobufType()

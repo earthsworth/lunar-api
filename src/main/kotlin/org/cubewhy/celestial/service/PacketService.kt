@@ -1,6 +1,5 @@
 package org.cubewhy.celestial.service
 
-import com.google.protobuf.GeneratedMessage
 import com.lunarclient.authenticator.v1.LunarclientAuthenticatorV1
 import com.lunarclient.websocket.handshake.v1.WebsocketHandshakeV1
 import com.lunarclient.websocket.protocol.v1.WebsocketProtocolV1
