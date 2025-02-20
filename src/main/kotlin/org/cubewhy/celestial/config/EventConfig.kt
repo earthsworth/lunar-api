@@ -14,7 +14,7 @@ class EventConfig {
         val eventMulticaster =
             SimpleApplicationEventMulticaster()
 
-        eventMulticaster.taskExecutor = SimpleAsyncTaskExecutor()
+        eventMulticaster.setTaskExecutor(SimpleAsyncTaskExecutor())
         return eventMulticaster
     }
 }
