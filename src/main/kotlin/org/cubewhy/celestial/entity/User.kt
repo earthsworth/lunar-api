@@ -38,7 +38,7 @@ data class User(
     var createdAt: Instant = Instant.now(),
     var lastSeenAt: Instant = Instant.now(),
     var allowFriendRequests: Boolean = true,
-    var pinFriends: List<String>,
+    var pinFriends: List<String> = mutableListOf(),
 
     var status: UserStatus = UserStatus.ONLINE,
 
