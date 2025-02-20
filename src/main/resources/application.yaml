@@ -14,6 +14,12 @@ spring:
       key: ${JWT_KEY:3cfa76ef14937c1c0ea519f8fc057a80fcd04a7420f8e8bcd0a7567c272e007b}
       expire: ${JWT_EXPIRE:1}
   rabbitmq:
+    stream:
+      host: ${RABBITMQ_HOST:localhost}
+      port: ${RABBITMQ_STREAM_PORT:5672}
+      username: ${RABBITMQ_USERNAME:admin}
+      password: ${RABBITMQ_PASSWORD:password}
+      virtual-host: ${RABBITMQ_VIRTUAL_HOST:lunar}
     host: ${RABBITMQ_HOST:localhost}
     port: ${RABBITMQ_PORT:5672}
     username: ${RABBITMQ_USERNAME:admin}
