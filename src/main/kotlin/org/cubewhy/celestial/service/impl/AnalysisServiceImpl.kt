@@ -43,5 +43,5 @@ class AnalysisServiceImpl(
     }
 
     override suspend fun getLatestAnalysis(): Analysis =
-        analysisRepository.findTop().awaitFirst()
+        analysisRepository.findFirstByOrderByTimestampDesc().awaitFirst()
 }
