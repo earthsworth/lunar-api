@@ -4,7 +4,9 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.reactive.awaitFirst
+import kotlinx.coroutines.reactive.awaitLast
 import org.cubewhy.celestial.entity.Analysis
+import org.cubewhy.celestial.entity.vo.AnalysisVO
 import org.cubewhy.celestial.repository.AnalysisRepository
 import org.cubewhy.celestial.repository.UserRepository
 import org.cubewhy.celestial.repository.WebUserRepository
@@ -12,6 +14,7 @@ import org.cubewhy.celestial.service.AnalysisService
 import org.cubewhy.celestial.service.SessionService
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
+import java.time.Instant
 
 @Service
 class AnalysisServiceImpl(
@@ -31,7 +34,7 @@ class AnalysisServiceImpl(
             val onlineCount = sessionService.countAvailableSessions()
             val userCount = userRepository.count().awaitFirst()
             val webUserCount = webUserRepository.count().awaitFirst()
-            logger.debug { "Record analysis data (total $userCount users, $webUserCount web users, $onlineCount online)" }
+            logger.info { "Record analysis data (total $userCount users, $webUserCount web users, $onlineCount online)" }
             val analysis = Analysis(
                 userCount = userCount,
                 webUserCount = webUserCount,
@@ -42,6 +45,9 @@ class AnalysisServiceImpl(
         }
     }
 
-    override suspend fun getLatestAnalysis(): Analysis =
-        analysisRepository.findFirstByOrderByTimestampDesc().awaitFirst()
+    override suspend fun getAnalysisAfter(timestamp: Instant): List<AnalysisVO> {
+        return analysisRepository.getAnalysisByTimestampAfter(timestamp)
+            .map { it.toVO() }
+            .collectList().awaitLast()
+    }
 }
