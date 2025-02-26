@@ -3,6 +3,7 @@ package org.cubewhy.celestial.controller
 import org.cubewhy.celestial.entity.RestBean
 import org.cubewhy.celestial.entity.vo.AnalysisVO
 import org.cubewhy.celestial.service.AnalysisService
+import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -11,6 +12,7 @@ import java.time.Instant
 
 @RestController
 @RequestMapping("/api/analysis")
+@CrossOrigin(origins = ["*"])
 class AnalysisController(
     private val analysisService: AnalysisService
 ) {
