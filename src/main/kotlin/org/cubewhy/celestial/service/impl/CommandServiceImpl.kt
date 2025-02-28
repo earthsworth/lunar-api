@@ -13,10 +13,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class CommandServiceImpl(
-    echoCommand: EchoCommand,
-    shoutCommand: ShoutCommand,
-    whoamiCommand: WhoamiCommand,
-    toggleLunarPlusCommand: ToggleLunarPlusCommand
+    commandList: List<Command>
 ) : CommandService {
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -25,14 +22,6 @@ class CommandServiceImpl(
     private val commands = mutableMapOf<String, Command>()
 
     init {
-        // commands list
-        val commandList = listOf(
-            echoCommand,
-            shoutCommand,
-            whoamiCommand,
-            toggleLunarPlusCommand
-        )
-
         commandList.forEach {
             commands[it.trigger()] = it
         }
