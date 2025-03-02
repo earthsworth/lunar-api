@@ -6,7 +6,9 @@ COPY build.gradle.kts .
 COPY settings.gradle.kts .
 COPY src ./src
 
-RUN gradle bootJar
+RUN gradle dependencies --no-daemon
+
+RUN gradle bootJar --no-daemon
 
 FROM openjdk:21
 WORKDIR /app
