@@ -28,11 +28,12 @@ class AnalysisServiceImpl(
         private val logger = KotlinLogging.logger {}
     }
 
-    override suspend fun getNowAnalysis(): Analysis {
-        return Analysis(
+    override suspend fun getNowAnalysis(): AnalysisVO {
+        return AnalysisVO(
             userCount = userRepository.count().awaitFirst(),
             webUserCount = webUserRepository.count().awaitFirst(),
-            onlineCount = sessionService.countAvailableSessions()
+            onlineCount = sessionService.countAvailableSessions(),
+            timestamp = Instant.now()
         )
     }
 
