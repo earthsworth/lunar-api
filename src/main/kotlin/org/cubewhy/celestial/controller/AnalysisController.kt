@@ -16,4 +16,9 @@ class AnalysisController(
     suspend fun analysis(): RestBean<Analysis> {
         return RestBean.success(analysisService.getLatestAnalysis())
     }
+
+    @GetMapping("/now")
+    suspend fun now(): RestBean<Analysis> {
+        return RestBean.success(analysisService.getNowAnalysis())
+    }
 }
