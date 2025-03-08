@@ -28,6 +28,15 @@ class AnalysisServiceImpl(
         private val logger = KotlinLogging.logger {}
     }
 
+    override suspend fun getNowAnalysis(): AnalysisVO {
+        return AnalysisVO(
+            userCount = userRepository.count().awaitFirst(),
+            webUserCount = webUserRepository.count().awaitFirst(),
+            onlineCount = sessionService.countAvailableSessions(),
+            timestamp = Instant.now()
+        )
+    }
+
     @Scheduled(cron = "0 0 * * * *")
     private fun record() {
         scope.launch {
