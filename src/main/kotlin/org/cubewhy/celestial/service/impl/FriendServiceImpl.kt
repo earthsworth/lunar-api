@@ -45,7 +45,7 @@ class FriendServiceImpl(
     var botUsername = "lunar_cn"
 
     @Value("\${lunar.friend.max}")
-    var maxFriend = 50
+    var maxFriend: Long = -1
 
     override suspend fun process(
         method: String,
@@ -77,6 +77,11 @@ class FriendServiceImpl(
 
             "DenyFriendRequest" -> this.processDenyFriendRequest(
                 WebsocketFriendV1.DenyFriendRequestRequest.parseFrom(payload),
+                user
+            ).toWebsocketResponse()
+
+            "RemoveFriend" -> this.processRemoveFriendRequest(
+                WebsocketFriendV1.RemoveFriendRequest.parseFrom(payload),
                 user
             ).toWebsocketResponse()
 
@@ -116,10 +121,45 @@ class FriendServiceImpl(
         val target = userRepository.findByUuid(message.senderUuid.toUUIDString()).awaitFirst()
         friendRequestRepository.deleteBySenderIdAndRecipientId(target.id!!, user.id!!).awaitFirst()
         val targetSession = sessionService.getSession(target)
+        // push event
         targetSession?.pushEvent(WebsocketFriendV1.FriendRequestDeniedPush.newBuilder().apply {
             denierUuid = user.uuid.toLunarClientUUID()
         }.build())
         return WebsocketFriendV1.DenyFriendRequestResponse.getDefaultInstance()
+    }
+
+    override suspend fun processRemoveFriendRequest(
+        message: WebsocketFriendV1.RemoveFriendRequest,
+        user: User
+    ): GeneratedMessage {
+        val target = userRepository.findByUuid(message.friendUuid.toUUIDString()).awaitFirst()
+        val relation = friendRepository.findFriendRelation(user.id!!, target.id!!).awaitFirstOrNull()
+            ?: return WebsocketFriendV1.RemoveFriendResponse.getDefaultInstance() // not friend
+        val targetSession = sessionService.getSession(target)
+        // remove relation
+        logger.info { "Removed friend between ${user.username} and ${target.username}" }
+        friendRepository.delete(relation).awaitFirstOrNull()
+        // push event
+        targetSession?.pushEvent(WebsocketFriendV1.FriendRemovedYouPush.newBuilder().apply {
+            this.friendUuid = target.uuid.toLunarClientUUID()
+        }.build())
+        return WebsocketFriendV1.RemoveFriendResponse.getDefaultInstance()
+    }
+
+    override suspend fun userOffline(user: User) {
+        // find friend relations
+        val friends = friendRepository.findFriendRelations(user.id!!).collectList().awaitLast()
+        // push events to friends
+        friends.forEach { friend ->
+            val friendId = if (user.id == friend.user1) friend.user2 else friend.user1
+            val friendUser = userRepository.findById(friendId).awaitFirst()
+            sessionService.getSession(friendId)?.let { session ->
+                val offlineFriend = this.buildOfflineFriend(friendUser, friend)
+                session.pushEvent(WebsocketFriendV1.FriendStatusPush.newBuilder().apply {
+                    this.offlineFriend = offlineFriend
+                }.build())
+            }
+        }
     }
 
     override suspend fun processRemoveFriendPinRequest(
@@ -171,25 +211,30 @@ class FriendServiceImpl(
         val builder = WebsocketFriendV1.AcceptFriendRequestResponse.newBuilder()
         val target = userRepository.findByUuid(message.senderUuid.toUUIDString()).awaitFirst()
         val targetSession = sessionService.getSession(target)
-        if (friendRepository.findFriendRelation(user.id!!, target.id!!).awaitFirst() != null) {
+        if (friendRepository.findFriendRelation(user.id!!, target.id!!).awaitFirstOrNull() != null) {
+            // delete friend request
+            friendRequestRepository.deleteBySenderIdAndRecipientId(user.id, target.id).awaitFirst()
             builder.status =
                 WebsocketFriendV1.AcceptFriendRequestResponse_Status.ACCEPTFRIENDREQUESTRESPONSE_STATUS_STATUS_ALREADY_FRIENDS
             return builder.build()
         }
         if (friendRequestRepository.existsBySenderIdAndRecipientId(target.id, user.id).awaitFirst()) {
-            val userFriend = friendRepository.countByUser1(user.id).awaitFirst()
-            val targetFriend = friendRepository.countByUser1(target.id).awaitFirst()
-            if (userFriend >= maxFriend) {
+            val userFriendCount = friendRepository.countByUser1(user.id).awaitFirst()
+            val targetFriendCount = friendRepository.countByUser1(target.id).awaitFirst()
+            if (userFriendCount >= maxFriend) {
                 builder.status =
                     WebsocketFriendV1.AcceptFriendRequestResponse_Status.ACCEPTFRIENDREQUESTRESPONSE_STATUS_STATUS_YOUR_FRIEND_LIST_FULL
-            } else if (targetFriend >= maxFriend) {
+            } else if (targetFriendCount >= maxFriend) {
                 builder.status =
                     WebsocketFriendV1.AcceptFriendRequestResponse_Status.ACCEPTFRIENDREQUESTRESPONSE_STATUS_STATUS_TARGET_FRIEND_LIST_FULL
             } else {
+                // save friend
                 builder.status =
                     WebsocketFriendV1.AcceptFriendRequestResponse_Status.ACCEPTFRIENDREQUESTRESPONSE_STATUS_STATUS_OK
                 builder.offlineFriend =
                     buildOfflineFriend(target, friendRepository.save(Friend(null, target.id, user.id)).awaitFirst())
+                // delete friend request
+                friendRequestRepository.deleteBySenderIdAndRecipientId(user.id, target.id).awaitFirst()
                 targetSession?.pushEvent(WebsocketFriendV1.FriendRequestAcceptedPush.newBuilder().apply {
                     newFriendUuid = user.uuid.toLunarClientUUID()
                     newFriend = user.toLunarClientPlayer()
@@ -219,7 +264,7 @@ class FriendServiceImpl(
         }
         events.addAll(friends.mapNotNull { friend ->
             // push friend status
-            if (friend.friendUser.status != UserStatus.INVISIBLE) {
+            if (friend.friendUser.status != UserStatus.INVISIBLE && sessionService.getSession(friend.friendUser) != null) {
                 this.buildOnlineFriendStatusPush(friend.lunarType, friend.friendUser)
             } else null
         })
@@ -231,7 +276,7 @@ class FriendServiceImpl(
             botFriend?.let { this.addOfflineFriends(it) }
             this.addAllOfflineFriends(friends.map { it.lunarType })
             this.currentStatus = user.status.protoType
-            // todo friend requests
+            // add friend requests
             this.addAllInboundFriendRequests(incomingRequests.map { request ->
                 userRepository.findById(request.senderId).awaitFirst().toLunarClientPlayer()
             })
@@ -364,7 +409,7 @@ class FriendServiceImpl(
             else -> {
                 sendFriendRequest(user, targetUser)
                 return buildResponse(
-                    user,
+                    targetUser,
                     WebsocketFriendV1.SendFriendRequestResponse_Status.SENDFRIENDREQUESTRESPONSE_STATUS_STATUS_OK
                 )
             }

@@ -80,6 +80,8 @@ class PacketServiceImpl(
         sessionService.removeSession(user)
         logger.info { "User ${user.username} disconnected" }
         logger.info { "Websocket terminated [${signalType.name}]" }
+        // push event to friends
+        friendService.userOffline(user)
         // save last seen timestamp
         userService.markOffline(user)
     }

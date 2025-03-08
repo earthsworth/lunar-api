@@ -23,6 +23,7 @@ interface FriendService : PacketProcessor {
         message: WebsocketFriendV1.BroadcastStatusChangeRequest,
         user: User
     ): GeneratedMessage
+
     suspend fun processAcceptFriendRequestRequest(
         message: WebsocketFriendV1.AcceptFriendRequestRequest,
         user: User
@@ -43,4 +44,7 @@ interface FriendService : PacketProcessor {
         message: WebsocketFriendV1.CancelFriendRequestRequest,
         user: User
     ): GeneratedMessage
+
+    suspend fun processRemoveFriendRequest(message: WebsocketFriendV1.RemoveFriendRequest, user: User): GeneratedMessage
+    suspend fun userOffline(user: User)
 }
