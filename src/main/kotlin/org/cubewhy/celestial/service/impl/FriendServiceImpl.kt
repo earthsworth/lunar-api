@@ -282,14 +282,14 @@ class FriendServiceImpl(
             })
             this.addAllInboundFriendAddRequests(incomingRequests.map { this@FriendServiceImpl.buildFriendRequest(it) })
             this.addAllOutboundFriendRequests(outgoingRequests.map { request ->
-                userRepository.findById(request.senderId).awaitFirst().toLunarClientPlayer()
+                userRepository.findById(request.recipientId).awaitFirst().toLunarClientPlayer()
             })
-            this.addAllOutboundFriendAddRequests(outgoingRequests.map { this@FriendServiceImpl.buildFriendRequest(it) })
+            this.addAllOutboundFriendAddRequests(outgoingRequests.map { this@FriendServiceImpl.buildFriendRequest(it, true) })
         }.build(), events)
     }
 
-    private suspend fun buildFriendRequest(request: FriendRequest): WebsocketFriendV1.FriendRequest {
-        val recipient = userRepository.findById(request.recipientId).awaitFirst()
+    private suspend fun buildFriendRequest(request: FriendRequest, outgoing: Boolean = false): WebsocketFriendV1.FriendRequest {
+        val recipient = userRepository.findById(if (outgoing) request.senderId else request.recipientId).awaitFirst()
         return WebsocketFriendV1.FriendRequest.newBuilder().apply {
             this.player = recipient.toLunarClientPlayer()
             this.sentAt = request.timestamp.toProtobufType()
