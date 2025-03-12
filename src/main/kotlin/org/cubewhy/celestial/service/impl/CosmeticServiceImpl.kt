@@ -2,7 +2,7 @@ package org.cubewhy.celestial.service.impl
 
 import com.google.protobuf.ByteString
 import com.google.protobuf.GeneratedMessage
-import com.lunarclient.websocket.cosmetic.v1.WebsocketCosmeticV1
+import com.lunarclient.websocket.cosmetic.v1.*
 import com.opencsv.CSVReader
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.annotation.PostConstruct
@@ -70,7 +70,7 @@ class CosmeticServiceImpl(
             "Login" -> this.processLogin(user).toWebsocketResponse() // process login packet
             "UpdateCosmeticSettings" -> {
                 // parse payload
-                val pb = WebsocketCosmeticV1.UpdateCosmeticSettingsRequest.parseFrom(payload)
+                val pb = UpdateCosmeticSettingsRequest.parseFrom(payload)
                 this.processUpdateCosmeticSettings(pb, user, session).toWebsocketResponse()
             }
 
@@ -79,7 +79,7 @@ class CosmeticServiceImpl(
     }
 
     override suspend fun processUpdateCosmeticSettings(
-        message: WebsocketCosmeticV1.UpdateCosmeticSettingsRequest,
+        message: UpdateCosmeticSettingsRequest,
         user: User,
         session: WebSocketSession
     ): GeneratedMessage {
@@ -104,12 +104,12 @@ class CosmeticServiceImpl(
                 // push cosmetics event
                 targetSession?.pushCosmeticEvent(user, message.settings)
             }
-        return WebsocketCosmeticV1.UpdateCosmeticSettingsResponse.getDefaultInstance()
+        return UpdateCosmeticSettingsResponse.getDefaultInstance()
     }
 
     private suspend fun WebSocketSession.pushCosmeticEvent(
         user: User,
-        settings: WebsocketCosmeticV1.CustomizableCosmeticSettings
+        settings: CustomizableCosmeticSettings
     ) {
         // push cosmetics event
         this.pushEvent(this@CosmeticServiceImpl.buildCosmeticsPush(user, settings))
@@ -117,9 +117,9 @@ class CosmeticServiceImpl(
 
     private fun buildCosmeticsPush(
         user: User,
-        settings: WebsocketCosmeticV1.CustomizableCosmeticSettings
+        settings: CustomizableCosmeticSettings
     ) =
-        WebsocketCosmeticV1.PlayerCosmeticsPush.newBuilder().apply {
+        PlayerCosmeticsPush.newBuilder().apply {
             this.playerUuid = user.uuid.toLunarClientUUID()
             this.settings = settings
             this.logoColor = user.role.toLunarClientColor()
@@ -127,7 +127,7 @@ class CosmeticServiceImpl(
         }.build()
 
     override suspend fun processLogin(user: User): GeneratedMessage {
-        return WebsocketCosmeticV1.LoginResponse.newBuilder().apply {
+        return LoginResponse.newBuilder().apply {
             settings = buildCosmeticSettings(user)
             logoColor = user.role.toLunarClientColor()
             rankName = user.role.rank
@@ -141,8 +141,8 @@ class CosmeticServiceImpl(
         }.build()
     }
 
-    private fun buildCosmeticSettings(user: User): WebsocketCosmeticV1.CustomizableCosmeticSettings {
-        return WebsocketCosmeticV1.CustomizableCosmeticSettings.newBuilder().apply {
+    private fun buildCosmeticSettings(user: User): CustomizableCosmeticSettings {
+        return CustomizableCosmeticSettings.newBuilder().apply {
             addAllActiveCosmeticIds(user.cosmetic.activeCosmetics.map { it })
             addAllEquippedCosmetics(user.cosmetic.equippedCosmetics.map { it.toEquippedCosmetic() })
             flipShoulderPet = user.cosmetic.flipShoulderPet

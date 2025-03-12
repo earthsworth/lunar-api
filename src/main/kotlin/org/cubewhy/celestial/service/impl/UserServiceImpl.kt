@@ -1,6 +1,6 @@
 package org.cubewhy.celestial.service.impl
 
-import com.lunarclient.authenticator.v1.LunarclientAuthenticatorV1
+import com.lunarclient.authenticator.v1.HelloMessage
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.annotation.PostConstruct
 import kotlinx.coroutines.CoroutineScope
@@ -81,7 +81,7 @@ class UserServiceImpl(
             .awaitFirst()
     }
 
-    override suspend fun loadUser(hello: LunarclientAuthenticatorV1.HelloMessage): User {
+    override suspend fun loadUser(hello: HelloMessage): User {
         val uuid = hello.identity.uuid.toUUIDString()
         return this.loadUser(hello.identity.username, uuid)
     }

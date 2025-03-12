@@ -1,7 +1,7 @@
 package org.cubewhy.celestial.service.impl
 
 import com.google.protobuf.ByteString
-import com.lunarclient.websocket.language.v1.WebsocketLanguageV1
+import com.lunarclient.websocket.language.v1.*
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.cubewhy.celestial.entity.User
 import org.cubewhy.celestial.entity.WebsocketResponse
@@ -18,13 +18,13 @@ class LanguageServiceImpl : LanguageService {
     }
 
     override suspend fun processUpdateLanguageRequest(
-        request: WebsocketLanguageV1.UpdateLanguageRequest,
+        request: UpdateLanguageRequest,
         session: WebSocketSession,
         user: User
-    ): WebsocketLanguageV1.UpdateLanguageResponse {
+    ): UpdateLanguageResponse {
         logger.info { "User ${user.username} selected new language ${request.newLanguage}" }
         session.attributes["language"] = request.newLanguage
-        return WebsocketLanguageV1.UpdateLanguageResponse.getDefaultInstance()
+        return UpdateLanguageResponse.getDefaultInstance()
     }
 
     override suspend fun process(
@@ -36,7 +36,7 @@ class LanguageServiceImpl : LanguageService {
         return when (method) {
             "UpdateLanguageRequest" ->
                 this.processUpdateLanguageRequest(
-                    WebsocketLanguageV1.UpdateLanguageRequest.parseFrom(payload),
+                    UpdateLanguageRequest.parseFrom(payload),
                     session,
                     user
                 ).toWebsocketResponse()

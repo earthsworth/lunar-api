@@ -1,7 +1,7 @@
 package org.cubewhy.celestial.service.impl
 
 import com.google.protobuf.ByteString
-import com.lunarclient.websocket.conversation.v1.WebsocketConversationV1
+import com.lunarclient.websocket.conversation.v1.*
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.reactive.awaitFirst
 import org.cubewhy.celestial.entity.*
@@ -39,7 +39,7 @@ class ConversationServiceImpl(
     ): WebsocketResponse {
         return when (method) {
             "SendConversationMessage" -> this.processSendMessage(
-                WebsocketConversationV1.SendConversationMessageRequest.parseFrom(payload),
+                SendConversationMessageRequest.parseFrom(payload),
                 user,
                 session
             )
@@ -49,7 +49,7 @@ class ConversationServiceImpl(
     }
 
     override suspend fun processSendMessage(
-        request: WebsocketConversationV1.SendConversationMessageRequest,
+        request: SendConversationMessageRequest,
         user: User,
         session: WebSocketSession
     ): WebsocketResponse {
@@ -76,9 +76,9 @@ class ConversationServiceImpl(
                 ).awaitFirst().buildBotResponsePush(botUsername)
             )
             return WebsocketResponse.create(
-                WebsocketConversationV1.SendConversationMessageResponse.newBuilder().apply {
+                SendConversationMessageResponse.newBuilder().apply {
                     status =
-                        WebsocketConversationV1.SendConversationMessageResponse_Status.SENDCONVERSATIONMESSAGERESPONSE_STATUS_STATUS_OK
+                        SendConversationMessageResponse.Status.STATUS_OK
                 }.build(),
                 events
             )
@@ -86,9 +86,8 @@ class ConversationServiceImpl(
         val target = userRepository.findByUuid(recipientUuid).awaitFirst()
         if (!friendService.hasFriend(user, target)) {
             // not friends
-            return WebsocketConversationV1.SendConversationMessageResponse.newBuilder().apply {
-                status =
-                    WebsocketConversationV1.SendConversationMessageResponse_Status.SENDCONVERSATIONMESSAGERESPONSE_STATUS_STATUS_UNKNOWN_CONVERSATION
+            return SendConversationMessageResponse.newBuilder().apply {
+                status = SendConversationMessageResponse.Status.STATUS_UNKNOWN_CONVERSATION
             }.build().toWebsocketResponse()
         }
         logger.info { "User ${user.username} send message to ${target.username} (${chatMessage})" }
@@ -104,18 +103,18 @@ class ConversationServiceImpl(
         sessionService.getSession(target)
             ?.pushEvent(this.buildConversationMessagePush(savedMessage, user, request)) // push to recipient
         session.pushEvent(this.buildConversationMessagePush(savedMessage, user, request)) // push to self
-        return WebsocketConversationV1.SendConversationMessageResponse.newBuilder().apply {
+        return SendConversationMessageResponse.newBuilder().apply {
             status =
-                WebsocketConversationV1.SendConversationMessageResponse_Status.SENDCONVERSATIONMESSAGERESPONSE_STATUS_STATUS_OK
+                SendConversationMessageResponse.Status.STATUS_OK
         }.build().toWebsocketResponse()
     }
 
     private fun buildConversationMessagePush(
         message: Message,
         sender: User,
-        request: WebsocketConversationV1.SendConversationMessageRequest,
-    ): WebsocketConversationV1.ConversationMessagePush {
-        return WebsocketConversationV1.ConversationMessagePush.newBuilder().apply {
+        request: SendConversationMessageRequest,
+    ): ConversationMessagePush {
+        return ConversationMessagePush.newBuilder().apply {
             this.message =
                 this@ConversationServiceImpl.buildConversationMessage(message, sender)
             this.conversationReference = request.conversationReference
@@ -125,11 +124,11 @@ class ConversationServiceImpl(
     private fun buildConversationMessage(
         message: Message,
         sender: User
-    ) = WebsocketConversationV1.ConversationMessage.newBuilder().apply {
+    ) = ConversationMessage.newBuilder().apply {
         this.id = message.lunarclientId.toLunarClientUUID()
         this.contents =
-            WebsocketConversationV1.ConversationMessageContents.newBuilder().setPlainText(message.content).build()
-        this.sender = WebsocketConversationV1.ConversationSender.newBuilder().apply {
+            ConversationMessageContents.newBuilder().setPlainText(message.content).build()
+        this.sender = ConversationSender.newBuilder().apply {
             this.player = sender.toLunarClientPlayer()
         }.build()
         this.sentAt = message.timestamp.toProtobufType()

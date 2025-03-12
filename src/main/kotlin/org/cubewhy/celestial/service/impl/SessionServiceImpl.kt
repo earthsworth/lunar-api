@@ -1,8 +1,8 @@
 package org.cubewhy.celestial.service.impl
 
 import com.google.protobuf.kotlin.toByteString
-import com.lunarclient.common.v1.LunarclientCommonV1
-import com.lunarclient.websocket.friend.v1.WebsocketFriendV1
+import com.lunarclient.common.v1.*
+import com.lunarclient.websocket.friend.v1.*
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import kotlinx.coroutines.reactive.awaitLast
@@ -69,7 +69,7 @@ class SessionServiceImpl(
         return getOnlineUser(uuid)?.minecraftVersion
     }
 
-    override suspend fun saveLocation(user: User, location: WebsocketFriendV1.InboundLocation) {
+    override suspend fun saveLocation(user: User, location: InboundLocation) {
         // convert to json
         val locationJson = location.toJson()
         getOnlineUser(user.uuid)?.let { onlineUser ->
@@ -78,9 +78,9 @@ class SessionServiceImpl(
         }
     }
 
-    override suspend fun getLocation(uuid: String): LunarclientCommonV1.Location? =
+    override suspend fun getLocation(uuid: String): Location? =
         getOnlineUser(uuid)?.let { onlineUser ->
-            onlineUser.location?.toProtobufMessage(LunarclientCommonV1.Location.newBuilder())
+            onlineUser.location?.toProtobufMessage(Location.newBuilder())
         }
 
     /**

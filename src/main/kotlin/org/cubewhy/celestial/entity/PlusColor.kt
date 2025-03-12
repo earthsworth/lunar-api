@@ -1,6 +1,6 @@
 package org.cubewhy.celestial.entity
 
-import com.lunarclient.common.v1.LunarclientCommonV1
+import com.lunarclient.common.v1.Color
 
 enum class PlusColor(val color: Int) {
     PURPLE(0x7F00D9),
@@ -33,7 +33,7 @@ enum class PlusColor(val color: Int) {
     NAVY(0x03055B),
     MAROON(0x800000);
 
-    fun toLunarClientColor(): LunarclientCommonV1.Color = LunarclientCommonV1.Color.newBuilder()
+    fun toLunarClientColor(): Color = Color.newBuilder()
         .setColor(this.color)
         .build()
 

@@ -1,7 +1,8 @@
 package org.cubewhy.celestial.entity
 
-import com.lunarclient.websocket.cosmetic.v1.WebsocketCosmeticV1
-import com.lunarclient.websocket.cosmetic.v1.WebsocketCosmeticV1.OwnedCosmetic_ExpirationReason
+import com.lunarclient.websocket.cosmetic.v1.EquippedCosmetic
+import com.lunarclient.websocket.cosmetic.v1.OwnedCosmetic
+import com.lunarclient.websocket.cosmetic.v1.OwnedCosmetic.ExpirationReason
 import org.cubewhy.celestial.util.toProtobufType
 import java.time.Instant
 
@@ -23,12 +24,12 @@ data class UserCosmetic(
     val expiresAt: Instant?,
     val expirationReason: CosmeticExpirationReason?
 ) {
-    fun toEquippedCosmetic(): WebsocketCosmeticV1.EquippedCosmetic = WebsocketCosmeticV1.EquippedCosmetic.newBuilder()
+    fun toEquippedCosmetic(): EquippedCosmetic = EquippedCosmetic.newBuilder()
         .setCosmeticId(this.cosmeticId)
         .build()
 
-    fun toOwnedCosmetic(): WebsocketCosmeticV1.OwnedCosmetic {
-        return WebsocketCosmeticV1.OwnedCosmetic.newBuilder().apply {
+    fun toOwnedCosmetic(): OwnedCosmetic {
+        return OwnedCosmetic.newBuilder().apply {
             cosmeticId = this@UserCosmetic.cosmeticId
             grantedAt = this@UserCosmetic.grantedAt.toProtobufType()
             this@UserCosmetic.expirationReason?.let { setExpirationReason(it.toLunarClientType()) }
@@ -44,9 +45,9 @@ enum class CosmeticExpirationReason {
     LEFT_LC_DISCORD;
 
     fun toLunarClientType() = when (this) {
-        UNSPECIFIED -> OwnedCosmetic_ExpirationReason.OWNEDCOSMETIC_EXPIRATIONREASON_EXPIRATION_REASON_UNSPECIFIED
-        TIME_LAPSED -> OwnedCosmetic_ExpirationReason.OWNEDCOSMETIC_EXPIRATIONREASON_EXPIRATION_REASON_TIME_LAPSED
-        LEFT_LC_DISCORD -> OwnedCosmetic_ExpirationReason.OWNEDCOSMETIC_EXPIRATIONREASON_EXPIRATION_REASON_LEFT_LC_DISCORD
+        UNSPECIFIED -> ExpirationReason.EXPIRATION_REASON_UNSPECIFIED
+        TIME_LAPSED -> ExpirationReason.EXPIRATION_REASON_TIME_LAPSED
+        LEFT_LC_DISCORD -> ExpirationReason.EXPIRATION_REASON_LEFT_LC_DISCORD
     }
 
 }

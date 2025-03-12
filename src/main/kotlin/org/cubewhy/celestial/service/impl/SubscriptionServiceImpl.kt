@@ -1,7 +1,7 @@
 package org.cubewhy.celestial.service.impl
 
 import com.google.protobuf.ByteString
-import com.lunarclient.websocket.subscription.v1.WebsocketSubscriptionV1
+import com.lunarclient.websocket.subscription.v1.*
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.cubewhy.celestial.entity.User
 import org.cubewhy.celestial.entity.WebsocketResponse
@@ -30,12 +30,12 @@ class SubscriptionServiceImpl(
     ): WebsocketResponse {
         return when (method) {
             "Subscribe" -> this.processSubscribe(
-                WebsocketSubscriptionV1.SubscribeRequest.parseFrom(payload),
+                SubscribeRequest.parseFrom(payload),
                 session,
                 user
             ).toWebsocketResponse()
             "Unsubscribe" -> this.processUnsubscribe(
-                WebsocketSubscriptionV1.UnsubscribeRequest.parseFrom(payload),
+                UnsubscribeRequest.parseFrom(payload),
                 session,
                 user
             ).toWebsocketResponse()
@@ -45,28 +45,28 @@ class SubscriptionServiceImpl(
     }
 
     override suspend fun processUnsubscribe(
-        request: WebsocketSubscriptionV1.UnsubscribeRequest,
+        request: UnsubscribeRequest,
         session: WebSocketSession,
         user: User
-    ): WebsocketSubscriptionV1.UnsubscribeResponse {
+    ): UnsubscribeResponse {
         val uuids = request.targetUuidsList
         logger.info { "User ${user.username} update multiplayer player list (removed ${uuids.size} players)" }
         @Suppress("UNCHECKED_CAST")
         (session.attributes["multiplayer-uuids"] as MutableList<String>).removeAll(uuids.map { it.toUUIDString() }
             .toSet()) // set new uuid list
-        return WebsocketSubscriptionV1.UnsubscribeResponse.getDefaultInstance()
+        return UnsubscribeResponse.getDefaultInstance()
     }
 
     override suspend fun processSubscribe(
-        request: WebsocketSubscriptionV1.SubscribeRequest,
+        request: SubscribeRequest,
         session: WebSocketSession,
         user: User
-    ): WebsocketSubscriptionV1.SubscribeResponse {
+    ): SubscribeResponse {
         val playerUuids = request.targetUuidsList.map { it.toUUIDString() }
         // save ids to session properties
         this.saveWorldPlayerUuids(session, playerUuids, user)
 
-        return WebsocketSubscriptionV1.SubscribeResponse.newBuilder().build() // empty data
+        return SubscribeResponse.newBuilder().build() // empty data
     }
 
     fun saveWorldPlayerUuids(

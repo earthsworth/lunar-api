@@ -1,6 +1,6 @@
 package org.cubewhy.celestial.entity
 
-import com.lunarclient.common.v1.LunarclientCommonV1.UuidAndUsername
+import com.lunarclient.common.v1.UuidAndUsername
 import org.cubewhy.celestial.util.toLunarClientUUID
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document

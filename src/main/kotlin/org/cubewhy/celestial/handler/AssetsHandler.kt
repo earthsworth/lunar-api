@@ -1,7 +1,7 @@
 package org.cubewhy.celestial.handler
 
-import com.lunarclient.websocket.handshake.v1.WebsocketHandshakeV1
-import com.lunarclient.websocket.protocol.v1.WebsocketProtocolV1
+import com.lunarclient.websocket.handshake.v1.Handshake
+import com.lunarclient.websocket.protocol.v1.ServerboundWebSocketMessage
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import kotlinx.coroutines.reactor.mono
@@ -32,7 +32,7 @@ class AssetsHandler(
         return session.receive().concatMap { message ->
             if (!session.attributes.containsKey("user")) {
                 // process handshake
-                val pbMessage = WebsocketHandshakeV1.Handshake.parseFrom(message.payload.asInputStream())
+                val pbMessage = Handshake.parseFrom(message.payload.asInputStream())
                 mono {
                     val user = packetService.processHandshake(pbMessage, session)
                     session.attributes["user"] = user
@@ -42,7 +42,7 @@ class AssetsHandler(
             } else {
                 // process common message
                 val pbMessage =
-                    WebsocketProtocolV1.ServerboundWebSocketMessage.parseFrom(message.payload.asInputStream())
+                    ServerboundWebSocketMessage.parseFrom(message.payload.asInputStream())
                 mono {
                     packetService.process(pbMessage, session).apply {
                         requestId = pbMessage.requestId

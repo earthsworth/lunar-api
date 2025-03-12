@@ -1,8 +1,7 @@
 package org.cubewhy.celestial.service.impl
 
-import com.lunarclient.authenticator.v1.LunarclientAuthenticatorV1
-import com.lunarclient.websocket.handshake.v1.WebsocketHandshakeV1
-import com.lunarclient.websocket.protocol.v1.WebsocketProtocolV1
+import com.lunarclient.authenticator.v1.AuthSuccessMessage
+import com.lunarclient.websocket.handshake.v1.Handshake
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.cubewhy.celestial.entity.User
 import org.cubewhy.celestial.entity.WebsocketResponse
@@ -14,6 +13,8 @@ import org.springframework.stereotype.Service
 import org.springframework.web.reactive.socket.WebSocketSession
 import reactor.core.publisher.SignalType
 import java.time.Instant
+import com.lunarclient.authenticator.v1.ServerboundWebSocketMessage as AuthenticatorServerboundWebsocketMessage
+import com.lunarclient.websocket.protocol.v1.ServerboundWebSocketMessage as AssetsServerboundWebSocketMessage
 
 @Service
 class PacketServiceImpl(
@@ -31,7 +32,7 @@ class PacketServiceImpl(
         private val logger = KotlinLogging.logger {}
     }
 
-    override suspend fun processAuthorize(message: LunarclientAuthenticatorV1.ServerboundWebSocketMessage): LunarclientAuthenticatorV1.AuthSuccessMessage? {
+    override suspend fun processAuthorize(message: AuthenticatorServerboundWebsocketMessage): AuthSuccessMessage? {
         // load user
         if (message.hasHello()) {
             val hello = message.hello
@@ -40,14 +41,14 @@ class PacketServiceImpl(
             val jwt = jwtUtil.createJwt(user)
             // create packet
             logger.info { "User ${user.username} successfully authenticated" }
-            return LunarclientAuthenticatorV1.AuthSuccessMessage.newBuilder()
+            return AuthSuccessMessage.newBuilder()
                 .setJwt(jwt)
                 .build()
         }
         return null // unknown packet
     }
 
-    override suspend fun processHandshake(message: WebsocketHandshakeV1.Handshake, session: WebSocketSession): User? {
+    override suspend fun processHandshake(message: Handshake, session: WebSocketSession): User? {
         // this is the handshake packet (first packet)
         // parse packet
         val jwt = message.identity.authenticatorJwt
@@ -87,7 +88,7 @@ class PacketServiceImpl(
     }
 
     override suspend fun process(
-        message: WebsocketProtocolV1.ServerboundWebSocketMessage,
+        message: AssetsServerboundWebSocketMessage,
         session: WebSocketSession
     ): WebsocketResponse {
         val user = session.attributes["user"] as User

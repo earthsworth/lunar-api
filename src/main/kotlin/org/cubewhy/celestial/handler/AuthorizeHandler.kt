@@ -1,6 +1,6 @@
 package org.cubewhy.celestial.handler
 
-import com.lunarclient.authenticator.v1.LunarclientAuthenticatorV1
+import com.lunarclient.authenticator.v1.ServerboundWebSocketMessage
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.reactor.mono
 import org.cubewhy.celestial.service.PacketService
@@ -23,7 +23,7 @@ class AuthorizeHandler(
     override fun handle(session: WebSocketSession): Mono<Void> {
         return session.receive()
             .flatMap { message ->
-                LunarclientAuthenticatorV1.ServerboundWebSocketMessage.parseFrom(message.payload.asInputStream())
+                ServerboundWebSocketMessage.parseFrom(message.payload.asInputStream())
                     .toMono()
             } // parse message
             .flatMap { message -> mono { packetService.processAuthorize(message) } } // process message

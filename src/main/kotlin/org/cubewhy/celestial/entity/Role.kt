@@ -1,6 +1,7 @@
 package org.cubewhy.celestial.entity
 
-import com.lunarclient.common.v1.LunarclientCommonV1
+import com.lunarclient.common.v1.Color
+
 
 enum class Role(val color: Int, val rank: String) {
     USER(0xFFFFFF, "User"),
@@ -9,7 +10,7 @@ enum class Role(val color: Int, val rank: String) {
     DEVELOPER(0x00FFF0, "Dev"),
     OWNER(0x96010E, "Owner");
 
-    fun toLunarClientColor(): LunarclientCommonV1.Color = LunarclientCommonV1.Color.newBuilder()
+    fun toLunarClientColor(): Color = Color.newBuilder()
         .setColor(this.color)
         .build()
 }

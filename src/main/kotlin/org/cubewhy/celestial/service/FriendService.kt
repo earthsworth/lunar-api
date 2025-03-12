@@ -1,7 +1,7 @@
 package org.cubewhy.celestial.service
 
 import com.google.protobuf.GeneratedMessage
-import com.lunarclient.websocket.friend.v1.WebsocketFriendV1
+import com.lunarclient.websocket.friend.v1.*
 import org.cubewhy.celestial.entity.User
 import org.cubewhy.celestial.entity.WebsocketResponse
 import org.springframework.web.reactive.socket.WebSocketSession
@@ -13,38 +13,38 @@ interface FriendService : PacketProcessor {
     ): WebsocketResponse
 
     suspend fun processAddFriendRequest(
-        message: WebsocketFriendV1.SendFriendRequestRequest,
+        message: SendFriendRequestRequest,
         user: User
     ): GeneratedMessage
 
     suspend fun hasFriend(user: User, target: User): Boolean
-    suspend fun processToggleFriendRequests(message: WebsocketFriendV1.ToggleFriendRequestsRequest, user: User): GeneratedMessage
+    suspend fun processToggleFriendRequests(message: ToggleFriendRequestsRequest, user: User): GeneratedMessage
     suspend fun processBroadcastStatusChange(
-        message: WebsocketFriendV1.BroadcastStatusChangeRequest,
+        message: BroadcastStatusChangeRequest,
         user: User
     ): GeneratedMessage
 
     suspend fun processAcceptFriendRequestRequest(
-        message: WebsocketFriendV1.AcceptFriendRequestRequest,
+        message: AcceptFriendRequestRequest,
         user: User
     ): GeneratedMessage
 
     suspend fun processRemoveFriendPinRequest(
-        message: WebsocketFriendV1.RemoveFriendPinRequest,
+        message: RemoveFriendPinRequest,
         user: User
     ): GeneratedMessage
 
-    suspend fun processAddFriendPinRequest(message: WebsocketFriendV1.AddFriendPinRequest, user: User): GeneratedMessage
+    suspend fun processAddFriendPinRequest(message: AddFriendPinRequest, user: User): GeneratedMessage
     suspend fun processDenyFriendRequest(
-        message: WebsocketFriendV1.DenyFriendRequestRequest,
+        message: DenyFriendRequestRequest,
         user: User
     ): GeneratedMessage
 
     suspend fun processCancelFriendRequest(
-        message: WebsocketFriendV1.CancelFriendRequestRequest,
+        message: CancelFriendRequestRequest,
         user: User
     ): GeneratedMessage
 
-    suspend fun processRemoveFriendRequest(message: WebsocketFriendV1.RemoveFriendRequest, user: User): GeneratedMessage
+    suspend fun processRemoveFriendRequest(message: RemoveFriendRequest, user: User): GeneratedMessage
     suspend fun userOffline(user: User)
 }

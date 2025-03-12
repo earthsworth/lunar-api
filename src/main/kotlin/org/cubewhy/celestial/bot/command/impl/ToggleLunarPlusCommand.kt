@@ -1,6 +1,6 @@
 package org.cubewhy.celestial.bot.command.impl
 
-import com.lunarclient.websocket.cosmetic.v1.WebsocketCosmeticV1
+import com.lunarclient.websocket.cosmetic.v1.RefreshCosmeticsPush
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.reactive.awaitFirst
 import org.cubewhy.celestial.bot.command.Command
@@ -34,7 +34,7 @@ class ToggleLunarPlusCommand(
         userRepository.save(user).awaitFirst()
 
         // push event
-        sessionService.getSession(user)?.pushEvent(WebsocketCosmeticV1.RefreshCosmeticsPush.getDefaultInstance())
+        sessionService.getSession(user)?.pushEvent(RefreshCosmeticsPush.getDefaultInstance())
         return "Success ${if (newState) "enabled" else "disabled"} Lunar+ feature."
     }
 }

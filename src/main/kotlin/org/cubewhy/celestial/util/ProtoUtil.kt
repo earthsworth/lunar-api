@@ -5,13 +5,13 @@ import com.google.protobuf.ByteString
 import com.google.protobuf.GeneratedMessage
 import com.google.protobuf.Timestamp
 import com.google.protobuf.util.JsonFormat
-import com.lunarclient.authenticator.v1.LunarclientAuthenticatorV1
-import com.lunarclient.authenticator.v1.LunarclientAuthenticatorV1.AuthSuccessMessage
-import com.lunarclient.common.v1.LunarclientCommonV1
-import com.lunarclient.common.v1.LunarclientCommonV1.UuidAndUsername
-import com.lunarclient.websocket.conversation.v1.WebsocketConversationV1
-import com.lunarclient.websocket.protocol.v1.WebsocketProtocolV1
-import com.lunarclient.websocket.protocol.v1.WebsocketProtocolV1.WebSocketRpcResponse
+import com.lunarclient.authenticator.v1.AuthSuccessMessage
+import com.lunarclient.authenticator.v1.ClientboundWebSocketMessage as AuthenticatorClientboundWebsocketMessage
+import com.lunarclient.common.v1.*
+import com.lunarclient.common.v1.UuidAndUsername
+import com.lunarclient.websocket.conversation.v1.*
+import com.lunarclient.websocket.protocol.v1.*
+import com.lunarclient.websocket.protocol.v1.ClientboundWebSocketMessage as AssetsClientboundWebsocketMessage
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import org.cubewhy.celestial.entity.Message
 import org.springframework.web.reactive.socket.WebSocketSession
@@ -25,8 +25,8 @@ import java.util.*
  *
  * @param requestId clientside request id
  * */
-fun GeneratedMessage.wrapCommon(requestId: ByteString): WebsocketProtocolV1.ClientboundWebSocketMessage {
-    return WebsocketProtocolV1.ClientboundWebSocketMessage.newBuilder()
+fun GeneratedMessage.wrapCommon(requestId: ByteString): AssetsClientboundWebsocketMessage {
+    return AssetsClientboundWebsocketMessage.newBuilder()
         .setRpcResponse(
             WebSocketRpcResponse.newBuilder()
                 .setRequestId(requestId)
@@ -37,19 +37,19 @@ fun GeneratedMessage.wrapCommon(requestId: ByteString): WebsocketProtocolV1.Clie
 }
 
 
-fun GeneratedMessage.wrapPush(): WebsocketProtocolV1.ClientboundWebSocketMessage {
-    return WebsocketProtocolV1.ClientboundWebSocketMessage.newBuilder().apply {
+fun GeneratedMessage.wrapPush(): AssetsClientboundWebsocketMessage {
+    return AssetsClientboundWebsocketMessage.newBuilder().apply {
         pushNotification = Any.pack(this@wrapPush)
     }.build()
 }
 
-fun AuthSuccessMessage.wrapAuthenticator(): LunarclientAuthenticatorV1.ClientboundWebSocketMessage {
-    return LunarclientAuthenticatorV1.ClientboundWebSocketMessage.newBuilder()
+fun AuthSuccessMessage.wrapAuthenticator(): AuthenticatorClientboundWebsocketMessage {
+    return AuthenticatorClientboundWebsocketMessage.newBuilder()
         .setAuthSuccess(this)
         .build()
 }
 
-fun LunarclientCommonV1.Uuid.toUUIDString(): String {
+fun Uuid.toUUIDString(): String {
     return UUID(this.high64, this.low64).toString()
 }
 
@@ -58,12 +58,12 @@ fun Instant.toProtobufType(): Timestamp = Timestamp.newBuilder()
     .setNanos(nano)
     .build()
 
-fun Int.toLunarClientColor(): LunarclientCommonV1.Color =
-    LunarclientCommonV1.Color.newBuilder().apply {
+fun Int.toLunarClientColor(): Color =
+    Color.newBuilder().apply {
         color = this@toLunarClientColor
     }.build()
 
-fun UUID.toLunarClientUUID(): LunarclientCommonV1.Uuid = LunarclientCommonV1.Uuid.newBuilder().apply {
+fun UUID.toLunarClientUUID(): Uuid = Uuid.newBuilder().apply {
     this.high64 = this@toLunarClientUUID.mostSignificantBits
     this.low64 = this@toLunarClientUUID.leastSignificantBits
 }.build()
@@ -102,20 +102,20 @@ fun <T : GeneratedMessage, B : GeneratedMessage.Builder<B>> String.toProtobufMes
     return builder.build() as T
 }
 
-fun Message.buildBotResponsePush(botUsername: String): List<WebsocketConversationV1.ConversationMessagePush> {
+fun Message.buildBotResponsePush(botUsername: String): List<ConversationMessagePush> {
     return this.content.split("\n").map { line ->
-        WebsocketConversationV1.ConversationMessagePush.newBuilder().apply {
-            this.message = WebsocketConversationV1.ConversationMessage.newBuilder().apply {
+        ConversationMessagePush.newBuilder().apply {
+            this.message = ConversationMessage.newBuilder().apply {
                 this.id = this@buildBotResponsePush.lunarclientId.toLunarClientUUID()
                 this.contents =
-                    WebsocketConversationV1.ConversationMessageContents.newBuilder().setPlainText(line)
+                    ConversationMessageContents.newBuilder().setPlainText(line)
                         .build()
-                this.sender = WebsocketConversationV1.ConversationSender.newBuilder().apply {
+                this.sender = ConversationSender.newBuilder().apply {
                     this.player = botUsername.toLunarClientPlayer(bot = true)
                 }.build()
                 this.sentAt = this@buildBotResponsePush.timestamp.toProtobufType()
             }.build()
-            this.conversationReference = WebsocketConversationV1.ConversationReference.newBuilder().apply {
+            this.conversationReference = ConversationReference.newBuilder().apply {
                 this.friendUuid = botUuid.toLunarClientUUID()
             }.build()
         }.build()

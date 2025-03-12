@@ -2,7 +2,7 @@ package org.cubewhy.celestial.service.impl
 
 import com.google.protobuf.ByteString
 import com.google.protobuf.GeneratedMessage
-import com.lunarclient.websocket.emote.v1.WebsocketEmoteV1
+import com.lunarclient.websocket.emote.v1.*
 import com.opencsv.CSVReader
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.annotation.PostConstruct
@@ -62,7 +62,7 @@ class EmoteServiceImpl(
         return when (method) {
             "Login" -> this.processLogin(user).toWebsocketResponse()
             "UseEmote" -> this.processUseEmote(
-                WebsocketEmoteV1.UseEmoteRequest.parseFrom(payload),
+                UseEmoteRequest.parseFrom(payload),
                 session,
                 user
             ).toWebsocketResponse()
@@ -71,7 +71,7 @@ class EmoteServiceImpl(
                 user
             ).toWebsocketResponse()
             "UpdateEquippedEmotes" -> this.processUpdateEquippedEmotes(
-                WebsocketEmoteV1.UpdateEquippedEmotesRequest.parseFrom(payload),
+                UpdateEquippedEmotesRequest.parseFrom(payload),
                 session,
                 user
             ).toWebsocketResponse()
@@ -80,19 +80,19 @@ class EmoteServiceImpl(
     }
 
     override suspend fun processUpdateEquippedEmotes(
-        request: WebsocketEmoteV1.UpdateEquippedEmotesRequest,
+        request: UpdateEquippedEmotesRequest,
         session: WebSocketSession,
         user: User
-    ): WebsocketEmoteV1.UpdateEquippedEmotesResponse {
+    ): UpdateEquippedEmotesResponse {
         user.emote.equippedEmotes = emoteList.stream().filter {
             request.equippedEmoteIdsList.contains(it.emoteId)
         }.toList()
         userRepository.save(user).awaitFirst()
-        return WebsocketEmoteV1.UpdateEquippedEmotesResponse.newBuilder().build()
+        return UpdateEquippedEmotesResponse.newBuilder().build()
     }
 
     override suspend fun processLogin(user: User): GeneratedMessage {
-        return WebsocketEmoteV1.LoginResponse.newBuilder().apply {
+        return LoginResponse.newBuilder().apply {
             addAllOwnedEmotes(emoteList.map { it.toOwnedEmote(it.emoteId) })
             addAllOwnedEmoteIds(emoteList.map { it.emoteId })
             addAllEquippedEmoteIds(user.emote.equippedEmotes.map { it.emoteId })
@@ -101,44 +101,44 @@ class EmoteServiceImpl(
     }
 
     override suspend fun processUseEmote(
-        request: WebsocketEmoteV1.UseEmoteRequest,
+        request: UseEmoteRequest,
         session: WebSocketSession,
         user: User
-    ): WebsocketEmoteV1.UseEmoteResponse {
+    ): UseEmoteResponse {
         // send push to players
         subscriptionService.getWorldPlayerUuids(session).forEach { uuid ->
             // build push
             val push = this.buildUseEmotePush(request, user)
             sessionService.getSession(uuid)?.pushEvent(push)
         }
-        return WebsocketEmoteV1.UseEmoteResponse.newBuilder().apply {
+        return UseEmoteResponse.newBuilder().apply {
             this.emoteId = request.emoteId
             this.emoteMetadata = request.emoteMetadata
-            this.status = WebsocketEmoteV1.UseEmoteResponse_Status.USEEMOTERESPONSE_STATUS_STATUS_OK
+            this.status = UseEmoteResponse.Status.STATUS_OK
         }.build()
     }
 
     override suspend fun processStopEmote(
         session: WebSocketSession,
         user: User
-    ): WebsocketEmoteV1.StopEmoteResponse {
+    ): StopEmoteResponse {
         subscriptionService.getWorldPlayerUuids(session).forEach { uuid ->
             // build push
             val push = this.buildStopEmotePush(user)
             sessionService.getSession(uuid)?.pushEvent(push)
         }
-        return WebsocketEmoteV1.StopEmoteResponse.getDefaultInstance()
+        return StopEmoteResponse.getDefaultInstance()
     }
 
-    private fun buildUseEmotePush(request: WebsocketEmoteV1.UseEmoteRequest, user: User) =
-        WebsocketEmoteV1.UseEmotePush.newBuilder().apply {
+    private fun buildUseEmotePush(request: UseEmoteRequest, user: User) =
+        UseEmotePush.newBuilder().apply {
             this.emoteId = request.emoteId
             this.emoteMetadata = request.emoteMetadata
             this.playerUuid = user.uuid.toLunarClientUUID()
             this.emoteSoundtrackUrl = request.emoteSoundtrackUrl
         }.build()
 
-    private fun buildStopEmotePush(user: User) = WebsocketEmoteV1.StopEmotePush.newBuilder().apply {
+    private fun buildStopEmotePush(user: User) = StopEmotePush.newBuilder().apply {
         this.playerUuid = user.uuid.toLunarClientUUID()
     }.build()
 }
