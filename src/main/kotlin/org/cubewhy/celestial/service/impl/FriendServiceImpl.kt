@@ -440,7 +440,7 @@ class FriendServiceImpl(
         this.findFriends(user).forEach { target ->
             // push event
             sessionService.getSession(target.friendUser)
-                ?.pushEvent(this.buildOnlineFriendStatusPush(target.lunarType, user))
+                ?.pushEvent(this.buildOnlineFriendStatusPush(target.lunarType, target.friendUser))
         }
         return BroadcastStatusChangeResponse.getDefaultInstance()
     }
