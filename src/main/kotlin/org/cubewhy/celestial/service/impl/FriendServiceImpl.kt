@@ -440,7 +440,7 @@ class FriendServiceImpl(
         this.findFriends(user).forEach { target ->
             // push event
             sessionService.getSession(target.friendUser)
-                ?.pushEvent(this.buildOnlineFriendStatusPush(target.lunarType, target.friendUser))
+                ?.pushEvent(this.buildOnlineFriendStatusPush(buildOfflineFriend(user, target.friend), user))
         }
         return BroadcastStatusChangeResponse.getDefaultInstance()
     }
@@ -464,6 +464,7 @@ class FriendServiceImpl(
                                 targetUser,
                                 friend
                             ),
+                            friend = friend,
                             friendUser = targetUser
                         )
                     }
@@ -575,5 +576,6 @@ class FriendServiceImpl(
 
 private data class InternalFriendDTO(
     val lunarType: OfflineFriend,
+    val friend: Friend,
     val friendUser: User
 )
