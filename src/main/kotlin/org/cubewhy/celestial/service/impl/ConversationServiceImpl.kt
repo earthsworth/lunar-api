@@ -102,7 +102,7 @@ class ConversationServiceImpl(
         // push chat message
         sessionService.getSession(target)
             ?.pushEvent(this.buildConversationMessagePush(savedMessage, user, ConversationReference.newBuilder().apply {
-                this.friendUuid = target.uuid.toLunarClientUUID()
+                this.friendUuid = user.uuid.toLunarClientUUID()
             }.build())) // push to recipient
         session.pushEvent(this.buildConversationMessagePush(savedMessage, user, request.conversationReference)) // push to self
         return SendConversationMessageResponse.newBuilder().apply {
