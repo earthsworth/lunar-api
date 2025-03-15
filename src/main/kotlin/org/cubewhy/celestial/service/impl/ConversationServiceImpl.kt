@@ -66,7 +66,7 @@ class ConversationServiceImpl(
                     content = chatMessage,
                 )
             ).awaitFirst()
-            val events = mutableListOf(this.buildConversationMessagePush(savedMessage, user, request))
+            val events = mutableListOf(this.buildConversationMessagePush(savedMessage, user, request.conversationReference))
             events.addAll(
                 messageRepository.save(
                     commandService.process(
@@ -101,8 +101,10 @@ class ConversationServiceImpl(
         ).awaitFirst()
         // push chat message
         sessionService.getSession(target)
-            ?.pushEvent(this.buildConversationMessagePush(savedMessage, user, request)) // push to recipient
-        session.pushEvent(this.buildConversationMessagePush(savedMessage, user, request)) // push to self
+            ?.pushEvent(this.buildConversationMessagePush(savedMessage, user, ConversationReference.newBuilder().apply {
+                this.friendUuid = target.uuid.toLunarClientUUID()
+            }.build())) // push to recipient
+        session.pushEvent(this.buildConversationMessagePush(savedMessage, user, request.conversationReference)) // push to self
         return SendConversationMessageResponse.newBuilder().apply {
             status =
                 SendConversationMessageResponse.Status.STATUS_OK
@@ -112,12 +114,12 @@ class ConversationServiceImpl(
     private fun buildConversationMessagePush(
         message: Message,
         sender: User,
-        request: SendConversationMessageRequest,
+        conversationReference: ConversationReference,
     ): ConversationMessagePush {
         return ConversationMessagePush.newBuilder().apply {
             this.message =
                 this@ConversationServiceImpl.buildConversationMessage(message, sender)
-            this.conversationReference = request.conversationReference
+            this.conversationReference = conversationReference
         }.build()
     }
 
