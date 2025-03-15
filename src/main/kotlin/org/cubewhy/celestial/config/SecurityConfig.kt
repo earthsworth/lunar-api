@@ -1,6 +1,7 @@
 package org.cubewhy.celestial.config
 
 import org.cubewhy.celestial.entity.RestBean
+import org.cubewhy.celestial.entity.Role
 import org.cubewhy.celestial.entity.vo.AuthorizeVO
 import org.cubewhy.celestial.service.UserService
 import org.cubewhy.celestial.util.JwtUtil
@@ -44,7 +45,7 @@ class SecurityConfig(
                     pathMatchers("/ws/**", "/ws", "/api/user/register", "/api/analysis/**", "/api/user/login"),
                     permitAll
                 )
-                authorize(pathMatchers("/api/admin/**"), hasAuthority("ADMIN"))
+                authorize(pathMatchers("/api/admin/**"), hasAnyRole(Role.OWNER.name, Role.ADMIN.name))
                 authorize(anyExchange, authenticated)
             }
             formLogin {

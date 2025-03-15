@@ -11,7 +11,7 @@ import org.cubewhy.celestial.entity.User
 import org.cubewhy.celestial.entity.WebUser
 import org.cubewhy.celestial.entity.dto.RegisterUserDTO
 import org.cubewhy.celestial.entity.dto.ResetPasswordDTO
-import org.cubewhy.celestial.entity.vo.UserVO
+import org.cubewhy.celestial.entity.vo.WebUserVO
 import org.cubewhy.celestial.event.UserOfflineEvent
 import org.cubewhy.celestial.repository.UserRepository
 import org.cubewhy.celestial.repository.WebUserRepository
@@ -53,8 +53,8 @@ class UserServiceImpl(
             if (webUserRepository.countByRole(Role.OWNER).awaitFirst() == 0L) {
                 logger.info { "Creating default users" }
                 val owner = WebUser(
-                    username = "admin",
-                    password = passwordEncoder.encode("password"),
+                    username = defaultUsername,
+                    password = passwordEncoder.encode(defaultUserPassword),
                     role = Role.OWNER
                 )
                 webUserRepository.save(owner).awaitFirst()
@@ -114,7 +114,7 @@ class UserServiceImpl(
         return webUserRepository.findByUsername(username)
     }
 
-    override suspend fun registerWebUser(dto: RegisterUserDTO): UserVO? {
+    override suspend fun registerWebUser(dto: RegisterUserDTO): WebUserVO? {
         // create web user
         if (webUserRepository.existsByUsername(dto.username).awaitFirst()) {
             return null
@@ -127,7 +127,7 @@ class UserServiceImpl(
         // save web user
         val saved = webUserRepository.save(webUser).awaitFirst()
         logger.info { "Web user ${webUser.username} was registered" }
-        return UserVO(
+        return WebUserVO(
             id = saved.id!!,
             username = saved.username,
             role = saved.role.name
@@ -149,5 +149,14 @@ class UserServiceImpl(
         user.password = passwordEncoder.encode(dto.password)
         // save user
         webUserRepository.save(user).awaitFirst()
+    }
+
+    override suspend fun loadWebUserVO(id: String): WebUserVO {
+        val wu = webUserRepository.findById(id).awaitFirst()
+        return WebUserVO(
+            id = wu.id!!,
+            username = wu.username,
+            role = wu.role.name
+        )
     }
 }

@@ -2,6 +2,7 @@ package org.cubewhy.celestial.controller
 
 import org.cubewhy.celestial.entity.RestBean
 import org.cubewhy.celestial.entity.dto.EditRoleDTO
+import org.cubewhy.celestial.entity.dto.TogglePlusDTO
 import org.cubewhy.celestial.entity.vo.PlayerInfoVO
 import org.cubewhy.celestial.service.AdminService
 import org.springframework.web.bind.annotation.*
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.*
 class AdminController(
     private val adminService: AdminService
 ) {
-    @PostMapping("/editRole")
+    @PostMapping("editRole")
     suspend fun editRole(
         @RequestBody dto: EditRoleDTO
     ): RestBean<Void> {
@@ -19,13 +20,14 @@ class AdminController(
         return RestBean.success()
     }
 
-    @GetMapping("/playerInfo/{playerName}")
+    @GetMapping("playerInfo/{playerName}")
     suspend fun getPlayerInfo(@PathVariable playerName: String): RestBean<PlayerInfoVO> {
-        return adminService.playerInfo(playerName)
+        return RestBean.success(adminService.playerInfo(playerName))
     }
 
-    @GetMapping("/togglePlus/{playerName}")
-    suspend fun togglePlus(@PathVariable playerName: String): RestBean<Void> {
-        return adminService.togglePlus(playerName)
+    @PostMapping("plus")
+    suspend fun togglePlus(@RequestBody dto: TogglePlusDTO): RestBean<Void> {
+        adminService.togglePlus(dto)
+        return RestBean.success()
     }
 }

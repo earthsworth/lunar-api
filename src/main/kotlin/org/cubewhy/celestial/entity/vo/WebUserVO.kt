@@ -1,8 +1,8 @@
 package org.cubewhy.celestial.entity.vo
 
-data class UserVO(
+data class WebUserVO(
     val id: String,
     val username: String,
     val role: String,
-    val gameUser: String? = null, // id
+    val gameUser: String? = null,
 )
