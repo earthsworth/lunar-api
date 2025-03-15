@@ -1,8 +1,8 @@
 package org.cubewhy.celestial.service.impl
 
 import com.google.protobuf.kotlin.toByteString
-import com.lunarclient.common.v1.*
-import com.lunarclient.websocket.friend.v1.*
+import com.lunarclient.common.v1.Location
+import com.lunarclient.websocket.friend.v1.InboundLocation
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import kotlinx.coroutines.reactive.awaitLast
@@ -80,7 +80,11 @@ class SessionServiceImpl(
 
     override suspend fun getLocation(uuid: String): Location? =
         getOnlineUser(uuid)?.let { onlineUser ->
-            onlineUser.location?.toProtobufMessage(Location.newBuilder())
+            try {
+                return onlineUser.location?.toProtobufMessage(Location.newBuilder())
+            } catch (e: Exception) {
+                null
+            }
         }
 
     /**
