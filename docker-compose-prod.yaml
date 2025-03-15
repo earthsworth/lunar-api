@@ -3,6 +3,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    volumes:
+      - gradle_cache:/home/gradle/.gradle
     ports:
       - '40888:8888'
     environment:
