@@ -66,3 +66,5 @@ volumes:
     driver: local
   rabbitmq_data:
     driver: local
+  gradle_cache:
+    driver: local
