@@ -484,7 +484,7 @@ class FriendServiceImpl(
             if (friendUser.cosmetic.lunarPlusState) {
                 plusColor = friendUser.cosmetic.lunarPlusColor.toLunarClientColor()
             }
-            logoColor = friendUser.role.toLunarClientColor()
+            logoColor = friendUser.logoColor
             isRadioPremium = friendUser.radioPremium
             lastVisibleOnline = friendUser.lastSeenAt.toProtobufType()
         }.build()
@@ -508,7 +508,7 @@ class FriendServiceImpl(
         sessionService.getSession(target)?.let { session ->
             session.pushEvent(FriendRequestReceivedPush.newBuilder().apply {
                 sender = user.toLunarClientPlayer()
-                senderLogoColor = user.role.toLunarClientColor()
+                senderLogoColor = user.logoColor
                 if (user.cosmetic.lunarPlusState) {
                     senderPlusColor = user.cosmetic.lunarPlusColor.toLunarClientColor()
                 }

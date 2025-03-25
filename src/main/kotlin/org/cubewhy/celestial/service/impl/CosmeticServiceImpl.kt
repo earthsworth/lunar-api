@@ -122,14 +122,14 @@ class CosmeticServiceImpl(
         PlayerCosmeticsPush.newBuilder().apply {
             this.playerUuid = user.uuid.toLunarClientUUID()
             this.settings = settings
-            this.logoColor = user.role.toLunarClientColor()
+            this.logoColor = user.logoColor
             this.logoAlwaysShow = user.cosmetic.logoAlwaysShow
         }.build()
 
     override suspend fun processLogin(user: User): GeneratedMessage {
         return LoginResponse.newBuilder().apply {
             settings = buildCosmeticSettings(user)
-            logoColor = user.role.toLunarClientColor()
+            logoColor = user.logoColor
             rankName = user.role.rank
             if (user.cosmetic.lunarPlusState) {
                 addAllAvailableLunarPlusColors(PlusColor.entries.map { it.toLunarClientColor() })
