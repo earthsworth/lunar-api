@@ -1,10 +1,12 @@
 services:
   api:
+    container_name: lunar-api
     build:
       context: .
       dockerfile: Dockerfile
+
     volumes:
-      - gradle_cache:/home/gradle/.gradle
+      - ~/.gradle:/root/.gradle
     ports:
       - '40888:8888'
     environment:
@@ -48,6 +50,8 @@ services:
       RABBITMQ_DEFAULT_VHOST: lunar
     configs:
       - source: plugins
+        uid: "100"
+        gid: "101"
         target: /etc/rabbitmq/enabled_plugins
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
