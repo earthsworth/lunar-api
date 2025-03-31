@@ -11,16 +11,16 @@ import java.time.Duration
 
 
 @Configuration
-class RabbitMQConfig {
+open class RabbitMQConfig {
     @Bean
-    fun streamAdmin(env: Environment): StreamAdmin {
+    open fun streamAdmin(env: Environment): StreamAdmin {
         return StreamAdmin(env) { sc: StreamCreator ->
             sc.stream("stream.lunar.queue1").maxAge(Duration.ofMinutes(5)).create()
         }
     }
 
     @Bean
-    fun streamTemplate(env: Environment): RabbitStreamTemplate {
+    open fun streamTemplate(env: Environment): RabbitStreamTemplate {
         val template = RabbitStreamTemplate(env, "stream.lunar.queue1")
         template.setProducerCustomizer { _: String?, builder: ProducerBuilder -> builder.name("data") }
         return template
