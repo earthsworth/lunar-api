@@ -5,7 +5,8 @@ import org.cubewhy.celestial.entity.User
 import org.springframework.stereotype.Component
 
 @Component
-class EchoCommand : Command {
+class
+EchoCommand : Command {
     override fun trigger() = "echo"
     override fun usage() = "<text>"
     override fun description() = "Display a line of text"

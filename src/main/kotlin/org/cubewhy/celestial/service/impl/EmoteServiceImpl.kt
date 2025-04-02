@@ -53,6 +53,11 @@ class EmoteServiceImpl(
         logger.info { "Loaded ${emoteList.size} emotes" }
     }
 
+    override suspend fun refreshEmote(user: User) {
+        val session = sessionService.getSession(user)
+        session?.pushEvent(RefreshEmotesPush.getDefaultInstance())
+    }
+
     override suspend fun process(
         method: String,
         payload: ByteString,

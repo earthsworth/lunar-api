@@ -60,6 +60,11 @@ class CosmeticServiceImpl(
         logger.info { "Loaded ${cosmeticList.size} cosmetics" }
     }
 
+    override suspend fun refreshCosmetics(user: User) {
+        val session = sessionService.getSession(user)
+        session?.pushEvent(RefreshCosmeticsPush.getDefaultInstance())
+    }
+
     override suspend fun process(
         method: String,
         payload: ByteString,

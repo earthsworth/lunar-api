@@ -12,4 +12,5 @@ interface CosmeticService : PacketProcessor {
         user: User,
         session: WebSocketSession
     ): GeneratedMessage
+    suspend fun refreshCosmetics(user: User)
 }
