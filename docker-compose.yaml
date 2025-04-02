@@ -32,6 +32,8 @@ services:
       RABBITMQ_DEFAULT_VHOST: lunar
     configs:
       - source: plugins
+        uid: "100"
+        gid: "101"
         target: /etc/rabbitmq/enabled_plugins
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq

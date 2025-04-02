@@ -1,6 +1,8 @@
 package org.cubewhy.celestial.entity
 
+import com.lunarclient.common.v1.Color
 import com.lunarclient.common.v1.UuidAndUsername
+import org.cubewhy.celestial.util.toLunarClientColor
 import org.cubewhy.celestial.util.toLunarClientUUID
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
@@ -49,6 +51,12 @@ data class User(
         this.uuid = this@User.uuid.toLunarClientUUID()
         this.username = this@User.username
     }.build()
+
+    val logoColor: Color
+        get() {
+            if (this.cosmetic.lunarPlusState && this.role == Role.USER) return (0xFF00EB).toLunarClientColor()
+            return this.role.toLunarClientColor()
+        }
 }
 
 /**
@@ -66,7 +74,7 @@ data class UserEmoteSettings(
 )
 
 data class UserCosmeticSettings(
-    var lunarPlusColor: Int = 0,
+    var lunarPlusColor: Int = 0x3BBE54,
     var clothCloak: Boolean = true,
     var flipShoulderPet: Boolean = false,
     var activeCosmetics: List<Int> = mutableListOf(),

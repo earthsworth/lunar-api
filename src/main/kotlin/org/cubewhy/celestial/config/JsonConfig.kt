@@ -7,9 +7,9 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-class JsonConfig {
+open class JsonConfig {
     @Bean
-    fun objectMapper(): ObjectMapper = ObjectMapper()
+    open fun objectMapper(): ObjectMapper = ObjectMapper()
         .registerModule(KotlinModule.Builder().build())
         .registerModule(JavaTimeModule())
 }

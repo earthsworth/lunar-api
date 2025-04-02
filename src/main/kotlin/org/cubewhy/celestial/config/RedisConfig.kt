@@ -12,10 +12,10 @@ import org.springframework.data.redis.serializer.StringRedisSerializer
 
 
 @Configuration
-class RedisConfig {
+open class RedisConfig {
 
     @Bean
-    fun reactiveRedisTemplate(
+    open fun reactiveRedisTemplate(
         objectMapper: ObjectMapper,
         factory: ReactiveRedisConnectionFactory
     ): ReactiveRedisTemplate<String, OnlineUser> {

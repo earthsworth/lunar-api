@@ -8,7 +8,7 @@ import org.springframework.scheduling.annotation.EnableScheduling
 
 @EnableScheduling
 @SpringBootApplication
-class LunarApiApplication {
+open class LunarApiApplication {
     companion object {
         private val logger = KotlinLogging.logger {}
     }

@@ -8,12 +8,13 @@ import org.springframework.core.task.SimpleAsyncTaskExecutor
 
 
 @Configuration
-class EventConfig {
+open class EventConfig {
     @Bean(name = ["applicationEventMulticaster"])
-    fun simpleApplicationEventMulticaster(): ApplicationEventMulticaster {
+    open fun simpleApplicationEventMulticaster(): ApplicationEventMulticaster {
         val eventMulticaster =
             SimpleApplicationEventMulticaster()
 
+        @Suppress("UsePropertyAccessSyntax")
         eventMulticaster.setTaskExecutor(SimpleAsyncTaskExecutor())
         return eventMulticaster
     }

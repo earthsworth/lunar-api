@@ -1,12 +1,15 @@
 FROM gradle:8.12.1-jdk21 AS build
 
 WORKDIR /app
+ENV GRADLE_USER_HOME=/root/.gradle
 
+COPY gradle.properties .
 COPY build.gradle.kts .
 COPY settings.gradle.kts .
-COPY src ./src
 
-RUN gradle dependencies --no-daemon
+RUN gradle dependencies --no-daemon || true
+
+COPY src ./src
 
 RUN gradle bootJar --no-daemon
 

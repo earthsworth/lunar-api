@@ -8,7 +8,7 @@ enum class PlusColor(val color: Int) {
     AQUA(0x00FFF0),
     RED(0xE10049),
     BLUE(0x1981C8),
-    GREEN(0x34C759),
+    GREEN(0x3BBE54),
     YELLOW(0xFFFF00),
     ORANGE(0xFFA500),
     PINK(0xFFC0CB),
