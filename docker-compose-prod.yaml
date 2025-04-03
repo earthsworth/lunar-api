@@ -8,20 +8,16 @@ services:
     volumes:
       - ~/.gradle:/root/.gradle
     ports:
-      - '40888:8888'
+      - '40888:8080'
     environment:
       - MONGODB_URI=mongodb://root:password@lunar-mongo/lunarclient?authSource=admin
       - REDIS_URL=redis://lunar-redis:6379/0
-      - RABBITMQ_HOST=lunar-rabbitmq
-      - RABBITMQ_PORT=5672
-      - RABBITMQ_STREAM_PORT=5552
-      - RABBITMQ_USERNAME=admin
-      - RABBITMQ_PASSWORD=password
-      - RABBITMQ_VIRTUAL_HOST=lunar
+      - API_TOKEN=api_token
+      - SCHEMA_REGISTRY_URL=http://schema-registry:8081
+      - KAFKA_BOOTSTRAP_SERVER=kafka:9092
     depends_on:
       - mongo
       - redis
-      - rabbitmq
     restart: always
 
   mongo:
@@ -40,35 +36,35 @@ services:
     container_name: lunar-redis
     restart: always
 
-  rabbitmq:
-    image: rabbitmq:4.1.0-beta.4-management-alpine
-    container_name: lunar-rabbitmq
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: lunar-kafka
+    hostname: kafka
+    depends_on:
+      - zookeeper
     restart: always
     environment:
-      RABBITMQ_DEFAULT_USER: admin
-      RABBITMQ_DEFAULT_PASS: password
-      RABBITMQ_DEFAULT_VHOST: lunar
-    configs:
-      - source: plugins
-        uid: "100"
-        gid: "101"
-        target: /etc/rabbitmq/enabled_plugins
-    volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
-    healthcheck:
-      test: [ "CMD", "rabbitmqctl", "status" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://kafka:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
-configs:
-  plugins:
-    content: "[rabbitmq_management, rabbitmq_stream]."
+  schema-registry:
+    image: confluentinc/cp-schema-registry:latest
+    hostname: schema-registry
+    container_name: lunar-schema-registry
+    depends_on:
+      - kafka
+    restart: always
+    environment:
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'kafka:29092'
+      SCHEMA_REGISTRY_LISTENERS: http://schema-registry:8081
 
 volumes:
   mongo:
-    driver: local
-  rabbitmq_data:
     driver: local
   gradle_cache:
     driver: local

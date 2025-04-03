@@ -62,7 +62,8 @@ data class User(
 /**
  * An entity to store user sessions among clusters, loadbalancer
  * */
-data class OnlineUser(
+data class UserWebsocketSession(
+    var userId: String,
     var userUuid: String,
     var websocketId: String,
     var location: String? = null,
