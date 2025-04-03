@@ -45,7 +45,7 @@ data class User(
     var status: UserStatus = UserStatus.ONLINE,
 
     var cosmetic: UserCosmeticSettings = UserCosmeticSettings(),
-    var emote: UserEmoteSettings = UserEmoteSettings()
+    var emote: UserEmoteSettings = UserEmoteSettings(),
 ) {
     fun toLunarClientPlayer(): UuidAndUsername = UuidAndUsername.newBuilder().apply {
         this.uuid = this@User.uuid.toLunarClientUUID()
@@ -92,3 +92,4 @@ data class UserCosmeticSettings(
             return lunarPlusColor > 0
         }
 }
+
