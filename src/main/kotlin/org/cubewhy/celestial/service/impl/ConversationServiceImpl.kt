@@ -76,13 +76,10 @@ class ConversationServiceImpl(
                     )
                 ).awaitFirst().buildBotResponsePush(botUsername)
             )
-            return WebsocketResponse.create(
-                SendConversationMessageResponse.newBuilder().apply {
-                    status =
-                        SendConversationMessageResponse.Status.STATUS_OK
-                }.build(),
-                events
-            )
+            return SendConversationMessageResponse.newBuilder().apply {
+                status =
+                    SendConversationMessageResponse.Status.STATUS_OK
+            }.build().toWebsocketResponse().addPush(events.map { pushOf(it) })
         }
         val target = userRepository.findByUuid(recipientUuid).awaitFirst()
         if (!friendService.hasFriend(user, target)) {

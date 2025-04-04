@@ -100,7 +100,7 @@ class SessionServiceImpl(
 
     override suspend fun saveMinecraftVersion(user: User, version: String) {
         // get online user object
-        TODO("Save Minecraft version")
+        // TODO Save Minecraft version
     }
 
     override suspend fun getMinecraftVersion(uuid: String): String? {

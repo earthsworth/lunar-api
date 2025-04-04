@@ -11,12 +11,23 @@ services:
     volumes:
       - mongo:/data/db
     restart: always
+
   redis:
     image: redis:latest
     container_name: lunar-redis
     ports:
       - '6379:6379'
     restart: always
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: lunar-zookeeper
+    restart: always
+    ports:
+      - '2181:2181'
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
 
   kafka:
     image: confluentinc/cp-kafka:latest

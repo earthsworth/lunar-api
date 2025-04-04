@@ -3,9 +3,11 @@ package org.cubewhy.celestial.service.impl
 import com.lunarclient.authenticator.v1.AuthSuccessMessage
 import com.lunarclient.websocket.handshake.v1.Handshake
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlinx.coroutines.reactive.awaitFirst
 import org.cubewhy.celestial.entity.User
 import org.cubewhy.celestial.entity.WebsocketResponse
 import org.cubewhy.celestial.entity.emptyWebsocketResponse
+import org.cubewhy.celestial.repository.UserRepository
 import org.cubewhy.celestial.service.*
 import org.cubewhy.celestial.util.JwtUtil
 import org.cubewhy.celestial.util.toUUIDString
@@ -27,6 +29,7 @@ class PacketServiceImpl(
     private val languageService: LanguageService,
     private val conversationService: ConversationService,
     private val jwtUtil: JwtUtil,
+    private val userRepository: UserRepository,
 ) : PacketService {
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -39,6 +42,7 @@ class PacketServiceImpl(
             val user = userService.loadUser(hello)
             // generate jwt
             val jwt = jwtUtil.createJwt(user)
+            // todo verify account
             // create packet
             logger.info { "User ${user.username} successfully authenticated" }
             return AuthSuccessMessage.newBuilder()
@@ -93,7 +97,9 @@ class PacketServiceImpl(
         message: AssetsServerboundWebSocketMessage,
         session: WebSocketSession
     ): WebsocketResponse {
-        val user = session.attributes["user"] as User
+        val userId = session.attributes["user-id"] as String
+        // find user
+        val user = userRepository.findById(userId).awaitFirst()
         logger.info { "User ${user.username} send packet ${message.service}:${message.method}" }
         return when (message.service) {
             "lunarclient.websocket.cosmetic.v1.CosmeticService" -> cosmeticService.process(

@@ -5,7 +5,7 @@ import com.google.protobuf.GeneratedMessage
 
 data class WebsocketResponse(
     var response: GeneratedMessage? = null,
-    var events: List<GeneratedMessage> = emptyList(),
+    var pushes: MutableList<Push> = mutableListOf(),
 ) {
     var requestId: ByteString? = null
 
@@ -14,18 +14,28 @@ data class WebsocketResponse(
             if (response == null) return null
             return WebsocketResponse(response)
         }
+    }
 
-        fun create(response: GeneratedMessage, vararg events: GeneratedMessage): WebsocketResponse {
-            return WebsocketResponse(response, events.asList())
-        }
+    fun addPush(vararg push: Push): WebsocketResponse {
+        pushes.addAll(push)
+        return this
+    }
 
-        fun create(response: GeneratedMessage, events: List<GeneratedMessage>): WebsocketResponse {
-            return WebsocketResponse(response, events)
-        }
+    fun addPush(pushList: List<Push>): WebsocketResponse {
+        pushes.addAll(pushList)
+        return this
     }
 }
 
+data class Push(
+    val payload: GeneratedMessage,
+    val broadcast: Boolean
+)
+
 fun GeneratedMessage.toWebsocketResponse() =
-    WebsocketResponse.create(this)
+    WebsocketResponse(this)
+
+fun pushOf(payload: GeneratedMessage, broadcast: Boolean = true) =
+    Push(payload, broadcast)
 
 fun emptyWebsocketResponse() = WebsocketResponse()

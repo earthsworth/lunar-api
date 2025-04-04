@@ -3,11 +3,13 @@ package org.cubewhy.celestial.handler
 import com.lunarclient.websocket.handshake.v1.Handshake
 import com.lunarclient.websocket.protocol.v1.ServerboundWebSocketMessage
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlinx.coroutines.reactive.awaitFirst
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import kotlinx.coroutines.reactor.mono
-import org.cubewhy.celestial.entity.User
-import org.cubewhy.celestial.handler.AssetsHandler.Companion.sessions
+import org.cubewhy.celestial.repository.UserRepository
 import org.cubewhy.celestial.service.PacketService
+import org.cubewhy.celestial.service.SessionService
+import org.cubewhy.celestial.service.UserService
 import org.cubewhy.celestial.util.pushEvent
 import org.cubewhy.celestial.util.wrapCommon
 import org.springframework.stereotype.Component
@@ -21,22 +23,29 @@ import java.util.concurrent.ConcurrentHashMap
 
 @Component
 class AssetsHandler(
-    private val packetService: PacketService
+    private val packetService: PacketService,
+    private val sessionService: SessionService,
+    private val userRepository: UserRepository,
 ) : WebSocketHandler {
     companion object {
         private val logger = KotlinLogging.logger {}
-        val sessions = ConcurrentHashMap<String, WebSocketSession>() // uuid:session
+        val sessions = ConcurrentHashMap<String, WebSocketSession>() // session-id:session
     }
 
     override fun handle(session: WebSocketSession): Mono<Void> {
         return session.receive().concatMap { message ->
-            if (!session.attributes.containsKey("user")) {
+            if (!session.attributes.containsKey("user-id")) {
                 // process handshake
                 val pbMessage = Handshake.parseFrom(message.payload.asInputStream())
                 mono {
                     val user = packetService.processHandshake(pbMessage, session)
-                    session.attributes["user"] = user
-                    sessions[user!!.uuid] = session
+                    if (user == null) {
+                        // unauthorized, close the session
+                        session.close().awaitFirstOrNull()
+                        return@mono null
+                    }
+                    session.attributes["user-id"] = user.id
+                    sessions[session.id] = session
                     null // no response
                 }
             } else {
@@ -58,9 +67,18 @@ class AssetsHandler(
                         )
                     }.toMono()).awaitFirstOrNull() // send response
                 }
+                // find user
+                val userId = session.attributes["user-id"] as String
+                val user = userRepository.findById(userId).awaitFirst()
                 // send events
-                message.events.forEach { event ->
-                    session.pushEvent(event)
+                message.pushes.forEach { push ->
+                    if (!push.broadcast) {
+                        session.pushEvent(push.payload)
+                    } else {
+                        // push to all sessions that logged in the same account
+                        // find user
+                        sessionService.push(user, push.payload)
+                    }
                 }
             }
         }.doOnError { e ->
@@ -69,21 +87,16 @@ class AssetsHandler(
                 logger.error(e) { "WebSocket processing error" }
             }
         }.doFinally { signalType ->
-            // remove session id and close session
-            val user = session.attributes["user"] as User?
-            // remove session
-            user?.let {
+            (session.attributes["user-id"] as String?)?.let { userId ->
                 // remove from local session store
-                sessions.remove(it.uuid)
+                sessions.remove(session.id)
                 // perform processDisconnect
                 mono {
-                    packetService.processDisconnect(signalType, session, it)
+                    // find user
+                    val user = userRepository.findById(userId).awaitFirst()
+                    packetService.processDisconnect(signalType, session, user)
                 }.publishOn(Schedulers.boundedElastic()).subscribe()
             }
         }.then()
     }
-}
-
-fun getSessionLocally(uuid: String): WebSocketSession? {
-    return sessions[uuid]?.takeIf { it.isOpen }
 }

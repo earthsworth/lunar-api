@@ -2,8 +2,11 @@ package org.cubewhy.celestial.service.impl
 
 import com.google.protobuf.ByteString
 import com.google.protobuf.GeneratedMessage
-import com.lunarclient.common.v1.*
+import com.lunarclient.common.v1.Location
+import com.lunarclient.common.v1.MinecraftVersion
+import com.lunarclient.common.v1.PublicServer
 import com.lunarclient.websocket.friend.v1.*
+import com.lunarclient.websocket.friend.v1.FriendRequest as LunarFriendRequest
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -272,9 +275,11 @@ class FriendServiceImpl(
             } else null
         })
 
+        // find friend requests
         val incomingRequests = findAllIncomingFriendRequests(user)
         val outgoingRequests = findAllOutgoingFriendRequests(user)
-        return WebsocketResponse.create(LoginResponse.newBuilder().apply {
+        // build response
+        val response = LoginResponse.newBuilder().apply {
             this.allowFriendRequests = user.allowFriendRequests
             botFriend?.let { this.addOfflineFriends(it) }
             this.addAllOfflineFriends(friends.map { it.lunarType })
@@ -290,18 +295,19 @@ class FriendServiceImpl(
             this.addAllOutboundFriendAddRequests(outgoingRequests.map {
                 this@FriendServiceImpl.buildFriendRequest(
                     it,
-                    true
+                    outgoing = true
                 )
             })
-        }.build(), events)
+        }.build()
+        return response.toWebsocketResponse().addPush(events.map { pushOf(it, broadcast = false) })
     }
 
     private suspend fun buildFriendRequest(
         request: FriendRequest,
         outgoing: Boolean = false
-    ): com.lunarclient.websocket.friend.v1.FriendRequest {
+    ): LunarFriendRequest {
         val recipient = userRepository.findById(if (outgoing) request.senderId else request.recipientId).awaitFirst()
-        return com.lunarclient.websocket.friend.v1.FriendRequest.newBuilder().apply {
+        return LunarFriendRequest.newBuilder().apply {
             this.player = recipient.toLunarClientPlayer()
             this.sentAt = request.timestamp.toProtobufType()
             this.playerLogoColor = recipient.role.toLunarClientColor()
