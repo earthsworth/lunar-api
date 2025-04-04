@@ -36,44 +36,30 @@ class UserServiceImpl(
     private val passwordEncoder: PasswordEncoder,
     private val coroutineScope: CoroutineScope
 ) : UserService {
-    @Value("\${lunar.user.default.username}")
-    private lateinit var defaultUsername: String
-
-    @Value("\${lunar.user.default.password}")
-    private lateinit var defaultUserPassword: String
 
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
-    @PostConstruct
-    fun init() {
-        coroutineScope.launch {
-            // create default user
-            if (webUserRepository.countByRole(Role.OWNER).awaitFirst() == 0L) {
-                logger.info { "Creating default users" }
-                val owner = WebUser(
-                    username = defaultUsername,
-                    password = passwordEncoder.encode(defaultUserPassword),
-                    role = Role.OWNER
-                )
-                webUserRepository.save(owner).awaitFirst()
-                logger.warn { "Default user created. ${defaultUsername}:$defaultUserPassword" }
-                logger.warn { "Please change it via the web dashboard!" }
-            }
-        }
-    }
-
     override suspend fun loadUser(username: String, uuid: String): User {
         return userRepository.findByUuid(uuid)
             .switchIfEmpty {
+                logger.info { "User with Minecraft IGN $username created" }
                 userRepository.save(
                     User(
                         username = username,
                         uuid = uuid,
-                        role = Role.USER
+                        roles = mutableListOf(Role.USER)
                     )
                 )
+            }
+            .flatMap { user ->
+                if (user.username != username) {
+                    // user updated it's IGN
+                    user.username = username // update username in database
+                    return@flatMap userRepository.save(user)
+                }
+                user.toMono()
             }
             .doOnNext { user ->
                 logger.info { "Successfully loaded user ${user.username}" }
