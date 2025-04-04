@@ -34,7 +34,7 @@ class ToggleLunarPlusCommand(
         userRepository.save(user).awaitFirst()
 
         // push event
-        sessionService.getSession(user)?.pushEvent(RefreshCosmeticsPush.getDefaultInstance())
+        sessionService.push(user, RefreshCosmeticsPush.getDefaultInstance())
         return "Success ${if (newState) "enabled" else "disabled"} Lunar+ feature."
     }
 }

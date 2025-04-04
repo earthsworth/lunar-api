@@ -7,6 +7,7 @@ import com.opencsv.CSVReader
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.annotation.PostConstruct
 import kotlinx.coroutines.reactive.awaitFirst
+import kotlinx.coroutines.reactive.awaitFirstOrNull
 import kotlinx.coroutines.reactor.mono
 import org.cubewhy.celestial.entity.*
 import org.cubewhy.celestial.event.UserSubscribeEvent
@@ -61,8 +62,7 @@ class CosmeticServiceImpl(
     }
 
     override suspend fun refreshCosmetics(user: User) {
-        val session = sessionService.getSession(user)
-        session?.pushEvent(RefreshCosmeticsPush.getDefaultInstance())
+        sessionService.push(user, RefreshCosmeticsPush.getDefaultInstance())
     }
 
     override suspend fun process(
@@ -105,19 +105,19 @@ class CosmeticServiceImpl(
         // push settings to other players
         subscriptionService.getWorldPlayerUuids(session)
             .forEach { uuid ->
-                val targetSession = sessionService.getSession(uuid)
-                // push cosmetics event
-                targetSession?.pushCosmeticEvent(user, message.settings)
+                userRepository.findByUuid(uuid).awaitFirstOrNull()?.let {
+                    this.pushCosmeticEvent(user, message.settings)
+                }
             }
         return UpdateCosmeticSettingsResponse.getDefaultInstance()
     }
 
-    private suspend fun WebSocketSession.pushCosmeticEvent(
+    private suspend fun pushCosmeticEvent(
         user: User,
         settings: CustomizableCosmeticSettings
     ) {
         // push cosmetics event
-        this.pushEvent(this@CosmeticServiceImpl.buildCosmeticsPush(user, settings))
+        sessionService.push(user, this@CosmeticServiceImpl.buildCosmeticsPush(user, settings))
     }
 
     private fun buildCosmeticsPush(

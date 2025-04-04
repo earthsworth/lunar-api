@@ -121,11 +121,12 @@ class FriendServiceImpl(
     ): GeneratedMessage {
         val target = userRepository.findByUuid(message.senderUuid.toUUIDString()).awaitFirst()
         friendRequestRepository.deleteBySenderIdAndRecipientId(target.id!!, user.id!!).awaitFirst()
-        val targetSession = sessionService.getSession(target)
-        // push event
-        targetSession?.pushEvent(FriendRequestDeniedPush.newBuilder().apply {
+
+        // push
+        val push = FriendRequestDeniedPush.newBuilder().apply {
             denierUuid = user.uuid.toLunarClientUUID()
-        }.build())
+        }.build()
+        sessionService.push(target, push)
         return DenyFriendRequestResponse.getDefaultInstance()
     }
 
@@ -136,14 +137,14 @@ class FriendServiceImpl(
         val target = userRepository.findByUuid(message.friendUuid.toUUIDString()).awaitFirst()
         val relation = friendRepository.findFriendRelation(user.id!!, target.id!!).awaitFirstOrNull()
             ?: return RemoveFriendResponse.getDefaultInstance() // not friend
-        val targetSession = sessionService.getSession(target)
         // remove relation
         logger.info { "Removed friend between ${user.username} and ${target.username}" }
         friendRepository.delete(relation).awaitFirstOrNull()
         // push event
-        targetSession?.pushEvent(FriendRemovedYouPush.newBuilder().apply {
+        val push = FriendRemovedYouPush.newBuilder().apply {
             this.friendUuid = target.uuid.toLunarClientUUID()
-        }.build())
+        }.build()
+        sessionService.push(target, push)
         return RemoveFriendResponse.getDefaultInstance()
     }
 
@@ -154,12 +155,12 @@ class FriendServiceImpl(
         friends.forEach { friend ->
             val friendId = if (user.id == friend.user1) friend.user2 else friend.user1
             val friendUser = userRepository.findById(friendId).awaitFirst()
-            sessionService.getSession(friendId)?.let { session ->
-                val offlineFriend = this.buildOfflineFriend(friendUser, friend)
-                session.pushEvent(FriendStatusPush.newBuilder().apply {
-                    this.offlineFriend = offlineFriend
-                }.build())
-            }
+            val offlineFriend = this.buildOfflineFriend(friendUser, friend)
+            // push
+            val push = FriendStatusPush.newBuilder().apply {
+                this.offlineFriend = offlineFriend
+            }.build()
+            sessionService.push(friendUser, push)
         }
     }
 
@@ -211,7 +212,6 @@ class FriendServiceImpl(
     ): GeneratedMessage {
         val builder = AcceptFriendRequestResponse.newBuilder()
         val target = userRepository.findByUuid(message.senderUuid.toUUIDString()).awaitFirst()
-        val targetSession = sessionService.getSession(target)
         if (friendRepository.findFriendRelation(user.id!!, target.id!!).awaitFirstOrNull() != null) {
             // delete friend request
             friendRequestRepository.deleteBySenderIdAndRecipientId(user.id, target.id).awaitFirst()
@@ -236,10 +236,12 @@ class FriendServiceImpl(
                     buildOfflineFriend(target, friendRepository.save(Friend(null, target.id, user.id)).awaitFirst())
                 // delete friend request
                 friendRequestRepository.deleteBySenderIdAndRecipientId(user.id, target.id).awaitFirst()
-                targetSession?.pushEvent(FriendRequestAcceptedPush.newBuilder().apply {
+                // push
+                val push = FriendRequestAcceptedPush.newBuilder().apply {
                     newFriendUuid = user.uuid.toLunarClientUUID()
                     newFriend = user.toLunarClientPlayer()
-                }.build())
+                }.build()
+                sessionService.push(target, push)
             }
         } else {
             builder.status =
@@ -265,7 +267,7 @@ class FriendServiceImpl(
         }
         events.addAll(friends.mapNotNull { friend ->
             // push friend status
-            if (friend.friendUser.status != UserStatus.INVISIBLE && sessionService.getSession(friend.friendUser) != null) {
+            if (friend.friendUser.status != UserStatus.INVISIBLE && sessionService.isOnline(friend.friendUser)) {
                 this.buildOnlineFriendStatusPush(friend.lunarType, friend.friendUser)
             } else null
         })
@@ -285,11 +287,19 @@ class FriendServiceImpl(
             this.addAllOutboundFriendRequests(outgoingRequests.map { request ->
                 userRepository.findById(request.recipientId).awaitFirst().toLunarClientPlayer()
             })
-            this.addAllOutboundFriendAddRequests(outgoingRequests.map { this@FriendServiceImpl.buildFriendRequest(it, true) })
+            this.addAllOutboundFriendAddRequests(outgoingRequests.map {
+                this@FriendServiceImpl.buildFriendRequest(
+                    it,
+                    true
+                )
+            })
         }.build(), events)
     }
 
-    private suspend fun buildFriendRequest(request: FriendRequest, outgoing: Boolean = false): com.lunarclient.websocket.friend.v1.FriendRequest {
+    private suspend fun buildFriendRequest(
+        request: FriendRequest,
+        outgoing: Boolean = false
+    ): com.lunarclient.websocket.friend.v1.FriendRequest {
         val recipient = userRepository.findById(if (outgoing) request.senderId else request.recipientId).awaitFirst()
         return com.lunarclient.websocket.friend.v1.FriendRequest.newBuilder().apply {
             this.player = recipient.toLunarClientPlayer()
@@ -439,8 +449,8 @@ class FriendServiceImpl(
         // broadcast to other users
         this.findFriends(user).forEach { target ->
             // push event
-            sessionService.getSession(target.friendUser)
-                ?.pushEvent(this.buildOnlineFriendStatusPush(buildOfflineFriend(user, target.friend), user))
+            val push = this.buildOnlineFriendStatusPush(buildOfflineFriend(user, target.friend), user)
+            sessionService.push(target.friendUser, push)
         }
         return BroadcastStatusChangeResponse.getDefaultInstance()
     }
@@ -505,17 +515,16 @@ class FriendServiceImpl(
     private suspend fun sendFriendRequest(user: User, target: User) {
         friendRequestRepository.save(FriendRequest(null, user.id!!, target.id!!, Instant.now())).awaitFirst()
         // send notification to target
-        sessionService.getSession(target)?.let { session ->
-            session.pushEvent(FriendRequestReceivedPush.newBuilder().apply {
-                sender = user.toLunarClientPlayer()
-                senderLogoColor = user.logoColor
-                if (user.cosmetic.lunarPlusState) {
-                    senderPlusColor = user.cosmetic.lunarPlusColor.toLunarClientColor()
-                }
-                senderRankName = user.role.rank
+        val push = FriendRequestReceivedPush.newBuilder().apply {
+            sender = user.toLunarClientPlayer()
+            senderLogoColor = user.logoColor
+            if (user.cosmetic.lunarPlusState) {
+                senderPlusColor = user.cosmetic.lunarPlusColor.toLunarClientColor()
+            }
+            senderRankName = user.role.rank
 
-            }.build())
-        }
+        }.build()
+        sessionService.push(target, push)
     }
 
     /**
@@ -560,11 +569,10 @@ class FriendServiceImpl(
                 .flatMap { friend ->
                     userRepository.findById(friend.getTargetId(user)).flatMap { friendUser ->
                         mono {
-                            sessionService.getSession(friendUser)?.let { session ->
-                                session.pushEvent(FriendStatusPush.newBuilder().apply {
-                                    offlineFriend = buildOfflineFriend(friendUser, friend) // went offline
-                                }.build())
-                            }
+                            val push = FriendStatusPush.newBuilder().apply {
+                                offlineFriend = buildOfflineFriend(friendUser, friend) // friend went offline
+                            }.build()
+                            sessionService.push(friendUser, push)
                         }
                     }
                 }

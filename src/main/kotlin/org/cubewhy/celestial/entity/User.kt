@@ -5,6 +5,7 @@ import com.lunarclient.common.v1.UuidAndUsername
 import org.cubewhy.celestial.util.toLunarClientColor
 import org.cubewhy.celestial.util.toLunarClientUUID
 import org.springframework.data.annotation.Id
+import org.springframework.data.mongodb.core.index.Indexed
 import org.springframework.data.mongodb.core.mapping.Document
 import java.io.Serializable
 import java.time.Instant
@@ -33,6 +34,7 @@ data class User(
     val id: String? = null,
 
     var username: String,
+    @Indexed(unique = true)
     val uuid: String,
     var role: Role, // synced with web user
 

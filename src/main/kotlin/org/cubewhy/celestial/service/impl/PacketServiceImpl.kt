@@ -78,13 +78,15 @@ class PacketServiceImpl(
 
     override suspend fun processDisconnect(signalType: SignalType, session: WebSocketSession, user: User) {
         // remove user from shared store
-        sessionService.removeSession(user)
+        sessionService.removeSession(session)
         logger.info { "User ${user.username} disconnected" }
         logger.info { "Websocket terminated [${signalType.name}]" }
-        // push event to friends
-        friendService.userOffline(user)
-        // save last seen timestamp
-        userService.markOffline(user)
+        if (!sessionService.isOnline(user)) {
+            // save last seen timestamp
+            userService.markOffline(user)
+            // push event to friends
+            friendService.userOffline(user)
+        }
     }
 
     override suspend fun process(

@@ -7,21 +7,23 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.reactive.awaitFirst
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import kotlinx.coroutines.reactive.awaitLast
+import kotlinx.coroutines.reactor.mono
 import org.cubewhy.celestial.avro.FederationMessage
-import org.cubewhy.celestial.entity.UserWebsocketSession
 import org.cubewhy.celestial.entity.User
-import org.cubewhy.celestial.handler.getSessionLocally
+import org.cubewhy.celestial.entity.UserWebsocketSession
+import org.cubewhy.celestial.handler.AssetsHandler
 import org.cubewhy.celestial.repository.UserRepository
 import org.cubewhy.celestial.service.SessionService
 import org.cubewhy.celestial.util.Const
 import org.cubewhy.celestial.util.Const.SHARED_SESSION
 import org.cubewhy.celestial.util.toJson
 import org.cubewhy.celestial.util.toProtobufMessage
+import org.cubewhy.celestial.util.wrapPush
 import org.springframework.cloud.stream.function.StreamBridge
-import org.springframework.core.io.buffer.DataBufferFactory
 import org.springframework.data.redis.core.*
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.socket.WebSocketSession
+import reactor.kotlin.core.publisher.toFlux
 import java.time.Duration
 import java.time.Instant
 
@@ -55,15 +57,21 @@ class SessionServiceImpl(
         return findSessions(user).any { it.websocketId == session.id }
     }
 
-    override suspend fun isSessionValid(sessionId: String): Boolean {
-        return sessionRepository.existsById(sessionId).awaitFirst()
+    override fun push(user: User, push: GeneratedMessage) {
+        this.push(user.id!!, push)
     }
 
-    override fun pushEvent(userId: String, event: GeneratedMessage) {
+    override suspend fun isOnline(user: User): Boolean {
+        return userWebsocketSessionReactiveRedisTemplate.opsForSet().scan(Const.USER_WEBSOCKET_SESSION_STORE)
+            .any { it.userId == user.id!! }
+            .awaitFirst()
+    }
+
+    override fun push(userId: String, push: GeneratedMessage) {
         // convert to avro
         val payload = FederationMessage.newBuilder().apply {
             this.userId = userId
-            this.payload = protobufEventOf(event, userId).toByteString().asReadOnlyByteBuffer()
+            this.payload = push.wrapPush().toByteString().asReadOnlyByteBuffer()
             this.timestamp = Instant.now().epochSecond
         }
         // send to broker
@@ -78,7 +86,7 @@ class SessionServiceImpl(
         // find all available sessions
         this.findSessions(user).toFlux().mapNotNull {
             // find on local session map
-            WebsocketHandler.sessions[it.websocketId]
+            AssetsHandler.sessions[it.websocketId]
         }.flatMap { session ->
             mono { func.invoke(session!!) }
         }.awaitLast()
@@ -92,71 +100,67 @@ class SessionServiceImpl(
 
     override suspend fun saveMinecraftVersion(user: User, version: String) {
         // get online user object
-        getOnlineUser(user.uuid)?.let { onlineUser ->
-            logger.info { "Player ${user.username}'s Minecraft version was set to $version" }
-            onlineUser.minecraftVersion = version
-            saveSession(onlineUser)
-        }
+        TODO("Save Minecraft version")
     }
 
     override suspend fun getMinecraftVersion(uuid: String): String? {
-        return getOnlineUser(uuid)?.minecraftVersion
+        // TODO Get MC Version
+        return null
     }
 
     override suspend fun saveLocation(user: User, location: InboundLocation) {
         // convert to json
-        val locationJson = location.toJson()
-        getOnlineUser(user.uuid)?.let { onlineUser ->
-            onlineUser.location = locationJson
-            saveSession(onlineUser)
-        }
+//        val locationJson = location.toJson()
+//        getOnlineUser(user.uuid)?.let { onlineUser ->
+//            onlineUser.location = locationJson
+//            saveSession(onlineUser)
+//        }
+        // TODO Get location
     }
 
-    override suspend fun getLocation(uuid: String): Location? = getOnlineUser(uuid)?.let { onlineUser ->
-        try {
-            return onlineUser.location?.toProtobufMessage(Location.newBuilder())
-        } catch (e: Exception) {
-            null
-        }
+    override suspend fun getLocation(uuid: String): Location? {
+        // TODO get location
+        return null
     }
 
     /**
      * Remove a session from shared session store
      *
-     * @param user Player
+     * @param session websocket session
      * */
-    override suspend fun removeSession(user: User) {
-        logger.info { "Remove ${user.username} from shared session store" }
-        userWebsocketSessionRedisTemplate.opsForValue().deleteAndAwait(SHARED_SESSION + user.uuid)
+    override suspend fun removeSession(session: WebSocketSession) {
+        this.getUserSession(session)?.let { userWebsocketSession ->
+            val user = userRepository.findById(userWebsocketSession.userId).awaitFirst()
+            logger.info { "Remove ${user.username} from shared session store" }
+            userWebsocketSessionReactiveRedisTemplate.opsForSet().remove(Const.USER_WEBSOCKET_SESSION_STORE, userWebsocketSession)
+        }
     }
 
-    private suspend fun saveSession(userWebsocketSession: UserWebsocketSession) {
-        userWebsocketSessionRedisTemplate.opsForValue()
-            .setAndAwait(SHARED_SESSION + userWebsocketSession.userUuid, userWebsocketSession, Duration.ofHours(12))
+    override suspend fun getUserSession(session: WebSocketSession): UserWebsocketSession? {
+        return userWebsocketSessionReactiveRedisTemplate.opsForSet().scan(Const.USER_WEBSOCKET_SESSION_STORE)
+            .filter { it.websocketId == session.id }
+            .awaitLast()
     }
 
-    private suspend fun getOnlineUser(uuid: String): UserWebsocketSession? =
-        userWebsocketSessionRedisTemplate.opsForValue().getAndAwait(SHARED_SESSION + uuid)
-
-    override suspend fun countAvailableSessions(): Int {
-        return userWebsocketSessionRedisTemplate.keys("$SHARED_SESSION*").collectList().awaitLast().count()
+    override suspend fun countAvailableSessions(): Long {
+        return userWebsocketSessionReactiveRedisTemplate.opsForSet().scan(Const.USER_WEBSOCKET_SESSION_STORE).count()
+            .awaitLast()
     }
 
     override suspend fun pushAll(func: suspend (User, WebSocketSession) -> Unit) {
         // find all sessions
-        val sessionKeys = userWebsocketSessionRedisTemplate.keys("$SHARED_SESSION*").collectList().awaitLast()
-        userWebsocketSessionRedisTemplate.opsForValue().multiGetAndAwait(sessionKeys).forEach { onlineUser ->
-            // find user
-            val user0 = userRepository.findByUuid(onlineUser!!.userUuid).awaitFirstOrNull()
-            user0?.let { user ->
-                // find session
-                val session0 = this.getSession(onlineUser.userUuid)
-                session0?.let { session ->
-                    func.invoke(user, session)
+        userWebsocketSessionReactiveRedisTemplate.opsForSet()
+            .scan(Const.USER_WEBSOCKET_SESSION_STORE)
+            .collectList()
+            .awaitLast()
+            .forEach { onlineUser ->
+                // find user
+                userRepository.findByUuid(onlineUser!!.userUuid).awaitFirstOrNull()?.let { user ->
+                    // find session
+                    this.processWithSessionLocally(user.id!!) { session ->
+                        func.invoke(user, session)
+                    }
                 }
             }
-        }
     }
-
-    override suspend fun getSession(user: User) = this.getSession(user.uuid)
 }

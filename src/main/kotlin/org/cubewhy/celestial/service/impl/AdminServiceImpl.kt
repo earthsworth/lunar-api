@@ -39,7 +39,7 @@ class AdminServiceImpl(
         val target = userRepository.findByUsernameIgnoreCase(playerName).awaitFirst()
         val res = PlayerInfoVO(
             user = playerName,
-            online = sessionService.getSession(target) != null,
+            online = sessionService.isOnline(target),
             mcName = target.username,
             mcUuid = target.uuid,
             roleColor = target.role.color,

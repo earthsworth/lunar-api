@@ -7,12 +7,12 @@ import com.opencsv.CSVReader
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.annotation.PostConstruct
 import kotlinx.coroutines.reactive.awaitFirst
+import kotlinx.coroutines.reactive.awaitFirstOrNull
 import org.cubewhy.celestial.entity.*
 import org.cubewhy.celestial.repository.UserRepository
 import org.cubewhy.celestial.service.EmoteService
 import org.cubewhy.celestial.service.SessionService
 import org.cubewhy.celestial.service.SubscriptionService
-import org.cubewhy.celestial.util.pushEvent
 import org.cubewhy.celestial.util.toLunarClientUUID
 import org.springframework.core.io.ClassPathResource
 import org.springframework.stereotype.Service
@@ -54,8 +54,7 @@ class EmoteServiceImpl(
     }
 
     override suspend fun refreshEmote(user: User) {
-        val session = sessionService.getSession(user)
-        session?.pushEvent(RefreshEmotesPush.getDefaultInstance())
+        sessionService.push(user, RefreshEmotesPush.getDefaultInstance())
     }
 
     override suspend fun process(
@@ -71,15 +70,18 @@ class EmoteServiceImpl(
                 session,
                 user
             ).toWebsocketResponse()
+
             "StopEmote" -> this.processStopEmote(
                 session,
                 user
             ).toWebsocketResponse()
+
             "UpdateEquippedEmotes" -> this.processUpdateEquippedEmotes(
                 UpdateEquippedEmotesRequest.parseFrom(payload),
                 session,
                 user
             ).toWebsocketResponse()
+
             else -> emptyWebsocketResponse()
         }
     }
@@ -110,11 +112,13 @@ class EmoteServiceImpl(
         session: WebSocketSession,
         user: User
     ): UseEmoteResponse {
-        // send push to players
+        // build push
+        val push = this.buildUseEmotePush(request, user)
         subscriptionService.getWorldPlayerUuids(session).forEach { uuid ->
-            // build push
-            val push = this.buildUseEmotePush(request, user)
-            sessionService.getSession(uuid)?.pushEvent(push)
+            userRepository.findByUuid(uuid).awaitFirstOrNull()?.let { target ->
+                // push to players
+                sessionService.push(target, push)
+            }
         }
         return UseEmoteResponse.newBuilder().apply {
             this.emoteId = request.emoteId
@@ -127,10 +131,12 @@ class EmoteServiceImpl(
         session: WebSocketSession,
         user: User
     ): StopEmoteResponse {
+        val push = this.buildStopEmotePush(user)
         subscriptionService.getWorldPlayerUuids(session).forEach { uuid ->
-            // build push
-            val push = this.buildStopEmotePush(user)
-            sessionService.getSession(uuid)?.pushEvent(push)
+            // find target
+            userRepository.findByUuid(uuid).awaitFirstOrNull()?.let { target ->
+                sessionService.push(target, push)
+            }
         }
         return StopEmoteResponse.getDefaultInstance()
     }
