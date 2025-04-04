@@ -22,19 +22,6 @@ class AdminServiceImpl(
         private val logger = KotlinLogging.logger {}
     }
 
-    override suspend fun togglePlus(dto: TogglePlusDTO) {
-        val user = userRepository.findByUsernameIgnoreCase(dto.playerName).awaitFirst()
-        logger.info { "User ${user.username} ${if (dto.state) "enabled" else "disabled"} Lunar+ feature" }
-        user.cosmetic.lunarPlusColor = if (dto.state) PlusColor.AQUA.color else 0
-        userRepository.save(user).awaitFirst()
-    }
-
-    override suspend fun editRole(dto: EditRoleDTO) {
-        val target = userRepository.findByUsernameIgnoreCase(dto.user).awaitFirst()
-        target.role = Role.valueOf(dto.role)
-        userRepository.save(target).awaitFirst()
-    }
-
     override suspend fun playerInfo(playerName: String): PlayerInfoVO {
         val target = userRepository.findByUsernameIgnoreCase(playerName).awaitFirst()
         val res = PlayerInfoVO(
@@ -42,8 +29,8 @@ class AdminServiceImpl(
             online = sessionService.isOnline(target),
             mcName = target.username,
             mcUuid = target.uuid,
-            roleColor = target.role.color,
-            roleRank = target.role.rank,
+            roleColor = target.cosmetic.lunarLogoColor.color,
+            roles = target.roles,
             plus = target.cosmetic.lunarPlusState,
         )
         return res

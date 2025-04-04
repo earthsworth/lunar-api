@@ -36,7 +36,7 @@ data class User(
     var username: String,
     @Indexed(unique = true)
     val uuid: String,
-    var role: Role, // synced with web user
+    val roles: MutableList<Role> = mutableListOf(Role.USER),
 
     var radioPremium: Boolean = false,
     var createdAt: Instant = Instant.now(),
@@ -56,8 +56,9 @@ data class User(
 
     val logoColor: Color
         get() {
-            if (this.cosmetic.lunarPlusState && this.role == Role.USER) return (0xFF00EB).toLunarClientColor()
-            return this.role.toLunarClientColor()
+            // normal users with lunar+
+            if (this.cosmetic.lunarPlusState && this.roles.size == 1 && this.roles[0] == Role.USER) return PlusColor.PINK.toLunarClientColor()
+            return this.cosmetic.lunarLogoColor.color.toLunarClientColor()
         }
 }
 
@@ -77,8 +78,11 @@ data class UserEmoteSettings(
 )
 
 data class UserCosmeticSettings(
-    var lunarPlusColor: Int = 0x3BBE54,
+    var lunarLogoColor: LogoColor = LogoColor.WHITE,
+    var lunarPlusColor: PlusColor = PlusColor.GREEN,
+    var lunarPlusState: Boolean = true,
     var clothCloak: Boolean = true,
+
     var flipShoulderPet: Boolean = false,
     var activeCosmetics: List<Int> = mutableListOf(),
     var showHatsOverHelmet: Boolean = false,
@@ -89,10 +93,5 @@ data class UserCosmeticSettings(
     var showOverLeggings: Boolean = false,
     var equippedCosmetics: List<UserCosmetic> = emptyList(),
     var logoAlwaysShow: Boolean = true
-) {
-    val lunarPlusState: Boolean
-        get() {
-            return lunarPlusColor > 0
-        }
-}
+)
 

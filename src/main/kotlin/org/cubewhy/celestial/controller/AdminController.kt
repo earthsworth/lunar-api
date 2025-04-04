@@ -12,22 +12,9 @@ import org.springframework.web.bind.annotation.*
 class AdminController(
     private val adminService: AdminService
 ) {
-    @PostMapping("editRole")
-    suspend fun editRole(
-        @RequestBody dto: EditRoleDTO
-    ): RestBean<Void> {
-        adminService.editRole(dto)
-        return RestBean.success()
-    }
 
     @GetMapping("playerInfo/{playerName}")
     suspend fun getPlayerInfo(@PathVariable playerName: String): RestBean<PlayerInfoVO> {
         return RestBean.success(adminService.playerInfo(playerName))
-    }
-
-    @PostMapping("plus")
-    suspend fun togglePlus(@RequestBody dto: TogglePlusDTO): RestBean<Void> {
-        adminService.togglePlus(dto)
-        return RestBean.success()
     }
 }

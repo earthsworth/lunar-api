@@ -4,11 +4,9 @@ import com.lunarclient.websocket.cosmetic.v1.RefreshCosmeticsPush
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.reactive.awaitFirst
 import org.cubewhy.celestial.bot.command.Command
-import org.cubewhy.celestial.entity.PlusColor
 import org.cubewhy.celestial.entity.User
 import org.cubewhy.celestial.repository.UserRepository
 import org.cubewhy.celestial.service.SessionService
-import org.cubewhy.celestial.util.pushEvent
 import org.springframework.stereotype.Component
 
 @Component
@@ -24,17 +22,17 @@ class ToggleLunarPlusCommand(
 
     override fun usage() = ""
 
-    override fun description() = "Toggle Lunar Plus"
+    override fun description() = "Toggle Lunar+ features"
 
     override suspend fun execute(user: User, args: List<String>): String {
-        val newState = !user.cosmetic.lunarPlusState
-        logger.info { "User ${user.username} ${if (newState) "enabled" else "disabled"} Lunar+ feature" }
-        user.cosmetic.lunarPlusColor = if (newState) PlusColor.AQUA.color else 0
+        val oldState = user.cosmetic.lunarPlusState
+        logger.info { "User ${user.username} ${if (oldState) "enabled" else "disabled"} Lunar+ feature" }
+        user.cosmetic.lunarPlusState = !user.cosmetic.lunarPlusState
         // save user
         userRepository.save(user).awaitFirst()
 
         // push event
         sessionService.push(user, RefreshCosmeticsPush.getDefaultInstance())
-        return "Success ${if (newState) "enabled" else "disabled"} Lunar+ feature."
+        return "Success ${if (!oldState) "enabled" else "disabled"} Lunar+ feature."
     }
 }

@@ -46,7 +46,8 @@ class CommandServiceImpl(
         val command1 = commands[command]?: return "Unknown command, type .help for help"
         // check permission
         val trigger = command1.trigger()
-        if (!command1.roles().contains(user.role)) {
+        val requiredRoles = command1.roles()
+        if (!(requiredRoles.isEmpty() || requiredRoles.toSet().intersect(user.roles.toSet()).isNotEmpty())) {
             return "[$trigger] You have no enough permission to use this command"
         }
         logger.info { "User ${user.username} executes command $trigger" }
@@ -86,7 +87,8 @@ class HelpCommand(private val commands: Map<String, Command>) : Command {
         sb.append("Welcome to LunarCN! Yet another LunarClient API implementation\n")
             .append("use .help [command] to display the full information of a command\n")
         commands.values.forEach { command ->
-            if (command.roles().contains(user.role)) {
+            val requiredRoles = command.roles()
+            if (requiredRoles.isEmpty() || requiredRoles.toSet().intersect(user.roles.toSet()).isNotEmpty()) {
                 sb.append(".${command.trigger()} ${command.description()}")
                     .append("\n")
             }

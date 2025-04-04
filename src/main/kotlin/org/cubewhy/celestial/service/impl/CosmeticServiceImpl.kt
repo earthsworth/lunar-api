@@ -16,7 +16,6 @@ import org.cubewhy.celestial.service.CosmeticService
 import org.cubewhy.celestial.service.SessionService
 import org.cubewhy.celestial.service.SubscriptionService
 import org.cubewhy.celestial.util.pushEvent
-import org.cubewhy.celestial.util.toLunarClientColor
 import org.cubewhy.celestial.util.toLunarClientUUID
 import org.springframework.context.event.EventListener
 import org.springframework.core.io.ClassPathResource
@@ -91,7 +90,7 @@ class CosmeticServiceImpl(
         user.cosmetic.equippedCosmetics =
             message.settings.equippedCosmeticsList.map { UserCosmetic(it.cosmeticId, Instant.now(), null, null) }
         user.cosmetic.flipShoulderPet = message.settings.flipShoulderPet
-        user.cosmetic.lunarPlusColor = message.settings.plusColor.color
+        user.cosmetic.lunarPlusColor = PlusColor.entries.first { it.color == message.settings.plusColor.color }
         user.cosmetic.clothCloak = message.settings.clothCloak
         user.cosmetic.showHatsOverHelmet = message.settings.showHatsOverHelmet
         user.cosmetic.showHatsOverSkinLayer = message.settings.showHatsOverSkinLayer
@@ -135,7 +134,7 @@ class CosmeticServiceImpl(
         return LoginResponse.newBuilder().apply {
             settings = buildCosmeticSettings(user)
             logoColor = user.logoColor
-            rankName = user.role.rank
+            rankName = "Player"
             if (user.cosmetic.lunarPlusState) {
                 addAllAvailableLunarPlusColors(PlusColor.entries.map { it.toLunarClientColor() })
             }

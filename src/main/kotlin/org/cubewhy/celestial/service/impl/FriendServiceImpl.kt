@@ -310,8 +310,9 @@ class FriendServiceImpl(
         return LunarFriendRequest.newBuilder().apply {
             this.player = recipient.toLunarClientPlayer()
             this.sentAt = request.timestamp.toProtobufType()
-            this.playerLogoColor = recipient.role.toLunarClientColor()
-            this.playerRankName = recipient.role.rank
+            this.playerLogoColor = recipient.cosmetic.lunarLogoColor.color.toLunarClientColor()
+//            this.playerRankName = recipient.role.rank
+            this.playerRankName = "Player"
             if (recipient.cosmetic.lunarPlusState) {
                 this.playerPlusColor = recipient.cosmetic.lunarPlusColor.toLunarClientColor()
             }
@@ -495,7 +496,7 @@ class FriendServiceImpl(
     ): OfflineFriend {
         return OfflineFriend.newBuilder().apply {
             player = friendUser.toLunarClientPlayer()
-            rankName = friendUser.role.rank
+            rankName = "Player"
             friendsSince = friend.timestamp.toProtobufType()
             if (friendUser.cosmetic.lunarPlusState) {
                 plusColor = friendUser.cosmetic.lunarPlusColor.toLunarClientColor()
@@ -527,7 +528,7 @@ class FriendServiceImpl(
             if (user.cosmetic.lunarPlusState) {
                 senderPlusColor = user.cosmetic.lunarPlusColor.toLunarClientColor()
             }
-            senderRankName = user.role.rank
+            senderRankName = "Player"
 
         }.build()
         sessionService.push(target, push)

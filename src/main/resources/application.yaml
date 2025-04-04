@@ -26,10 +26,6 @@ spring:
           brokers: ${KAFKA_BOOTSTRAP_SERVER:localhost:9092}
 
 lunar:
-  user:
-    default:
-      username: ${LUNAR_DEFAULT_USERNAME:admin}
-      password: ${LUNAR_DEFAULT_PASSWORD:password}
   friend:
     bot:
       enabled: ${LUNAR_BOT_ENABLED:true}

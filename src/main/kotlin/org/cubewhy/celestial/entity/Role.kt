@@ -10,7 +10,7 @@ enum class Role(val color: Int, val rank: String) {
     ADMIN(0xE10110, "Admin"),
     DEVELOPER(0x00FFF0, "Dev"),
     YELLOW_FISH(0xEEC42A, "YellowFish"),
-    SUPPORTER(0xE17E2E, "Supporter"),
+    SPONSOR(0xE17E2E, "Sponsor"),
     PARTNER(0xFCAC04, "Partner");
 
     fun toLunarClientColor(): Color = Color.newBuilder()

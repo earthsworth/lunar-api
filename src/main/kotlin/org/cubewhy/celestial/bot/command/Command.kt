@@ -7,7 +7,7 @@ interface Command {
     fun trigger(): String
     fun usage(): String
     fun description(): String
-    fun roles(): List<Role> = Role.entries
+    fun roles(): List<Role> = listOf()
 
     fun help() = "${trigger()} - ${description()}\n${usage()}"
 
