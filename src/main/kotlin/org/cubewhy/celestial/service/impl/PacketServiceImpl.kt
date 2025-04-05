@@ -11,7 +11,7 @@ import kotlinx.coroutines.reactive.awaitFirst
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import org.cubewhy.celestial.entity.User
 import org.cubewhy.celestial.entity.WebsocketResponse
-import org.cubewhy.celestial.entity.config.UserProperties
+import org.cubewhy.celestial.entity.config.LunarProperties
 import org.cubewhy.celestial.entity.emptyWebsocketResponse
 import org.cubewhy.celestial.repository.UserRepository
 import org.cubewhy.celestial.service.*
@@ -40,9 +40,9 @@ class PacketServiceImpl(
     private val conversationService: ConversationService,
     private val jwtUtil: JwtUtil,
     private val userRepository: UserRepository,
+    private val mojangService: MojangService,
 
-    private val userProperties: UserProperties,
-    private val mojangService: MojangService
+    private val lunarProperties: LunarProperties
 ) : PacketService {
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -55,7 +55,7 @@ class PacketServiceImpl(
         // load user
         if (message.hasHello()) {
             val hello = message.hello
-            if (!userProperties.verify) {
+            if (!lunarProperties.user.verify) {
                 // verification is disabled
                 // create or find user
                 val user = userService.loadUser(hello.identity)

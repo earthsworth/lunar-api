@@ -2,13 +2,16 @@ package org.cubewhy.celestial
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.annotation.PostConstruct
+import org.cubewhy.celestial.entity.config.LunarProperties
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.runApplication
 import org.springframework.scheduling.annotation.EnableScheduling
 
 @EnableScheduling
 @SpringBootApplication
-open class LunarApiApplication {
+@EnableConfigurationProperties(LunarProperties::class)
+class LunarApiApplication {
     companion object {
         private val logger = KotlinLogging.logger {}
     }

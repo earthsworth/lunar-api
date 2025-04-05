@@ -5,7 +5,6 @@ import org.cubewhy.celestial.handler.AuthorizeHandler
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.reactive.HandlerMapping
-import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.handler.SimpleUrlHandlerMapping
 
 @Configuration
@@ -22,10 +21,5 @@ class WebConfig(
         val order = -1
 
         return SimpleUrlHandlerMapping(map, order)
-    }
-
-    @Bean
-    fun webClient(): WebClient {
-        return WebClient.create()
     }
 }
