@@ -42,8 +42,8 @@ data class User(
 
     val logoColor: Color
         get() {
-            // normal users with lunar+
-            if (this.cosmetic.lunarPlusState && this.roles.size == 1 && this.roles[0] == Role.USER) return PlusColor.PINK.toLunarClientColor()
+            // lunar+
+            if (this.cosmetic.lunarPlusState && this.cosmetic.lunarLogoColor == LogoColor.WHITE) return LogoColor.PINK.color.toLunarClientColor()
             return this.cosmetic.lunarLogoColor.color.toLunarClientColor()
         }
 
