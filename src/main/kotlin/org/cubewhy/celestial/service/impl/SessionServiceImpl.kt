@@ -147,7 +147,7 @@ class SessionServiceImpl(
             .awaitLast()
     }
 
-    override suspend fun pushAll(func: suspend (User, WebSocketSession) -> Unit) {
+    override suspend fun pushAll(func: suspend (User) -> Unit) {
         // find all sessions
         userWebsocketSessionReactiveRedisTemplate.opsForSet()
             .scan(Const.USER_WEBSOCKET_SESSION_STORE)
@@ -156,10 +156,8 @@ class SessionServiceImpl(
             .forEach { onlineUser ->
                 // find user
                 userRepository.findByUuid(onlineUser!!.userUuid).awaitFirstOrNull()?.let { user ->
-                    // find session
-                    this.processWithSessionLocally(user.id!!) { session ->
-                        func.invoke(user, session)
-                    }
+                    // process with session
+                    func.invoke(user)
                 }
             }
     }

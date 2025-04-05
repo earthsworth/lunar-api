@@ -11,5 +11,5 @@ interface CommandService {
      * @param user issuer
      * @return response message
      * */
-    suspend fun process(message: String, user: User): Message
+    suspend fun process(message: String, user: User): Message?
 }

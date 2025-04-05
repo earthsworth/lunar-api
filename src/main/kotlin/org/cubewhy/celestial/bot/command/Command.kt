@@ -11,5 +11,5 @@ interface Command {
 
     fun help() = "${trigger()} - ${description()}\n${usage()}"
 
-    suspend fun execute(user: User, args: List<String>): String
+    suspend fun execute(user: User, args: List<String>): String?
 }
