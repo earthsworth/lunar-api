@@ -13,31 +13,36 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 
 @Component
-class ShoutCommand(
+class IrcCommand(
     private val sessionService: SessionService,
     private val messageRepository: MessageRepository
 ) : Command {
     @Value("\${lunar.friend.bot.username}")
     var botUsername = "lunar_cn"
 
-    override fun trigger() = "shout"
+    override fun trigger() = "i"
     override fun usage() = "<content>"
-    override fun roles() = listOf(Role.ADMIN)
 
     override fun description() = "Send messages to all players that connected to this network"
 
-    override suspend fun execute(user: User, args: List<String>): String {
+    override suspend fun execute(user: User, args: List<String>): String? {
         if (args.isEmpty()) {
             return help()
         }
-        val content = args.joinToString(" ")
-        sessionService.pushAll { target, session ->
-            // push message
-            val message = messageRepository.save(Message.createBotResponse("[shout] $content", target)).awaitFirst()
+        val content = "${user.username} > ${args.joinToString(" ")}"
+        this.pushIRCMessage(content)
+        return null
+    }
+
+    private suspend fun pushIRCMessage(content: String) {
+        sessionService.pushAll { target ->
+            // build message
+            val message = messageRepository.save(Message.createBotResponse("[irc] $content", target)).awaitFirst()
             message.buildBotResponsePush(botUsername).forEach { push ->
-                session.pushEvent(push)
+                // push event
+                sessionService.push(target, push)
             }
         }
-        return "Success"
+        // TODO push to Discord if available
     }
 }

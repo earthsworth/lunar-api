@@ -2,10 +2,6 @@ package org.cubewhy.celestial.service.impl
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.cubewhy.celestial.bot.command.Command
-import org.cubewhy.celestial.bot.command.impl.EchoCommand
-import org.cubewhy.celestial.bot.command.impl.ShoutCommand
-import org.cubewhy.celestial.bot.command.impl.ToggleLunarPlusCommand
-import org.cubewhy.celestial.bot.command.impl.WhoamiCommand
 import org.cubewhy.celestial.entity.Message
 import org.cubewhy.celestial.entity.User
 import org.cubewhy.celestial.service.CommandService
@@ -30,15 +26,16 @@ class CommandServiceImpl(
         commands[helpCommand.trigger()] = helpCommand
     }
 
-    override suspend fun process(message: String, user: User): Message {
+    override suspend fun process(message: String, user: User): Message? {
         // parse command
         if (!message.startsWith(".")) {
             return Message.createBotResponse("Not a command, type .help for help", user)
         }
-        return Message.createBotResponse(parseCommand(user, message), user)
+        val response = parseCommand(user, message) ?: return null
+        return Message.createBotResponse(response, user)
     }
 
-    suspend fun parseCommand(user: User, message: String): String {
+    suspend fun parseCommand(user: User, message: String): String? {
         val parts = message.split(" ")
         val command = parts[0].substring(1)
         val args = parts.drop(1)
@@ -52,6 +49,7 @@ class CommandServiceImpl(
         }
         logger.info { "User ${user.username} executes command $trigger" }
         val rawResponse = command1.execute(user, args)
+        if (rawResponse.isNullOrEmpty()) return null
         val sb = StringBuilder()
         // format result
         rawResponse.split("\n").let {

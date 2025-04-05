@@ -30,6 +30,7 @@ repositories {
 dependencies {
     protobuf(files("proto"))
 
+    implementation("dev.kord:kord-core:0.15.0")
     implementation("com.opencsv:opencsv:5.10")
     implementation("com.auth0:java-jwt:4.4.0")
     implementation("io.confluent:kafka-streams-avro-serde:7.8.0")

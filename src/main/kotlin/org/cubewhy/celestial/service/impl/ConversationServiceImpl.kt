@@ -68,14 +68,16 @@ class ConversationServiceImpl(
             ).awaitFirst()
             val events =
                 mutableListOf(this.buildConversationMessagePush(savedMessage, user, request.conversationReference))
-            events.addAll(
-                messageRepository.save(
-                    commandService.process(
-                        chatMessage,
-                        user
-                    )
-                ).awaitFirst().buildBotResponsePush(botUsername)
-            )
+            // process command
+            commandService.process(chatMessage, user)?.let { msg ->
+                // build pushes
+                events.addAll(
+                    // save message
+                    messageRepository.save(msg)
+                        .awaitFirst()
+                        .buildBotResponsePush(botUsername)
+                )
+            }
             return SendConversationMessageResponse.newBuilder().apply {
                 status =
                     SendConversationMessageResponse.Status.STATUS_OK

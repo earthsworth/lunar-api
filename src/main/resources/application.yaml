@@ -35,3 +35,5 @@ lunar:
       username: ${LUNAR_BOT_USERNAME:lunar_bot}
     # max number have friend
     max: 50
+  discord:
+    token:

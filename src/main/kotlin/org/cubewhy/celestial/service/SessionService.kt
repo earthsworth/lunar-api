@@ -16,7 +16,7 @@ interface SessionService {
     suspend fun saveLocation(user: User, location: InboundLocation)
     suspend fun getMinecraftVersion(uuid: String): String?
     suspend fun getLocation(uuid: String): Location?
-    suspend fun pushAll(func: suspend (User, WebSocketSession) -> Unit)
+    suspend fun pushAll(func: suspend (User) -> Unit)
     suspend fun processWithSessionLocally(userId: String, func: suspend (WebSocketSession) -> Unit)
     fun push(userId: String, push: GeneratedMessage)
     suspend fun isOnSession(session: WebSocketSession, user: User): Boolean
