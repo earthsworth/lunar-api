@@ -6,7 +6,6 @@ import com.auth0.jwt.exceptions.JWTVerificationException
 import com.auth0.jwt.interfaces.DecodedJWT
 import com.auth0.jwt.interfaces.JWTVerifier
 import org.cubewhy.celestial.entity.User
-import org.cubewhy.celestial.entity.WebUser
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.stereotype.Component
@@ -47,18 +46,6 @@ class JwtUtil(
             .withClaim("id", user.id) // internal id
             .withClaim("name", user.username) // minecraft username
             .withClaim("mcuuid", user.uuid) // minecraft uuid
-            .withExpiresAt(expireDate) // now + {date}
-            .withIssuedAt(Date()) // time now
-            .sign(algorithm)
-    }
-
-    fun createJwt(webUser: WebUser): String {
-        val algorithm: Algorithm = Algorithm.HMAC256(key)
-        return JWT.create()
-            .withJWTId(UUID.randomUUID().toString())
-            .withClaim("id", webUser.id) // internal id
-            .withClaim("username", webUser.username) // minecraft username
-            .withClaim("role", webUser.role.name) // minecraft uuid
             .withExpiresAt(expireDate) // now + {date}
             .withIssuedAt(Date()) // time now
             .sign(algorithm)

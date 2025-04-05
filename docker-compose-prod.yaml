@@ -12,7 +12,6 @@ services:
     environment:
       - MONGODB_URI=mongodb://root:password@lunar-mongo/lunarclient?authSource=admin
       - REDIS_URL=redis://lunar-redis:6379/0
-      - API_TOKEN=api_token
       - SCHEMA_REGISTRY_URL=http://schema-registry:8081
       - KAFKA_BOOTSTRAP_SERVER=kafka:9092
     depends_on:

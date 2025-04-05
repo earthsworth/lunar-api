@@ -9,7 +9,6 @@ import org.cubewhy.celestial.entity.Analysis
 import org.cubewhy.celestial.entity.vo.AnalysisVO
 import org.cubewhy.celestial.repository.AnalysisRepository
 import org.cubewhy.celestial.repository.UserRepository
-import org.cubewhy.celestial.repository.WebUserRepository
 import org.cubewhy.celestial.service.AnalysisService
 import org.cubewhy.celestial.service.SessionService
 import org.springframework.scheduling.annotation.Scheduled
@@ -21,7 +20,6 @@ class AnalysisServiceImpl(
     private val scope: CoroutineScope,
     private val analysisRepository: AnalysisRepository,
     private val userRepository: UserRepository,
-    private val webUserRepository: WebUserRepository,
     private val sessionService: SessionService
 ) : AnalysisService {
     companion object {
@@ -31,7 +29,6 @@ class AnalysisServiceImpl(
     override suspend fun getNowAnalysis(): AnalysisVO {
         return AnalysisVO(
             userCount = userRepository.count().awaitFirst(),
-            webUserCount = webUserRepository.count().awaitFirst(),
             onlineCount = sessionService.countAvailableSessions(),
             timestamp = Instant.now()
         )
@@ -42,11 +39,9 @@ class AnalysisServiceImpl(
         scope.launch {
             val onlineCount = sessionService.countAvailableSessions()
             val userCount = userRepository.count().awaitFirst()
-            val webUserCount = webUserRepository.count().awaitFirst()
-            logger.info { "Record analysis data (total $userCount users, $webUserCount web users, $onlineCount online)" }
+            logger.info { "Record analysis data (total $userCount users, $onlineCount online)" }
             val analysis = Analysis(
                 userCount = userCount,
-                webUserCount = webUserCount,
                 onlineCount = onlineCount
             )
             // save analysis

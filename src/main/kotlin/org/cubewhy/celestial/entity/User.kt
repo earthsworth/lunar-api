@@ -11,22 +11,7 @@ import java.io.Serializable
 import java.time.Instant
 
 /**
- * The web dashboard user
- * */
-@Document
-data class WebUser(
-    @Id
-    val id: String? = null,
-    var username: String,
-    var password: String, // encrypted password
-    var gameUser: String? = null, // bind to in-game user id
-
-    var role: Role = Role.USER,
-    val createdAt: Instant = Instant.now(),
-)
-
-/**
- * The in-game user
+ * The user
  * */
 @Document
 data class User(

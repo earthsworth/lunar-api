@@ -3,7 +3,6 @@ package org.cubewhy.celestial.config
 import org.cubewhy.celestial.entity.RestBean
 import org.cubewhy.celestial.entity.Role
 import org.cubewhy.celestial.entity.vo.AuthorizeVO
-import org.cubewhy.celestial.filter.ApiTokenFilter
 import org.cubewhy.celestial.service.UserService
 import org.cubewhy.celestial.util.JwtUtil
 import org.springframework.context.annotation.Bean
@@ -13,7 +12,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity
-import org.springframework.security.config.web.server.SecurityWebFiltersOrder
 import org.springframework.security.config.web.server.ServerHttpSecurity
 import org.springframework.security.config.web.server.invoke
 import org.springframework.security.core.Authentication
@@ -34,13 +32,13 @@ import reactor.kotlin.core.publisher.toMono
 
 @Configuration
 @EnableWebFluxSecurity
-open class SecurityConfig(
+class SecurityConfig(
     private val jwtUtil: JwtUtil,
     private val userService: UserService,
-    private val apiTokenFilter: ApiTokenFilter,
+//    private val apiTokenFilter: ApiTokenFilter,
 ) {
     @Bean
-    open fun springSecurityFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain {
+    fun springSecurityFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain {
         return http {
 
             authorizeExchange {
@@ -56,7 +54,8 @@ open class SecurityConfig(
                 authenticationSuccessHandler = AuthSuccessHandler(jwtUtil, userService)
                 authenticationFailureHandler = AuthFailureHandler
             }
-            addFilterBefore(apiTokenFilter, SecurityWebFiltersOrder.AUTHENTICATION)
+            // todo api token filter
+//            addFilterBefore(apiTokenFilter, SecurityWebFiltersOrder.AUTHENTICATION)
             logout {
                 logoutUrl = "/api/user/logout"
                 logoutSuccessHandler = LogoutSuccessHandler(jwtUtil = jwtUtil)
@@ -83,12 +82,16 @@ open class SecurityConfig(
         ): Mono<Void> {
             // generate JWT
             val details = authentication.principal as User
-            // find web user
-            return userService.loadWebUser(details.username).flatMap { webUser ->
-                val jwt = jwtUtil.createJwt(webUser)
+            // find user
+            return userService.loadUserByUsername(details.username).flatMap { user ->
+                val jwt = jwtUtil.createJwt(user)
                 // parse jwt
                 val parsedJwt = jwtUtil.resolveJwt(jwt)!!
-                AuthorizeVO(webUser.username, jwt, parsedJwt.expiresAt.time, webUser.role.name).toMono()
+                AuthorizeVO(
+                    username = user.username,
+                    token = jwt,
+                    expire = parsedJwt.expiresAt.time,
+                    roles = user.roles.map { it.name }).toMono()
             }.flatMap { vo ->
                 webFilterExchange.exchange.responseSuccess(vo)
             }

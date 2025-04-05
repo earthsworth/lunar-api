@@ -12,9 +12,8 @@ data class Analysis(
     val id: String? = null,
 
     var userCount: Long,
-    var webUserCount: Long,
     var onlineCount: Long,
     val timestamp: Instant = Instant.now()
 ): Serializable {
-    fun toVO() = AnalysisVO(this.userCount, this.webUserCount, this.onlineCount, timestamp)
+    fun toVO() = AnalysisVO(this.userCount, this.onlineCount, timestamp)
 }

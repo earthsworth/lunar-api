@@ -8,17 +8,17 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.ReactiveSecurityContextHolder
 import org.springframework.security.core.context.SecurityContext
 import org.springframework.security.core.context.SecurityContextImpl
-import org.springframework.stereotype.Component
 import org.springframework.web.server.ServerWebExchange
 import org.springframework.web.server.WebFilter
 import org.springframework.web.server.WebFilterChain
 import reactor.core.publisher.Mono
 
 
-@Component
+//@Component
 class ApiTokenFilter(
     @Value("\${lunar.api.token}") private val apiToken: String
 ) : WebFilter {
+    // todo apiToken
     override fun filter(
         exchange: ServerWebExchange,
         chain: WebFilterChain

@@ -32,5 +32,3 @@ lunar:
       username: ${LUNAR_BOT_USERNAME:lunar_bot}
     # max number have friend
     max: 50
-  api:
-    token: ${API_TOKEN:api_token}
