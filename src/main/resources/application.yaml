@@ -30,5 +30,9 @@ lunar:
     bot:
       enabled: ${LUNAR_BOT_ENABLED:true}
       username: ${LUNAR_BOT_USERNAME:lunar_bot}
-    # max number have friend
-    max: 50
+    # max friends
+    max: 200
+  sentry:
+    filters:
+      - identifier: everything
+        regex: ".*"
