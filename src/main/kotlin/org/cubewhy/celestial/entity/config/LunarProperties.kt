@@ -4,9 +4,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 
 @ConfigurationProperties(prefix = "lunar")
 data class LunarProperties(
-    val user: UserProperties
+    var user: UserProperties
 ) {
     data class UserProperties(
-        val verify: Boolean
+        var verify: Boolean
     )
 }
