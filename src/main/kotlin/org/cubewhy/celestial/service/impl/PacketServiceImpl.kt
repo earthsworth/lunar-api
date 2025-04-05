@@ -115,13 +115,14 @@ class PacketServiceImpl(
             val serverHash = CryptUtil.getServerIdHash("", keypair.public!!, clientSecretKey)
             // get identity
             val identity = session.attributes["identity"] as UuidAndUsername
+            logger.info { "Verifying player ${identity.username} with Mojang API" }
             // verify with Mojang API
             if (mojangService.hasJoined(identity.username, serverHash.toString())) {
                 // create or find user
                 val user = userService.loadUser(identity)
                 // generate jwt
                 val jwt = jwtUtil.createJwt(user)
-                logger.info { "User ${user.username} successfully authenticated" }
+                logger.info { "User ${user.username} successfully authenticated (via Mojang API)" }
                 return AuthSuccessMessage.newBuilder().apply {
                     this.jwt = jwt
                 }.build()
