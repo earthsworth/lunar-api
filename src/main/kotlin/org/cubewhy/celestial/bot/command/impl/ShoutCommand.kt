@@ -22,7 +22,7 @@ class ShoutCommand(
 
     override fun trigger() = "shout"
     override fun usage() = "<content>"
-    override fun roles() = listOf(Role.ADMIN, Role.OWNER)
+    override fun roles() = listOf(Role.ADMIN)
 
     override fun description() = "Send messages to all players that connected to this network"
 

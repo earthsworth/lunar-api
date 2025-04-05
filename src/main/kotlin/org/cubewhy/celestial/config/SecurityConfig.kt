@@ -48,7 +48,7 @@ open class SecurityConfig(
                     pathMatchers("/ws/**", "/ws", "/api/user/register", "/api/analysis/**", "/api/user/login"),
                     permitAll
                 )
-                authorize(pathMatchers("/api/admin/**"), hasAnyRole(Role.OWNER.name, Role.ADMIN.name))
+                authorize(pathMatchers("/api/admin/**"), hasAnyRole(Role.ADMIN.name))
                 authorize(anyExchange, authenticated)
             }
             formLogin {
