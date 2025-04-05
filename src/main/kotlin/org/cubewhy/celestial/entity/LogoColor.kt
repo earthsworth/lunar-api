@@ -9,5 +9,9 @@ enum class LogoColor(val color: Int) {
     CYAN(0x00FFF0),
     YELLOW(0xEEC42A),
     ORANGE(0xE17E2E),
-    GOLD(0xFCAC04)
+    GOLD(0xFCAC04);
+
+    companion object {
+        fun findIgnoreCase(name: String): LogoColor? = entries.firstOrNull { it.name.equals(name, ignoreCase = true) }
+    }
 }

@@ -1,6 +1,7 @@
 package org.cubewhy.celestial.service
 
 import com.lunarclient.authenticator.v1.HelloMessage
+import org.cubewhy.celestial.entity.LogoColor
 import org.cubewhy.celestial.entity.User
 import org.cubewhy.celestial.entity.WebUser
 import org.cubewhy.celestial.entity.dto.RegisterUserDTO
@@ -21,4 +22,6 @@ interface UserService : ReactiveUserDetailsService {
     suspend fun registerWebUser(dto: RegisterUserDTO): WebUserVO?
     suspend fun resetWebUserPassword(dto: ResetPasswordDTO, authentication: Authentication)
     suspend fun loadWebUserVO(id: String): WebUserVO
+    suspend fun switchLogoColor(user: User, color: LogoColor)
+    suspend fun updatePassword(user: User, newPassword: String)
 }

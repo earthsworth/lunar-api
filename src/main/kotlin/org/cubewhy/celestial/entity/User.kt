@@ -34,6 +34,7 @@ data class User(
     val id: String? = null,
 
     var username: String,
+    var password: String? = null,
     @Indexed(unique = true)
     val uuid: String,
     val roles: MutableList<Role> = mutableListOf(Role.USER),
@@ -60,6 +61,9 @@ data class User(
             if (this.cosmetic.lunarPlusState && this.roles.size == 1 && this.roles[0] == Role.USER) return PlusColor.PINK.toLunarClientColor()
             return this.cosmetic.lunarLogoColor.color.toLunarClientColor()
         }
+
+    val availableLogoColors: Set<LogoColor>
+        get() = this.roles.flatMap { it.availableLogoColors.toList() }.toSet()
 }
 
 /**

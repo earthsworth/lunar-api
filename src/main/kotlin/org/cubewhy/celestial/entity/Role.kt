@@ -1,7 +1,7 @@
 package org.cubewhy.celestial.entity
 
 @Suppress("UNUSED")
-enum class Role(vararg availableLogoColors: LogoColor) {
+enum class Role(vararg val availableLogoColors: LogoColor) {
     USER(LogoColor.WHITE),
     ADMIN(*LogoColor.entries.toTypedArray()),
     STAFF(LogoColor.GREEN),

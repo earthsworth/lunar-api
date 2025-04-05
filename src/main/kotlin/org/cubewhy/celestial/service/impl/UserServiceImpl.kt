@@ -6,6 +6,7 @@ import jakarta.annotation.PostConstruct
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.reactive.awaitFirst
+import org.cubewhy.celestial.entity.LogoColor
 import org.cubewhy.celestial.entity.Role
 import org.cubewhy.celestial.entity.User
 import org.cubewhy.celestial.entity.WebUser
@@ -80,6 +81,25 @@ class UserServiceImpl(
         user.lastSeenAt = Instant.now() // set offline timestamp
         // push events to friends
         applicationEventPublisher.publishEvent(UserOfflineEvent(this, user))
+        userRepository.save(user).awaitFirst()
+    }
+
+    override suspend fun switchLogoColor(user: User, color: LogoColor) {
+        // check permission
+        if (!user.availableLogoColors.contains(color)) {
+            throw IllegalStateException("No permission")
+        }
+        // apply changes
+        logger.info { "User ${user.username} changed his logo color (${color.name})" }
+        user.cosmetic.lunarLogoColor = color
+        // save user
+        userRepository.save(user).awaitFirst()
+    }
+
+    override suspend fun updatePassword(user: User, newPassword: String) {
+        logger.info { "User ${user.username} updated his password" }
+        user.password = passwordEncoder.encode(newPassword)
+        // save user
         userRepository.save(user).awaitFirst()
     }
 

@@ -15,11 +15,11 @@ class CosmeticCommand(
     private val userRepository: UserRepository,
     private val cosmeticService: CosmeticService
 ) : Command {
-    override fun trigger(): String = "cosmetic"
+    override fun trigger() = "cosmetic"
 
-    override fun description(): String = "Manager your cosmetic"
+    override fun description() = "Manager your cosmetic"
 
-    override fun usage(): String = "cosmetic <save/load> <id>"
+    override fun usage() = "<save/load> [id]"
 
     override suspend fun execute(user: User, args: List<String>): String {
         return when (args[0]) {
