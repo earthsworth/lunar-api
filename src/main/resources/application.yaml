@@ -26,6 +26,9 @@ spring:
           brokers: ${KAFKA_BOOTSTRAP_SERVER:localhost:9092}
 
 lunar:
+  user:
+    # Check if the player is authenticated with a valid Mojang/Microsoft account.
+    verify: true
   friend:
     bot:
       enabled: ${LUNAR_BOT_ENABLED:true}

@@ -1,19 +1,29 @@
 package org.cubewhy.celestial.service.impl
 
+import com.google.protobuf.GeneratedMessage
+import com.google.protobuf.kotlin.toByteString
 import com.lunarclient.authenticator.v1.AuthSuccessMessage
+import com.lunarclient.authenticator.v1.EncryptionRequestMessage
+import com.lunarclient.common.v1.UuidAndUsername
 import com.lunarclient.websocket.handshake.v1.Handshake
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.reactive.awaitFirst
+import kotlinx.coroutines.reactive.awaitFirstOrNull
 import org.cubewhy.celestial.entity.User
 import org.cubewhy.celestial.entity.WebsocketResponse
+import org.cubewhy.celestial.entity.config.UserProperties
 import org.cubewhy.celestial.entity.emptyWebsocketResponse
 import org.cubewhy.celestial.repository.UserRepository
 import org.cubewhy.celestial.service.*
+import org.cubewhy.celestial.util.CryptUtil
 import org.cubewhy.celestial.util.JwtUtil
+import org.cubewhy.celestial.util.generateRandomBytes
 import org.cubewhy.celestial.util.toUUIDString
 import org.springframework.stereotype.Service
+import org.springframework.web.reactive.socket.CloseStatus
 import org.springframework.web.reactive.socket.WebSocketSession
 import reactor.core.publisher.SignalType
+import java.security.KeyPair
 import java.time.Instant
 import com.lunarclient.authenticator.v1.ServerboundWebSocketMessage as AuthenticatorServerboundWebsocketMessage
 import com.lunarclient.websocket.protocol.v1.ServerboundWebSocketMessage as AssetsServerboundWebSocketMessage
@@ -30,24 +40,97 @@ class PacketServiceImpl(
     private val conversationService: ConversationService,
     private val jwtUtil: JwtUtil,
     private val userRepository: UserRepository,
+
+    private val userProperties: UserProperties,
+    private val mojangService: MojangService
 ) : PacketService {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
-    override suspend fun processAuthorize(message: AuthenticatorServerboundWebsocketMessage): AuthSuccessMessage? {
+    override suspend fun processAuthorize(
+        session: WebSocketSession,
+        message: AuthenticatorServerboundWebsocketMessage
+    ): GeneratedMessage? {
         // load user
         if (message.hasHello()) {
             val hello = message.hello
-            val user = userService.loadUser(hello)
-            // generate jwt
-            val jwt = jwtUtil.createJwt(user)
-            // todo verify account
-            // create packet
-            logger.info { "User ${user.username} successfully authenticated" }
-            return AuthSuccessMessage.newBuilder()
-                .setJwt(jwt)
-                .build()
+            if (!userProperties.verify) {
+                // verification is disabled
+                // create or find user
+                val user = userService.loadUser(hello.identity)
+                // generate jwt
+                val jwt = jwtUtil.createJwt(user)
+                logger.info { "User ${user.username} successfully authenticated" }
+                return AuthSuccessMessage.newBuilder().apply {
+                    this.jwt = jwt
+                }.build()
+            } else {
+                // verify account
+                // put user info into websocket session
+                session.attributes["identity"] = hello.identity
+                session.attributes["need-verify"] = true
+                // generate public key
+                val keyPair = CryptUtil.generateKeyPair()!!
+                // save private key
+                session.attributes["keypair"] = keyPair
+                val pubKey = keyPair.public
+                val randomBytes = generateRandomBytes()
+                session.attributes["random-bytes"] = randomBytes
+                // require the client to request Mojang API to verify
+                return EncryptionRequestMessage.newBuilder().apply {
+                    this.publicKey = pubKey.encoded.toByteString()
+                    this.randomBytes = randomBytes.toByteString()
+                }.build()
+            }
+        } else if (message.hasEncryptionFail()) {
+            if ((session.attributes["need-verify"] as Boolean?) != true) {
+                logger.warn { "Wrong packet order: hello is required" }
+                // close socket
+                session.close(CloseStatus.create(1008, "Bad packet order")).awaitFirstOrNull()
+                return null
+            }
+            // get identity
+            val identity = session.attributes["identity"] as UuidAndUsername
+
+            val encryptionFail = message.encryptionFail
+            logger.warn { "Failed to verify session with user ${identity.username} (${identity.uuid.toUUIDString()}): ${encryptionFail.reason}" }
+        } else if (message.hasEncryptionResponse()) {
+            val encryptionResponse = message.encryptionResponse
+            // get server private key
+            val keypair = session.attributes["keypair"] as KeyPair
+            // decode random bytes
+            val clientRandomBytes = CryptUtil.decryptData(keypair.private!!, encryptionResponse.publicKey.toByteArray())
+            // verify random bytes
+            val serverRandomBytes = session.attributes["random-bytes"] as ByteArray
+            if (!clientRandomBytes.contentEquals(serverRandomBytes)) {
+                // a middleman modded the connection, close the socket right now
+                session.close(CloseStatus.create(1008, "Random bytes doesn't match")).awaitFirstOrNull()
+                return null
+            }
+            // decode secret key
+            val clientSecretKey =
+                CryptUtil.decryptSharedKey(keypair.private!!, encryptionResponse.secretKey.toByteArray())
+            // compute server hash
+            val serverHash = CryptUtil.getServerIdHash("", keypair.public!!, clientSecretKey)
+            // get identity
+            val identity = session.attributes["identity"] as UuidAndUsername
+            // verify with Mojang API
+            if (mojangService.hasJoined(identity.username, serverHash.toString())) {
+                // create or find user
+                val user = userService.loadUser(identity)
+                // generate jwt
+                val jwt = jwtUtil.createJwt(user)
+                logger.info { "User ${user.username} successfully authenticated" }
+                return AuthSuccessMessage.newBuilder().apply {
+                    this.jwt = jwt
+                }.build()
+            } else {
+                logger.warn { "Invalid session: ${identity.username} (failed to verify with Mojang API)" }
+                // failed to verify
+                session.close(CloseStatus.create(1008, "Failed to verify session")).awaitFirstOrNull()
+                return null
+            }
         }
         return null // unknown packet
     }

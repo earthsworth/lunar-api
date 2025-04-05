@@ -26,7 +26,7 @@ class AuthorizeHandler(
                 ServerboundWebSocketMessage.parseFrom(message.payload.asInputStream())
                     .toMono()
             } // parse message
-            .flatMap { message -> mono { packetService.processAuthorize(message) } } // process message
+            .flatMap { message -> mono { packetService.processAuthorize(session, message) } } // process message
             .flatMap { message -> message.wrapAuthenticator().toMono() } // wrap message
             .flatMap { message ->
                 session.send(session.binaryMessage { it.wrap(message.toByteArray()) }.toMono())

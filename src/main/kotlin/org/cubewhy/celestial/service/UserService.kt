@@ -1,13 +1,13 @@
 package org.cubewhy.celestial.service
 
-import com.lunarclient.authenticator.v1.HelloMessage
+import com.lunarclient.common.v1.UuidAndUsername
 import org.cubewhy.celestial.entity.LogoColor
 import org.cubewhy.celestial.entity.User
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService
 import reactor.core.publisher.Mono
 
 interface UserService : ReactiveUserDetailsService {
-    suspend fun loadUser(hello: HelloMessage): User
+    suspend fun loadUser(identity: UuidAndUsername): User
     suspend fun loadUser(username: String, uuid: String): User
 
     fun loadUserByUsername(username: String): Mono<User>
