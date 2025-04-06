@@ -6,9 +6,9 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-open class CoroutineConfig {
+class CoroutineConfig {
     @Bean
-    open fun coroutineScope(): CoroutineScope {
+    fun coroutineScope(): CoroutineScope {
         return CoroutineScope(Dispatchers.IO)
     }
 }

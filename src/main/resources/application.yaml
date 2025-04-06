@@ -37,3 +37,6 @@ lunar:
     max: 50
   discord:
     token:
+    irc:
+      # Channel ID to sync irc messages
+      channel: 1358028995899293746
