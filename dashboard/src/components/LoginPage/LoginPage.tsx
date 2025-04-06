@@ -2,6 +2,7 @@ import image from '../../assets/login-image.webp';
 import {Button, Input} from "@headlessui/react";
 import {FormEvent, useState} from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import {Link} from "react-router-dom";
 
 export function LoginPage() {
   const [error, setError] = useState<string | null>(null)
@@ -66,7 +67,8 @@ export function LoginPage() {
             <p className=" text-sm">
               Do not input your Microsoft password
             </p>
-            <strong className="text-red-500">.passwd &lt;new password&gt;</strong>
+            <p className="text-red-500 font-semibold">.passwd &lt;new password&gt;</p>
+            <Link to="/statistics" className="text-blue-500 dark:text-sky-500 underline hover:dark:text-blue-500 hover:text-sky-500">View Statistics</Link>
           </div>
         </div>
       </div>
