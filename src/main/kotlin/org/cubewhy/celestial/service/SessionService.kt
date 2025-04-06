@@ -4,13 +4,13 @@ import com.google.protobuf.GeneratedMessage
 import com.lunarclient.common.v1.Location
 import com.lunarclient.websocket.friend.v1.InboundLocation
 import org.cubewhy.celestial.entity.User
-import org.cubewhy.celestial.entity.UserWebsocketSession
+import org.cubewhy.celestial.entity.UserSession
 import org.springframework.web.reactive.socket.WebSocketSession
 
 interface SessionService {
     suspend fun countAvailableSessions(): Long
     suspend fun saveSession(user: User, websocketSession: WebSocketSession)
-    suspend fun getUserSession(session: WebSocketSession): UserWebsocketSession?
+    suspend fun getUserSession(session: WebSocketSession): UserSession?
     suspend fun removeSession(session: WebSocketSession)
     suspend fun saveMinecraftVersion(user: User, version: String)
     suspend fun saveLocation(user: User, location: InboundLocation)
@@ -20,7 +20,7 @@ interface SessionService {
     suspend fun processWithSessionLocally(userId: String, func: suspend (WebSocketSession) -> Unit)
     fun push(userId: String, push: GeneratedMessage)
     suspend fun isOnSession(session: WebSocketSession, user: User): Boolean
-    suspend fun findSessions(user: User): List<UserWebsocketSession>
+    suspend fun findSessions(user: User): List<UserSession>
     fun push(user: User, push: GeneratedMessage)
     suspend fun isOnline(user: User): Boolean
 }

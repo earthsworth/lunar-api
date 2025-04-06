@@ -25,6 +25,10 @@ spring:
         binder:
           brokers: ${KAFKA_BOOTSTRAP_SERVER:localhost:9092}
 
+instance:
+  # Used to recognize instances in Kubernetes
+  id: ${HOSTNAME:earthsworth}
+
 lunar:
   user:
     # Check if the player is authenticated with a valid Mojang/Microsoft account.
