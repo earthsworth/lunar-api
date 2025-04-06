@@ -43,11 +43,15 @@ class SecurityConfig(
 
             authorizeExchange {
                 authorize(
-                    pathMatchers("/ws/**", "/ws", "/api/user/register", "/api/analysis/**", "/api/user/login"),
+                    pathMatchers("/api/**"),
+                    authenticated
+                )
+                authorize(
+                    pathMatchers("/api/user/login", "/api/analysis", "/api/analysis/**"),
                     permitAll
                 )
                 authorize(pathMatchers("/api/admin/**"), hasAnyRole(Role.ADMIN.name))
-                authorize(anyExchange, authenticated)
+                authorize(anyExchange, permitAll)
             }
             formLogin {
                 loginPage = "/api/user/login"

@@ -7,10 +7,12 @@ plugins {
     id("com.github.davidmc24.gradle.plugin.avro") version "1.9.1"
 }
 
+val frontendDir = "./dashboard"
 val springCloudVersion by extra("2024.0.0")
 
 group = "org.cubewhy"
 version = "0.0.1-SNAPSHOT"
+
 
 java {
 	toolchain {
@@ -65,6 +67,7 @@ dependencies {
 
 tasks.withType<Jar> {
     exclude("**/*.proto")
+    includeEmptyDirs = false
 }
 
 kotlin {
@@ -87,4 +90,26 @@ dependencyManagement {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+tasks.register<Exec>("npmInstall") {
+    workingDir = file(frontendDir)
+    commandLine = listOf("pnpm", "install")
+}
+
+tasks.register<Exec>("npmBuild") {
+    workingDir = file(frontendDir)
+    commandLine = listOf("pnpm", "run", "build")
+    dependsOn("npmInstall")
+}
+
+tasks.register<Copy>("copyFrontendToBuild") {
+    dependsOn("npmBuild")
+    from("$frontendDir/dist")
+    into("${layout.buildDirectory.get().asFile}/resources/main/static")
+}
+
+tasks.named("processResources") {
+
+    dependsOn("copyFrontendToBuild")
 }
