@@ -71,10 +71,7 @@ class ConversationServiceImpl(
             // process command
             commandService.process(chatMessage, user)?.let { msg ->
                 // build pushes
-                events.addAll(
-                    // save message
-                    msg.buildBotResponsePush(botUsername)
-                )
+                events.addAll(msg.buildBotResponsePush(botUsername))
             }
             return SendConversationMessageResponse.newBuilder().apply {
                 status =
