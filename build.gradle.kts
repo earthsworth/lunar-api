@@ -30,7 +30,7 @@ repositories {
 dependencies {
     protobuf(files("proto"))
 
-    implementation("dev.kord:kord-core:0.15.0")
+    implementation("com.discord4j:discord4j-core:3.2.7")
     implementation("com.opencsv:opencsv:5.10")
     implementation("com.auth0:java-jwt:4.4.0")
     implementation("io.confluent:kafka-streams-avro-serde:7.8.0")
@@ -40,7 +40,7 @@ dependencies {
 	implementation("com.google.protobuf:protobuf-kotlin:4.30.0-RC1")
     implementation("com.google.protobuf:protobuf-java-util:4.30.0-RC1")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-    implementation("org.springframework.cloud:spring-cloud-starter-config")
+//    implementation("org.springframework.cloud:spring-cloud-starter-config")
     implementation("org.springframework.cloud:spring-cloud-stream")
     implementation("org.springframework.cloud:spring-cloud-stream-binder-kafka-reactive")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
