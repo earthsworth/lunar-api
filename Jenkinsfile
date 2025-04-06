@@ -13,14 +13,8 @@ pipeline{
         stage("docker build"){
             steps {
                 echo "========executing docker build========"
-                sh 'docker build -t 192.168.31.33:5000/lunarapi:latest .'
-            }
-        }
-
-        stage("public docker image"){
-            steps {
-                echo "========executing public docker image========"
-                sh 'docker push 192.168.31.33:5000/lunarapi:latest'
+                def image = docker.build("192.168.31.33:5000/lunarapi")
+                image.push('latest')
             }
         }
     }
