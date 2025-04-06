@@ -28,7 +28,7 @@ export function LoginPage() {
 
       <div className="flex w-full lg:w-1/2 items-center justify-center px-8">
         <div className="w-full max-w-md space-y-6">
-          <h1 className="text-3xl font-bold text-center">The Lunar Dashboard</h1>
+          <h1 className="text-3xl font-bold text-center select-none">The Lunar Dashboard</h1>
 
           <AnimatePresence>
             {error && (
@@ -47,7 +47,8 @@ export function LoginPage() {
           <form className="space-y-4 w-full" onSubmit={processLogin}>
             <label className="floating-label">
               <span>Minecraft Username</span>
-              <Input type="text" placeholder="Minecraft Username" className="input input-md w-full" required/>
+              <Input type="text" placeholder="Minecraft Username" pattern="^[a-zA-Z0-9_]{3,16}$"
+                     className="input validator input-md w-full" required/>
             </label>
 
             <label className="floating-label">
@@ -63,7 +64,7 @@ export function LoginPage() {
             </div>
           </form>
 
-          <div className="text-right">
+          <div className="text-right select-none">
             <p className=" text-sm">
               Do not input your Microsoft password
             </p>
