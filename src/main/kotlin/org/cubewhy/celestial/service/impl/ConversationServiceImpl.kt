@@ -73,9 +73,7 @@ class ConversationServiceImpl(
                 // build pushes
                 events.addAll(
                     // save message
-                    messageRepository.save(msg)
-                        .awaitFirst()
-                        .buildBotResponsePush(botUsername)
+                    msg.buildBotResponsePush(botUsername)
                 )
             }
             return SendConversationMessageResponse.newBuilder().apply {
