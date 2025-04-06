@@ -2,13 +2,13 @@ pipeline{
     agent any
     stages{
 
-        stage("gradle build"){
-            steps{
-                echo "========executing gradle build========"
-                sh './gradlew build'
-                sh './gradlew bootJar'
-            }
-        }
+        // stage("gradle build"){
+        //     steps{
+        //         echo "========executing gradle build========"
+        //         sh './gradlew build'
+        //         sh './gradlew bootJar'
+        //     }
+        // }
 
         stage("docker build"){
             steps {
