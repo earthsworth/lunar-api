@@ -100,9 +100,10 @@ class EmoteServiceImpl(
 
     override suspend fun processLogin(user: User): GeneratedMessage {
         return LoginResponse.newBuilder().apply {
-            addAllOwnedEmotes(emoteList.map { it.toOwnedEmote(it.emoteId) })
-            addAllOwnedEmoteIds(emoteList.map { it.emoteId })
+//            addAllOwnedEmotes(emoteList.map { it.toOwnedEmote(it.emoteId) })
+//            addAllOwnedEmoteIds(emoteList.map { it.emoteId })
             addAllEquippedEmoteIds(user.emote.equippedEmotes.map { it.emoteId })
+            // hack: use LunarClient's hasAllEmotesFlag
             hasAllEmotesFlag = true
         }.build()
     }

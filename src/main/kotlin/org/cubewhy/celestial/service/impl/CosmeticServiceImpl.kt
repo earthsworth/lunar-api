@@ -138,9 +138,10 @@ class CosmeticServiceImpl(
             if (user.cosmetic.lunarPlusState) {
                 addAllAvailableLunarPlusColors(PlusColor.entries.map { it.toLunarClientColor() })
             }
-            addAllOwnedCosmeticIds(cosmeticList.map { it.cosmeticId })
-            addAllOwnedCosmetics(cosmeticList.map { it.toUserCosmetic().toOwnedCosmetic() })
+//            addAllOwnedCosmeticIds(cosmeticList.map { it.cosmeticId })
+//            addAllOwnedCosmetics(cosmeticList.map { it.toUserCosmetic().toOwnedCosmetic() })
             logoAlwaysShow = user.cosmetic.logoAlwaysShow
+            // hack: use LunarClient's hasAllCosmeticsFlag
             hasAllCosmeticsFlag = true
         }.build()
     }
