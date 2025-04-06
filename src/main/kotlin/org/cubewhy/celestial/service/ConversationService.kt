@@ -12,5 +12,5 @@ interface ConversationService : PacketProcessor {
         session: WebSocketSession
     ): WebsocketResponse
 
-    suspend fun pushIrc(nickname: String, content: String, selfId: String? = null, fromDiscord: Boolean = false)
+    suspend fun pushIrc(nickname: String, content: String, self: User? = null, fromDiscord: Boolean = false)
 }

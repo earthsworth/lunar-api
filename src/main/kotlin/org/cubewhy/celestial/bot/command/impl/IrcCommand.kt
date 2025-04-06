@@ -28,7 +28,7 @@ class IrcCommand(
         }
         val content = args.joinToString(" ")
         // push to irc
-        conversationService.pushIrc(user.username, content, user.id!!, fromDiscord = false)
+        conversationService.pushIrc(user.username, content, user, fromDiscord = false)
         return null
     }
 }

@@ -129,13 +129,13 @@ class ConversationServiceImpl(
         }.build().toWebsocketResponse()
     }
 
-    override suspend fun pushIrc(nickname: String, content: String, selfId: String?, fromDiscord: Boolean) {
+    override suspend fun pushIrc(nickname: String, content: String, self: User?, fromDiscord: Boolean) {
         sessionService.pushAll { target ->
-            if (selfId != target.id) {
+            if (self?.id != target.id) {
                 // build message
                 // To reduce the database size, no irc messages is stored.
                 val message =
-                    Message.createBotResponse("[irc] ${if (fromDiscord) "[DC]" else ""}$nickname > $content", target)
+                    Message.createBotResponse("[irc] ${if (fromDiscord) "[DC] " else ""}$nickname > $content", target)
                 message.buildBotResponsePush(botUsername).forEach { push ->
                     // push
                     sessionService.push(target, push)
@@ -146,8 +146,8 @@ class ConversationServiceImpl(
             // push to discord
             val channelId = Snowflake.of(lunarProperties.discord.irc.channel)
             val embed = EmbedCreateSpec.builder()
-                .color(discord4j.rest.util.Color.BLUE)
-                .author(nickname, null, "https://skins.mcstats.com/skull/${nickname}")
+                .color(discord4j.rest.util.Color.of(self!!.logoColor.color))
+                .author(nickname, null, "https://skins.mcstats.com/skull/${self.uuid}")
                 .description(content)
                 .timestamp(Instant.now())
                 .footer("Powered by Celestial", "https://lunarclient.top/favicon.webp")
