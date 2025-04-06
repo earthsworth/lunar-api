@@ -54,12 +54,14 @@ data class User(
 /**
  * An entity to store user sessions among clusters, loadbalancer
  * */
-data class UserWebsocketSession(
+data class UserSession(
     var userId: String,
     var userUuid: String,
     var websocketId: String,
     var location: String? = null,
-    var minecraftVersion: String? = null
+    var minecraftVersion: String? = null,
+
+    val instanceId: String? = null, // k8s pod id
 ) : Serializable
 
 data class UserEmoteSettings(

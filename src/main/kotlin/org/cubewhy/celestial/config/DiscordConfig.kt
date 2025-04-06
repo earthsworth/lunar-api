@@ -3,6 +3,8 @@ package org.cubewhy.celestial.config
 import discord4j.core.DiscordClientBuilder
 import discord4j.core.GatewayDiscordClient
 import discord4j.core.event.domain.Event
+import discord4j.gateway.intent.Intent
+import discord4j.gateway.intent.IntentSet
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.reactor.mono
 import org.cubewhy.celestial.bot.discord.listener.DiscordEventListener
@@ -28,10 +30,13 @@ class DiscordConfig {
         logger.info { "Logging in to Discord" }
         val client = DiscordClientBuilder.create(discordToken)
             .build()
+            .gateway()
+            .setEnabledIntents(IntentSet.of(Intent.GUILDS, Intent.GUILD_MEMBERS, Intent.GUILD_MESSAGES))
             .login()
             .block()
         for (listener in eventListeners) {
             // register event listeners
+            logger.debug { "Register Discord event listener ${listener::class.java.name}" }
             client!!.on(listener.getEventType())
                 .flatMap {
                     mono { listener.execute(it) }
