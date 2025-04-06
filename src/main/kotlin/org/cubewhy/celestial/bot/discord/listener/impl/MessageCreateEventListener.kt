@@ -25,10 +25,9 @@ class MessageCreateEventListener(
         if (channelId.asLong() == lunarProperties.discord.irc.channel && event.member.isPresent && message.content.isNotBlank()) {
             val member = event.member.get()
             val nickname = member.nickname.orElseGet { member.username }
-            val ircMessage = "$nickname > ${message.content}"
-            logger.info { "Discord -> IRC: $ircMessage" }
+            logger.info { "Discord -> IRC: $nickname -> ${message.content}" }
             // push to irc
-            conversationService.pushIrc(nickname, ircMessage, fromDiscord = true)
+            conversationService.pushIrc(nickname, message.content, fromDiscord = true)
         }
     }
 }
