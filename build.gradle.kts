@@ -40,6 +40,7 @@ dependencies {
 	implementation("com.google.protobuf:protobuf-kotlin:4.30.0-RC1")
     implementation("com.google.protobuf:protobuf-java-util:4.30.0-RC1")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("org.springframework.cloud:spring-cloud-starter-config")
     implementation("org.springframework.cloud:spring-cloud-stream")
     implementation("org.springframework.cloud:spring-cloud-stream-binder-kafka-reactive")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
