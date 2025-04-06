@@ -1,14 +1,11 @@
 package org.cubewhy.celestial.bot.command.impl
 
-import kotlinx.coroutines.reactive.awaitFirst
 import org.cubewhy.celestial.bot.command.Command
 import org.cubewhy.celestial.entity.Message
-import org.cubewhy.celestial.entity.Role
 import org.cubewhy.celestial.entity.User
 import org.cubewhy.celestial.repository.MessageRepository
 import org.cubewhy.celestial.service.SessionService
 import org.cubewhy.celestial.util.buildBotResponsePush
-import org.cubewhy.celestial.util.pushEvent
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 
@@ -30,17 +27,20 @@ class IrcCommand(
             return help()
         }
         val content = "${user.username} > ${args.joinToString(" ")}"
-        this.pushIRCMessage(content)
+        this.pushIRCMessage(user, content)
         return null
     }
 
-    private suspend fun pushIRCMessage(content: String) {
+    private suspend fun pushIRCMessage(self: User, content: String) {
         sessionService.pushAll { target ->
-            // build message
-            val message = messageRepository.save(Message.createBotResponse("[irc] $content", target)).awaitFirst()
-            message.buildBotResponsePush(botUsername).forEach { push ->
-                // push event
-                sessionService.push(target, push)
+            if (self.id!! != target.id) {
+                // build message
+                // To reduce the database size, no irc messages is stored.
+                val message = Message.createBotResponse("[irc] $content", target)
+                message.buildBotResponsePush(botUsername).forEach { push ->
+                    // push
+                    sessionService.push(target, push)
+                }
             }
         }
         // TODO push to Discord if available

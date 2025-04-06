@@ -18,8 +18,8 @@ class LunarApiApplication {
 
     @PostConstruct
     private fun init() {
-        logger.info { "Initializing Lunar API servlet" }
-        logger.info { "Powered by Celestial. https://lunarclient.top" }
+        logger.info { "Powered by LunarCN/Celestial. https://lunarclient.top" }
+        logger.info { "Not affiliated with Moonsworth." }
     }
 }
 
