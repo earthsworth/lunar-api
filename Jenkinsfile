@@ -1,12 +1,6 @@
 pipeline{
     agent any
     stages{
-        stage("checkout"){
-            steps{
-                echo "========executing checkout========"
-                checkout svm
-            }
-        }
 
         stage("gradle build"){
             steps{
