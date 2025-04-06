@@ -3,6 +3,8 @@ package org.cubewhy.celestial.config
 import discord4j.core.DiscordClientBuilder
 import discord4j.core.GatewayDiscordClient
 import discord4j.core.event.domain.Event
+import discord4j.core.`object`.presence.ClientActivity
+import discord4j.core.`object`.presence.ClientPresence
 import discord4j.gateway.intent.Intent
 import discord4j.gateway.intent.IntentSet
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -34,6 +36,10 @@ class DiscordConfig {
             .setEnabledIntents(IntentSet.of(Intent.GUILDS, Intent.GUILD_MEMBERS, Intent.GUILD_MESSAGES))
             .login()
             .block()
+
+        client?.updatePresence(ClientPresence.online(
+            ClientActivity.playing("LunarClient")
+        ))?.block()
         for (listener in eventListeners) {
             // register event listeners
             logger.debug { "Register Discord event listener ${listener::class.java.name}" }
