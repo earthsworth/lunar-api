@@ -2,9 +2,9 @@ syntax = "proto3";
 
 package lunarclient.websocket.radio.v1;
 
+import "lunarclient/common/v1/radio.proto";
 import "lunarclient/websocket/protocol/v1/common.proto";
 import "lunarclient/websocket/radio/v1/common.proto";
-import "lunarclient/common/v1/radio.proto";
 
 option java_package = "com.lunarclient.websocket.radio.v1";
 option java_outer_classname = "ServiceProto";

@@ -1,10 +1,12 @@
-import {Route, Routes} from "react-router-dom";
-import {NotFound} from "./NotFound.tsx";
+import { Route, Routes } from "react-router-dom";
+import { NotFound } from "./NotFound.tsx";
 
-export function DashboardRoutes() {
+const DashboardRoutes = () => {
   return (
     <Routes>
-      <Route path="*" element={<NotFound/>}/>
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
-}
+};
+
+export default DashboardRoutes;

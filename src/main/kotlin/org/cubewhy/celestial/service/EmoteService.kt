@@ -24,7 +24,7 @@ interface EmoteService : PacketProcessor {
         user: User
     ): UpdateEquippedEmotesResponse
 
-    suspend fun refreshEmote(
+    fun refreshEmote(
         user: User
     )
 }

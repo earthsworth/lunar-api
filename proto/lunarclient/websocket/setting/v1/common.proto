@@ -15,5 +15,12 @@ message LauncherSetting {
   bool default_value = 4;
 }
 
+message ClientSetting {
+  string id = 1;
+  google.protobuf.Any value = 2;
+  bool changed_value = 3;
+  bool default_value = 4;
+}
+
 
 

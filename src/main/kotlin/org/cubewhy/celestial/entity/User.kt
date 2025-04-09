@@ -22,7 +22,7 @@ data class User(
     var password: String? = null,
     @Indexed(unique = true)
     val uuid: String,
-    val roles: MutableList<Role> = mutableListOf(Role.USER),
+    val roles: MutableList<Role> = mutableListOf(),
 
     var radioPremium: Boolean = false,
     var createdAt: Instant = Instant.now(),
@@ -48,7 +48,17 @@ data class User(
         }
 
     val availableLogoColors: Set<LogoColor>
-        get() = this.roles.flatMap { it.availableLogoColors.toList() }.toSet()
+        get() = this.resolvedRoles.flatMap { it.availableLogoColors.toList() }.toSet()
+
+    val resolvedRoles: List<Role>
+        get() {
+            val roles = this.roles.toMutableSet()
+            if (!this.roles.contains(Role.USER)) {
+                // add the default role
+                roles.add(Role.USER)
+            }
+            return roles.toList()
+        }
 }
 
 /**
@@ -65,7 +75,7 @@ data class UserSession(
 ) : Serializable
 
 data class UserEmoteSettings(
-    var equippedEmotes: List<Emote> = mutableListOf()
+    var equippedEmoteIds: List<Int> = mutableListOf()
 )
 
 data class UserCosmeticSettings(

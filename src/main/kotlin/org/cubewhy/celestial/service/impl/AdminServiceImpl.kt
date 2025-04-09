@@ -30,7 +30,7 @@ class AdminServiceImpl(
             mcName = target.username,
             mcUuid = target.uuid,
             roleColor = target.cosmetic.lunarLogoColor.color,
-            roles = target.roles,
+            roles = target.resolvedRoles,
             plus = target.cosmetic.lunarPlusState,
         )
         return res

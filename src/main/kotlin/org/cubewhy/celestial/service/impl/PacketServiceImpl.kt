@@ -38,6 +38,7 @@ class PacketServiceImpl(
     private val subscriptionService: SubscriptionService,
     private val languageService: LanguageService,
     private val conversationService: ConversationService,
+    private val jamService: JamService,
     private val jwtUtil: JwtUtil,
     private val userRepository: UserRepository,
     private val mojangService: MojangService,
@@ -225,6 +226,13 @@ class PacketServiceImpl(
             )
 
             "lunarclient.websocket.conversation.v1.ConversationService" -> conversationService.process(
+                message.method,
+                message.input,
+                session,
+                user
+            )
+
+            "lunarclient.websocket.jam.v1.JamService" -> jamService.process(
                 message.method,
                 message.input,
                 session,

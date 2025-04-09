@@ -4,13 +4,15 @@ import com.lunarclient.common.v1.UuidAndUsername
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.reactive.awaitFirst
 import org.cubewhy.celestial.entity.LogoColor
-import org.cubewhy.celestial.entity.Role
 import org.cubewhy.celestial.entity.User
+import org.cubewhy.celestial.entity.vo.UserVO
 import org.cubewhy.celestial.event.UserOfflineEvent
 import org.cubewhy.celestial.repository.UserRepository
+import org.cubewhy.celestial.service.UserMapper
 import org.cubewhy.celestial.service.UserService
 import org.cubewhy.celestial.util.toUUIDString
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.security.core.Authentication
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -24,6 +26,7 @@ class UserServiceImpl(
     private val userRepository: UserRepository,
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val passwordEncoder: PasswordEncoder,
+    private val userMapper: UserMapper
 ) : UserService {
 
     companion object {
@@ -34,13 +37,7 @@ class UserServiceImpl(
         return userRepository.findByUuid(uuid)
             .switchIfEmpty {
                 logger.info { "User with Minecraft username $username created" }
-                userRepository.save(
-                    User(
-                        username = username,
-                        uuid = uuid,
-                        roles = mutableListOf(Role.USER)
-                    )
-                )
+                userRepository.save(User(username = username, uuid = uuid))
             }
             .flatMap { user ->
                 if (user.username != username) {
@@ -57,8 +54,15 @@ class UserServiceImpl(
             .awaitFirst()
     }
 
+    override suspend fun selfInfo(authentication: Authentication): UserVO {
+        // find user
+        val user = userRepository.findByUsername(authentication.name).awaitFirst()
+        // map to VO
+        return userMapper.mapToUserVO(user)
+    }
+
     override fun loadUserByUsername(username: String): Mono<User> {
-        return userRepository.findByUsername(username)
+        return userRepository.findByUsernameIgnoreCase(username)
     }
 
     override suspend fun loadUser(identity: UuidAndUsername): User {
@@ -98,13 +102,13 @@ class UserServiceImpl(
 
     override fun findByUsername(username: String): Mono<UserDetails> {
         // find the username in webUser repository
-        return userRepository.findByUsername(username)
-            .flatMap { webUser ->
+        return userRepository.findByUsernameIgnoreCase(username)
+            .flatMap { user ->
                 // build User details
                 org.springframework.security.core.userdetails.User.builder()
-                    .username(webUser.username)
-                    .password(webUser.password)
-                    .roles(*webUser.roles.map { "ROLE_" + it.name }.toTypedArray())
+                    .username(user.username)
+                    .password(user.password)
+                    .roles(*user.resolvedRoles.map { "ROLE_${it.name}" }.toTypedArray())
                     .build().toMono()
             }
     }

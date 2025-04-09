@@ -16,5 +16,19 @@ message RecordCountersRequest {
 message RecordCountersResponse {
 }
 
+message LoginRequest {
+}
+
+message LoginResponse {
+  lunarclient.websocket.wrapped.v1.WrappedLeaderboardVisibility leaderboard_visibility = 1;
+}
+
+message SetLeaderboardVisibilityRequest {
+  lunarclient.websocket.wrapped.v1.WrappedLeaderboardVisibility leaderboard_visibility = 1;
+}
+
+message SetLeaderboardVisibilityResponse {
+}
+
 
 

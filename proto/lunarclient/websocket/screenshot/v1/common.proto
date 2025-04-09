@@ -2,10 +2,11 @@ syntax = "proto3";
 
 package lunarclient.websocket.screenshot.v1;
 
-import "lunarclient/common/v1/uuid.proto";
-import "lunarclient/common/v1/version.proto";
 import "lunarclient/common/v1/location.proto";
 import "lunarclient/common/v1/position.proto";
+import "lunarclient/common/v1/skin.proto";
+import "lunarclient/common/v1/uuid.proto";
+import "lunarclient/common/v1/version.proto";
 
 option java_package = "com.lunarclient.websocket.screenshot.v1";
 option java_outer_classname = "CommonProto";
@@ -37,6 +38,9 @@ message ScreenshotPlayer {
   repeated lunarclient.websocket.screenshot.v1.PlayerState states = 2;
   repeated int32 cosmetics = 3;
   int32 emote = 4;
+  int32 emote_jam = 5;
+  lunarclient.common.v1.MinecraftSkin skin = 6;
+  string cape = 7;
 }
 
 message ExtraScreenshotData {

@@ -2,12 +2,12 @@ syntax = "proto3";
 
 package lunarclient.apollo.pingmarker.v1;
 
+import "google/protobuf/duration.proto";
 import "lunarclient/apollo/common/v1/color.proto";
 import "lunarclient/apollo/common/v1/icon.proto";
 import "lunarclient/apollo/common/v1/location.proto";
 import "lunarclient/apollo/common/v1/sound.proto";
 import "lunarclient/apollo/common/v1/uuid.proto";
-import "google/protobuf/duration.proto";
 
 option java_package = "com.lunarclient.apollo.pingmarker.v1";
 option java_outer_classname = "SchemaProto";

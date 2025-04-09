@@ -4,6 +4,7 @@ package lunarclient.websocket.handshake.v1;
 
 import "google/protobuf/timestamp.proto";
 import "lunarclient/common/v1/modpack.proto";
+import "lunarclient/common/v1/skin.proto";
 import "lunarclient/common/v1/uuid.proto";
 import "lunarclient/common/v1/version.proto";
 import "lunarclient/websocket/friend/v1/location.proto";
@@ -50,11 +51,63 @@ message MinecraftIdentity {
   lunarclient.common.v1.UuidAndUsername player = 1;
   lunarclient.websocket.handshake.v1.MinecraftIdentity.Type type = 2;
   string authenticator_jwt = 3;
+  repeated lunarclient.websocket.handshake.v1.MinecraftIdentity.Skin skins = 4;
+  repeated lunarclient.websocket.handshake.v1.MinecraftIdentity.Cape capes = 5;
+  lunarclient.websocket.handshake.v1.MinecraftIdentity.Attributes attributes = 6;
+  google.protobuf.Timestamp created_at = 8;
+  lunarclient.websocket.handshake.v1.MinecraftIdentity.NameChange name_change = 9;
+  bool owns_bedrock_edition = 10;
 
+  message NameChange {
+    google.protobuf.Timestamp last_changed_at = 1;
+    bool allowed = 2;
+  }
+
+  message Skin {
+    string id = 1;
+    lunarclient.websocket.handshake.v1.MinecraftIdentity.TextureState state = 2;
+    lunarclient.common.v1.MinecraftSkin skin = 3;
+  }
+
+  message Cape {
+    string id = 1;
+    lunarclient.websocket.handshake.v1.MinecraftIdentity.TextureState state = 2;
+    string texture_id = 3;
+    string alias = 4;
+  }
+
+  message Attributes {
+    bool priviledge_online_chat = 1;
+    bool priviledge_multiplayer_server = 2;
+    bool priviledge_multiplayer_realms = 3;
+    bool priviledge_telemetry = 4;
+    bool priviledge_optional_telemetry = 5;
+    bool profanity_filter_realms = 6;
+    repeated lunarclient.websocket.handshake.v1.MinecraftIdentity.Attributes.BannedScope banned_scopes = 7;
+
+    message BannedScope {
+      lunarclient.websocket.handshake.v1.MinecraftIdentity.Attributes.BannedScope.Type type = 1;
+      string ban_id = 2;
+      google.protobuf.Timestamp expires = 3;
+      string reason = 4;
+      string reason_message = 5;
+
+      enum Type {
+        TYPE_UNSPECIFIED = 0;
+        TYPE_MULTIPLAYER = 1;
+      }
+    }
+  }
   enum Type {
     TYPE_UNSPECIFIED = 0;
     TYPE_MOJANG = 1;
     TYPE_MICROSOFT = 2;
+  }
+
+  enum TextureState {
+    TEXTURE_STATE_UNSPECIFIED = 0;
+    TEXTURE_STATE_ACTIVE = 1;
+    TEXTURE_STATE_INACTIVE = 2;
   }
 }
 
@@ -81,6 +134,7 @@ message GameHandshake {
     lunarclient.websocket.handshake.v1.NvidiaGpuMemory nvidia_memory = 9;
     lunarclient.websocket.handshake.v1.MesaGpuMemory mesa_memory = 10;
   }
+  repeated lunarclient.websocket.setting.v1.ClientSetting settings = 11;
 }
 
 message LauncherHandshake {

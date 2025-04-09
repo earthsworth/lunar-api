@@ -15,10 +15,15 @@ message EmotePromotionReward {
   int32 emote_id = 1;
 }
 
+message SprayPromotionReward {
+  int32 spray_id = 1;
+}
+
 message PromotionReward {
   oneof reward {
     lunarclient.websocket.promotion.v1.CosmeticPromotionReward cosmetic = 1;
     lunarclient.websocket.promotion.v1.EmotePromotionReward emote = 2;
+    lunarclient.websocket.promotion.v1.SprayPromotionReward spray = 3;
   }
 }
 

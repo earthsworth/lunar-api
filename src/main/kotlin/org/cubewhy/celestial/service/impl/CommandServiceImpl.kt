@@ -86,7 +86,7 @@ class HelpCommand(private val commands: Map<String, Command>) : Command {
             .append("use .help [command] to display the full information of a command\n")
         commands.values.forEach { command ->
             val requiredRoles = command.roles()
-            if (requiredRoles.isEmpty() || requiredRoles.toSet().intersect(user.roles.toSet()).isNotEmpty()) {
+            if (requiredRoles.isEmpty() || requiredRoles.toSet().intersect(user.resolvedRoles.toSet()).isNotEmpty()) {
                 sb.append(".${command.trigger()} ${command.description()}")
                     .append("\n")
             }

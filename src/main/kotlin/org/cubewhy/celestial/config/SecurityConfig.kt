@@ -95,7 +95,7 @@ class SecurityConfig(
                     username = user.username,
                     token = jwt,
                     expire = parsedJwt.expiresAt.time,
-                    roles = user.roles.map { it.name }).toMono()
+                    roles = user.resolvedRoles.map { it.name }).toMono()
             }.flatMap { vo ->
                 webFilterExchange.exchange.responseSuccess(vo)
             }

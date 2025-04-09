@@ -14,5 +14,9 @@ message OwnedSpray {
   google.protobuf.Timestamp expires_at = 3;
 }
 
+message EquippedSpray {
+  int32 spray_id = 1;
+}
+
 
 
