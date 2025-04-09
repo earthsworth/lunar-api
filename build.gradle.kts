@@ -95,21 +95,35 @@ tasks.withType<Test> {
 tasks.register<Exec>("npmInstall") {
     workingDir = file(frontendDir)
     commandLine = listOf("pnpm", "install")
+
+    inputs.files(fileTree(frontendDir).matching { include("package.json", "pnpm-lock.yaml") })
+
+    outputs.dir("$frontendDir/node_modules")
 }
+
 
 tasks.register<Exec>("npmBuild") {
     workingDir = file(frontendDir)
     commandLine = listOf("pnpm", "run", "build")
     dependsOn("npmInstall")
+
+    inputs.files(fileTree(frontendDir).matching { include("package.json", "src/**/*.ts", "src/**/*.js") })
+    outputs.dir("$frontendDir/dist")
 }
+
 
 tasks.register<Copy>("copyFrontendToBuild") {
     dependsOn("npmBuild")
+
     from("$frontendDir/dist")
+
     into("${layout.buildDirectory.get().asFile}/resources/main/static")
+
+    inputs.dir("$frontendDir/dist")
+    outputs.dir("${layout.buildDirectory.get().asFile}/resources/main/static")
 }
 
-tasks.named("processResources") {
 
+tasks.named("processResources") {
     dependsOn("copyFrontendToBuild")
 }

@@ -61,7 +61,7 @@ RUN gradle --no-daemon dependencies
 # Copy source code
 COPY . .
 
-RUN gradle --no-daemon clean bootJar --info
+RUN gradle --no-daemon clean bootJar --info -x test
 
 FROM amazoncorretto:21.0.6-al2023-headless
 
