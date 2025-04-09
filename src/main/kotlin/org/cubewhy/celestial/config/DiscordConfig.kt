@@ -17,7 +17,7 @@ import org.springframework.context.annotation.Configuration
 
 
 @Configuration
-@ConditionalOnProperty(name = ["lunar.discord.token"])
+@ConditionalOnProperty(name = ["lunar.discord.enabled"], havingValue = "true")
 class DiscordConfig {
 
     companion object {

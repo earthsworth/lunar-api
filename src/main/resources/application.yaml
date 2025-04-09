@@ -40,7 +40,8 @@ lunar:
     # max number have friend
     max: 50
   discord:
-    token:
+    enabled: false
+    token: discord_token
     irc:
       # Channel ID to sync irc messages
       channel: 1358028995899293746
