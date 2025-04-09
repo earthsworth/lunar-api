@@ -22,3 +22,6 @@ indent_size = 2
 [{*.js,*.jsx,*.ts,*.tsx}]
 indent_size = 2
 tab_width = 2
+
+[Jenkinsfile]
+indent_size = 2
