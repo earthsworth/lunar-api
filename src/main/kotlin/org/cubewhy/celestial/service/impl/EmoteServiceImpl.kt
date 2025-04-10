@@ -5,10 +5,7 @@ import com.google.protobuf.GeneratedMessage
 import com.lunarclient.websocket.emote.v1.*
 import kotlinx.coroutines.reactive.awaitFirst
 import kotlinx.coroutines.reactive.awaitFirstOrNull
-import org.cubewhy.celestial.entity.User
-import org.cubewhy.celestial.entity.WebsocketResponse
-import org.cubewhy.celestial.entity.emptyWebsocketResponse
-import org.cubewhy.celestial.entity.toWebsocketResponse
+import org.cubewhy.celestial.entity.*
 import org.cubewhy.celestial.repository.UserRepository
 import org.cubewhy.celestial.service.EmoteService
 import org.cubewhy.celestial.service.SessionService
@@ -89,16 +86,18 @@ class EmoteServiceImpl(
         session: WebSocketSession,
         user: User
     ): UpdateEquippedEmotesResponse {
-        user.emote.equippedEmoteIds = request.equippedEmoteIdsList
+        user.emote.equippedEmotes = request.equippedEmotesList.map { Emote(it.emoteId, it.slotNumber, it.attachedJamId) }
         userRepository.save(user).awaitFirst()
         return UpdateEquippedEmotesResponse.newBuilder().build()
     }
 
     override suspend fun processLogin(user: User): GeneratedMessage {
         return LoginResponse.newBuilder().apply {
-//            addAllOwnedEmotes(emoteList.map { it.toOwnedEmote(it.emoteId) })
-//            addAllOwnedEmoteIds(emoteList.map { it.emoteId })
-            addAllEquippedEmoteIds(user.emote.equippedEmoteIds)
+            addAllOwnedEmotes(user.emote.equippedEmotes.map { it.toOwnedEmote() })
+            addAllOwnedEmoteIds(user.emote.equippedEmotes.map { it.emoteId })
+
+            addAllEquippedEmotes(user.emote.equippedEmotes.map { it.toEquippedEmote() })
+            addAllEquippedEmoteIds(user.emote.equippedEmotes.map { it.emoteId })
             // hack: use LunarClient's hasAllEmotesFlag
             hasAllEmotesFlag = true
         }.build()

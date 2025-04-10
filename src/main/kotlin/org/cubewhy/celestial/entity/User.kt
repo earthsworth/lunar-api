@@ -75,7 +75,7 @@ data class UserSession(
 ) : Serializable
 
 data class UserEmoteSettings(
-    var equippedEmoteIds: List<Int> = mutableListOf()
+    var equippedEmotes: List<Emote> = mutableListOf()
 )
 
 data class UserCosmeticSettings(
