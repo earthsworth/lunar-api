@@ -42,6 +42,10 @@ class SecurityConfig(
         return http {
 
             authorizeExchange {
+//                authorize(
+//                    pathMatchers("/api/lunar/styngr/jwt"),
+//                    authenticated
+//                )
                 authorize(
                     pathMatchers("/api/user/login", "/api/analysis", "/api/analysis/**", "/api/lunar/**", "/ws", "/ws/**"),
                     permitAll

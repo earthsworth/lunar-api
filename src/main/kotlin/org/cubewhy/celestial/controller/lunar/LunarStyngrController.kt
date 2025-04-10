@@ -1,20 +1,31 @@
 package org.cubewhy.celestial.controller.lunar
 
 import org.cubewhy.celestial.entity.vo.SongVO
+import org.cubewhy.celestial.entity.vo.StyngrJwtVO
 import org.cubewhy.celestial.service.JamService
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ServerWebExchange
 
 @RestController
 @RequestMapping("/api/lunar/styngr")
-class StyngrController(
+class LunarStyngrController(
     private val jamService: JamService,
 ) {
 
     @GetMapping("jams")
     suspend fun jams(exchange: ServerWebExchange): List<SongVO> {
         return jamService.availableSongs()
+    }
+
+    @PostMapping("jwt")
+    suspend fun jwt(exchange: ServerWebExchange): StyngrJwtVO {
+        // the forged api use the same token
+        val jwt = exchange.request.headers.getFirst("Authorization") as String
+        return StyngrJwtVO(
+            styngrJwt = jwt
+        )
     }
 }
