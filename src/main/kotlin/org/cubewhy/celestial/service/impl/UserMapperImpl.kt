@@ -2,6 +2,7 @@ package org.cubewhy.celestial.service.impl
 
 import org.cubewhy.celestial.entity.User
 import org.cubewhy.celestial.entity.vo.UserVO
+import org.cubewhy.celestial.entity.vo.styngr.StyngrUserVO
 import org.cubewhy.celestial.service.UserMapper
 import org.springframework.stereotype.Service
 
@@ -11,5 +12,11 @@ class UserMapperImpl : UserMapper {
         id = user.id!!,
         username = user.username,
         uuid = user.uuid,
+    )
+
+    override fun mapToStyngrUserVO(user: User) = StyngrUserVO(
+        id = user.id!!,
+        inGameCurrencyAmount = 9999.99,
+        inGameCurrencyUrl = "https://lunarclient.top"
     )
 }

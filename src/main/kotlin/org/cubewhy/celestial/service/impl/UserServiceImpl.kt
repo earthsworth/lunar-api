@@ -6,6 +6,7 @@ import kotlinx.coroutines.reactive.awaitFirst
 import org.cubewhy.celestial.entity.LogoColor
 import org.cubewhy.celestial.entity.User
 import org.cubewhy.celestial.entity.vo.UserVO
+import org.cubewhy.celestial.entity.vo.styngr.StyngrUserVO
 import org.cubewhy.celestial.event.UserOfflineEvent
 import org.cubewhy.celestial.repository.UserRepository
 import org.cubewhy.celestial.service.UserMapper
@@ -52,6 +53,12 @@ class UserServiceImpl(
                 logger.info { "Successfully loaded user ${user.username}" }
             }
             .awaitFirst()
+    }
+
+    override suspend fun loadStyngrUser(authentication: Authentication): StyngrUserVO {
+        // find user
+        val user = userRepository.findByUsername(authentication.name).awaitFirst()
+        return userMapper.mapToStyngrUserVO(user)
     }
 
     override suspend fun selfInfo(authentication: Authentication): UserVO {
@@ -103,13 +110,13 @@ class UserServiceImpl(
     override fun findByUsername(username: String): Mono<UserDetails> {
         // find the username in webUser repository
         return userRepository.findByUsernameIgnoreCase(username)
-            .flatMap { user ->
+            .map { user ->
                 // build User details
                 org.springframework.security.core.userdetails.User.builder()
                     .username(user.username)
-                    .password(user.password)
-                    .roles(*user.resolvedRoles.map { "ROLE_${it.name}" }.toTypedArray())
-                    .build().toMono()
+                    .password(user.password!!)
+                    .roles(*user.resolvedRoles.map { it.name }.toTypedArray())
+                    .build()
             }
     }
 }
