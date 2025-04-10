@@ -3,6 +3,7 @@ package org.cubewhy.celestial.config
 import org.cubewhy.celestial.entity.RestBean
 import org.cubewhy.celestial.entity.Role
 import org.cubewhy.celestial.entity.vo.AuthorizeVO
+import org.cubewhy.celestial.filter.JwtFilter
 import org.cubewhy.celestial.service.UserService
 import org.cubewhy.celestial.util.JwtUtil
 import org.springframework.context.annotation.Bean
@@ -12,6 +13,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity
+import org.springframework.security.config.web.server.SecurityWebFiltersOrder
 import org.springframework.security.config.web.server.ServerHttpSecurity
 import org.springframework.security.config.web.server.invoke
 import org.springframework.security.core.Authentication
@@ -38,7 +40,7 @@ class SecurityConfig(
 //    private val apiTokenFilter: ApiTokenFilter,
 ) {
     @Bean
-    fun springSecurityFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain {
+    fun springSecurityFilterChain(http: ServerHttpSecurity, jwtFilter: JwtFilter): SecurityWebFilterChain {
         return http {
 
             authorizeExchange {
@@ -60,6 +62,7 @@ class SecurityConfig(
             }
             // todo api token filter
 //            addFilterBefore(apiTokenFilter, SecurityWebFiltersOrder.AUTHENTICATION)
+            addFilterBefore(jwtFilter, SecurityWebFiltersOrder.AUTHENTICATION)
             logout {
                 logoutUrl = "/api/user/logout"
                 logoutSuccessHandler = LogoutSuccessHandler(jwtUtil = jwtUtil)
