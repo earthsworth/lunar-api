@@ -119,6 +119,7 @@ class EmoteServiceImpl(
         return UseEmoteResponse.newBuilder().apply {
             this.emoteId = request.emoteId
             this.emoteMetadata = request.emoteMetadata
+
             this.status = UseEmoteResponse.Status.STATUS_OK
         }.build()
     }
@@ -143,6 +144,7 @@ class EmoteServiceImpl(
             this.emoteMetadata = request.emoteMetadata
             this.playerUuid = user.uuid.toLunarClientUUID()
             this.emoteSoundtrackUrl = request.emoteSoundtrackUrl
+            this.emoteJamId = request.emoteJamId
         }.build()
 
     private fun buildStopEmotePush(user: User) = StopEmotePush.newBuilder().apply {

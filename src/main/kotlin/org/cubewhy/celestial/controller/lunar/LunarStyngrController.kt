@@ -22,7 +22,7 @@ class LunarStyngrController(
 
     @PostMapping("jwt")
     suspend fun jwt(exchange: ServerWebExchange): StyngrJwtVO {
-        // the forged api use the same token
+        // the forged api use the same token for styngr
         val jwt = exchange.request.headers.getFirst("Authorization") as String
         return StyngrJwtVO(
             styngrJwt = jwt
