@@ -44,16 +44,16 @@ class SecurityConfig(
         return http {
 
             authorizeExchange {
-//                authorize(
-//                    pathMatchers("/api/lunar/styngr/jwt"),
-//                    authenticated
-//                )
                 authorize(
-                    pathMatchers("/api/user/login", "/api/analysis", "/api/analysis/**", "/api/lunar/**", "/ws", "/ws/**"),
+                    pathMatchers("/api/**"),
+                    authenticated
+                )
+                authorize(
+                    pathMatchers("/api/user/login", "/api/lunar/**", "/ws", "/ws/**"),
                     permitAll
                 )
                 authorize(pathMatchers("/api/admin/**"), hasAnyRole(Role.ADMIN.name))
-                authorize(anyExchange, authenticated)
+                authorize(anyExchange, permitAll)
             }
             formLogin {
                 loginPage = "/api/user/login"

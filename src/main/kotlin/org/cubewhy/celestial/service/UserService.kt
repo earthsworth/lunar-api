@@ -7,6 +7,7 @@ import org.cubewhy.celestial.entity.vo.UserVO
 import org.cubewhy.celestial.entity.vo.styngr.StyngrUserVO
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService
+import org.springframework.web.server.ServerWebExchange
 import reactor.core.publisher.Mono
 
 interface UserService : ReactiveUserDetailsService {
@@ -20,5 +21,5 @@ interface UserService : ReactiveUserDetailsService {
     suspend fun updatePassword(user: User, newPassword: String)
 
     suspend fun selfInfo(authentication: Authentication): UserVO
-    suspend fun loadStyngrUser(authentication: Authentication): StyngrUserVO
+    suspend fun loadStyngrUser(authentication: Authentication, exchange: ServerWebExchange): StyngrUserVO
 }

@@ -16,9 +16,7 @@ data class Message(
     val targetId: String,
 
     val content: String,
-
-    val timestamp: Instant = Instant.now(),
-) {
+) : TrackingEntity() {
     companion object {
         fun createBotResponse(content: String, recipient: User): Message {
             return Message(content = content, targetId = recipient.id!!, senderId = null)

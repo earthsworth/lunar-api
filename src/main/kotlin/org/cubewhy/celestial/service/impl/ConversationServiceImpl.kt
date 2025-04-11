@@ -74,15 +74,13 @@ class ConversationServiceImpl(
         if (recipientUuid == botUuid.toString()) {
             // process bot commands
             logger.info { "User ${user.username} send message to bot (${chatMessage})" }
-            val savedMessage = messageRepository.save(
-                Message(
-                    senderId = user.id!!,
-                    targetId = user.id,
-                    content = chatMessage,
-                )
-            ).awaitFirst()
+            val msg = Message(
+                senderId = user.id!!,
+                targetId = user.id,
+                content = chatMessage,
+            )
             val events =
-                mutableListOf(this.buildConversationMessagePush(savedMessage, user, request.conversationReference))
+                mutableListOf(this.buildConversationMessagePush(msg, user, request.conversationReference))
             // process command
             commandService.process(chatMessage, user)?.let { msg ->
                 // build pushes
@@ -185,6 +183,6 @@ class ConversationServiceImpl(
         this.sender = ConversationSender.newBuilder().apply {
             this.player = sender.toLunarClientPlayer()
         }.build()
-        this.sentAt = message.timestamp.toProtobufType()
+        this.sentAt = message.createdAt.toProtobufType()
     }.build()
 }

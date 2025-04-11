@@ -8,5 +8,5 @@ import java.time.Instant
 
 @Repository
 interface AnalysisRepository : ReactiveMongoRepository<Analysis, String> {
-    fun getAnalysisByTimestampAfter(timestampAfter: Instant): Flux<Analysis>
+    fun getAnalysisByCreatedAtAfter(timestamp: Instant): Flux<Analysis>
 }

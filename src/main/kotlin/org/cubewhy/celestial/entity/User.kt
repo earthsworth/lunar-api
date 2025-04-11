@@ -25,7 +25,6 @@ data class User(
     val roles: MutableList<Role> = mutableListOf(),
 
     var radioPremium: Boolean = false,
-    var createdAt: Instant = Instant.now(),
     var lastSeenAt: Instant = Instant.now(),
     var allowFriendRequests: Boolean = true,
     var pinFriends: List<String> = mutableListOf(),
@@ -34,7 +33,7 @@ data class User(
 
     var cosmetic: UserCosmeticSettings = UserCosmeticSettings(),
     var emote: UserEmoteSettings = UserEmoteSettings(),
-) {
+) : TrackingEntity() {
     fun toLunarClientPlayer(): UuidAndUsername = UuidAndUsername.newBuilder().apply {
         this.uuid = this@User.uuid.toLunarClientUUID()
         this.username = this@User.username

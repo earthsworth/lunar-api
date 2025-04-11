@@ -19,6 +19,20 @@ services:
       - '6379:6379'
     restart: always
 
+#  minio:
+#    image: minio/minio:latest
+#    container_name: lunar-minio
+#    ports:
+#      - "9000:9000"
+#      - "9001:9001"
+#    environment:
+#      - MINIO_ACCESS_KEY=minio
+#      - MINIO_SECRET_KEY=minio123
+#    volumes:
+#      - minio_data:/data
+#    command: server /data --console-address ":9001"
+#    restart: unless-stopped
+
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
     container_name: lunar-zookeeper
@@ -63,3 +77,5 @@ services:
 volumes:
   mongo:
     driver: local
+#  minio_data:
+#    driver: local

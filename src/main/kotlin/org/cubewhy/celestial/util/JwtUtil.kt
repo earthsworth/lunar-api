@@ -59,9 +59,10 @@ class JwtUtil(
         }
 
     fun convertToken(headerToken: String?): String? {
-        if (headerToken == null || !headerToken.startsWith("Bearer ")) {
+        if (headerToken == null) {
             return null // incorrect token
         }
+        if (!headerToken.startsWith("Bearer ")) return headerToken // fk u lunarclient
         // cut "Bearer "
         return headerToken.substring(7)
     }

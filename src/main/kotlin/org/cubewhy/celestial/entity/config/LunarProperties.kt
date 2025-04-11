@@ -5,7 +5,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 @ConfigurationProperties(prefix = "lunar")
 data class LunarProperties(
     var user: UserProperties,
-    var discord: DiscordProperties
+    var discord: DiscordProperties,
+    var upload: UploadProperties
 ) {
     data class UserProperties(
         var verify: Boolean
@@ -18,4 +19,8 @@ data class LunarProperties(
             var channel: Long
         )
     }
+
+    data class UploadProperties(
+        var maxSize: String
+    )
 }

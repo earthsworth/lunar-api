@@ -119,7 +119,7 @@ fun Message.buildBotResponsePush(botUsername: String): List<ConversationMessageP
                 this.sender = ConversationSender.newBuilder().apply {
                     this.player = botUsername.toLunarClientPlayer(bot = true)
                 }.build()
-                this.sentAt = this@buildBotResponsePush.timestamp.toProtobufType()
+                this.sentAt = this@buildBotResponsePush.createdAt.toProtobufType()
             }.build()
             this.conversationReference = ConversationReference.newBuilder().apply {
                 this.friendUuid = botUuid.toLunarClientUUID()

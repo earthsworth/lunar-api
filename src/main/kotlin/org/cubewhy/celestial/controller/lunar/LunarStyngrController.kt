@@ -17,7 +17,7 @@ class LunarStyngrController(
 
     @GetMapping("jams")
     suspend fun jams(exchange: ServerWebExchange): List<SongVO> {
-        return jamService.availableSongs()
+        return jamService.availableSongs(exchange)
     }
 
     @PostMapping("jwt")

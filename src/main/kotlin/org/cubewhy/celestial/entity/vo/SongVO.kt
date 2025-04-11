@@ -1,7 +1,7 @@
 package org.cubewhy.celestial.entity.vo
 
 data class SongVO(
-    val id: Long,
+    val id: Int,
     val styngrId: String,
     val name: String,
     val image: String,

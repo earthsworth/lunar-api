@@ -50,7 +50,7 @@ class AnalysisServiceImpl(
     }
 
     override suspend fun getAnalysisAfter(timestamp: Instant): List<AnalysisVO> {
-        return analysisRepository.getAnalysisByTimestampAfter(timestamp)
+        return analysisRepository.getAnalysisByCreatedAtAfter(timestamp)
             .map { it.toVO() }
             .collectList().awaitLast()
     }

@@ -9,8 +9,7 @@ data class Friend(
     @Id val id: String?,
     val user1: String,
     val user2: String,
-    val timestamp: Instant = Instant.now()
-) {
+) : TrackingEntity() {
     fun getTargetId(user: User): String {
         if (user1 == user.id) {
             return user2
