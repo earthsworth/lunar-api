@@ -1,6 +1,6 @@
 # Lunar API
 
-A 3rd party LunarClient backend implementation like solarsockets
+A 3rd party LunarClient backend implementation like Solar-Sockets
 
 ## Features
 
