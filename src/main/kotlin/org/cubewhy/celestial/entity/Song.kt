@@ -7,16 +7,16 @@ import org.springframework.data.mongodb.core.mapping.Document
 @Document
 data class Song(
     @Id val id: String? = null,
-    val user: String,
+    val owner: String,
 
-    val name: String, // in game name
-    val thumbnail: String, // image upload id
-    val songName: String, // song name
-    val artist: String,
-    val album: String, // description
-    val durationMillis: Int,
+    var name: String, // in game name
+    var thumbnail: String, // image upload id
+    var songName: String, // song name
+    var artist: String,
+    var album: String, // description
+    var durationMillis: Int,
 
-    val uploadId: String, // file id
+    var uploadId: String, // file id
 ) : TrackingEntity() {
     val numberId: Int
         get() {

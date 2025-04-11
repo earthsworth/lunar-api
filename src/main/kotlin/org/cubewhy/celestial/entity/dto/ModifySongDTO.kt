@@ -1,7 +1,7 @@
 package org.cubewhy.celestial.entity.dto
 
 data class ModifySongDTO(
-    val id: String,
+    val songId: String,
     val name: String,
     val thumbnail: String,
     val songName: String,

@@ -51,17 +51,17 @@ class SecurityConfig(
                     pathMatchers(HttpMethod.GET, "/api/upload"),
                     permitAll
                 )
+//                authorize(
+//                    pathMatchers(HttpMethod.POST, "/api/upload", "/api/music"),
+//                    hasAnyRole(Role.ADMIN.name, Role.SPONSOR.name, Role.YELLOW_FISH.name, Role.DEVELOPER.name)
+//                )
                 authorize(
-                    pathMatchers(HttpMethod.POST, "/api/upload", "/api/music"),
-                    hasAnyRole(Role.ADMIN.name, Role.SPONSOR.name, Role.YELLOW_FISH.name, Role.DEVELOPER.name)
+                    pathMatchers("/api/user/login", "/api/lunar/**", "/ws", "/ws/**"),
+                    permitAll
                 )
                 authorize(
                     pathMatchers("/api/**"),
                     authenticated
-                )
-                authorize(
-                    pathMatchers("/api/user/login", "/api/lunar/**", "/ws", "/ws/**"),
-                    permitAll
                 )
                 authorize(pathMatchers("/api/admin/**"), hasAnyRole(Role.ADMIN.name))
                 authorize(anyExchange, permitAll)

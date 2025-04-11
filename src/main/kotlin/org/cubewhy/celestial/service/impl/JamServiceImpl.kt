@@ -21,9 +21,11 @@ import org.cubewhy.celestial.service.JamService
 import org.cubewhy.celestial.service.SongMapper
 import org.cubewhy.celestial.util.extractBaseUrl
 import org.cubewhy.celestial.util.toProtobufType
+import org.springframework.http.HttpStatusCode
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.socket.WebSocketSession
+import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.server.ServerWebExchange
 import java.time.Instant
 
@@ -239,17 +241,17 @@ class JamServiceImpl(
         val user = userRepository.findByUsername(authentication.name).awaitFirst()
         // check contentType
         val thumbnailUpload = uploadRepository.findById(dto.thumbnail).awaitFirstOrNull()
-            ?: throw IllegalArgumentException("Bad thumbnail upload id")
+            ?: throw ResponseStatusException(HttpStatusCode.valueOf(400), "Bad thumbnail upload id")
         if (!thumbnailUpload.contentType.startsWith("image/")) {
-            throw IllegalArgumentException("Thumbnail is not a image")
+            throw ResponseStatusException(HttpStatusCode.valueOf(400), "Thumbnail is not a image")
         }
         val songUpload = uploadRepository.findById(dto.uploadId).awaitFirstOrNull()
-            ?: throw IllegalArgumentException("Bad song upload id")
+            ?: throw ResponseStatusException(HttpStatusCode.valueOf(400), "Bad song upload id")
         if (songUpload.contentType != "audio/mpeg") {
-            throw IllegalArgumentException("Bad song content type, only mp3 allowed")
+            throw ResponseStatusException(HttpStatusCode.valueOf(400), "Bad song content type, only mp3 allowed")
         }
         val song = Song(
-            user = user.id!!,
+            owner = user.id!!,
             name = dto.name,
             thumbnail = dto.thumbnail,
             songName = dto.songName,
@@ -264,7 +266,25 @@ class JamServiceImpl(
     }
 
     override suspend fun modifySong(dto: ModifySongDTO, authentication: Authentication): SongVO {
-        TODO("Not yet implemented")
+        // find song
+        val song = songRepository.findById(dto.songId).awaitFirstOrNull()
+            ?: throw ResponseStatusException(HttpStatusCode.valueOf(400), "Song with id ${dto.songId} not found")
+        // check owner
+        val user = userRepository.findByUsername(authentication.name).awaitFirst()
+        if (song.owner != user.id!! && !user.roles.contains(Role.ADMIN)) {
+            throw ResponseStatusException(HttpStatusCode.valueOf(403), "You had no permission to edit this song")
+        }
+        song.apply {
+            this.songName = dto.songName
+            this.name = dto.name
+            this.thumbnail = dto.thumbnail
+            this.album = dto.album
+            this.artist = dto.artist
+            this.durationMillis = dto.durationMillis
+            this.uploadId = dto.uploadId
+        }
+        // save song
+        return songMapper.mapToSongVO(songRepository.save(song).awaitFirst())
     }
 
     private fun buildJam(song: Song): OwnedJam {

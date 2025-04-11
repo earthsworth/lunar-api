@@ -13,7 +13,7 @@ class SongMapperImpl : SongMapper {
             id = song.numberId,
             styngrId = song.id!!,
             name = song.name,
-            image = "${baseUrl}/api/upload?id=${song.thumbnail}",
+            image = "${baseUrl}api/upload?id=${song.thumbnail}",
             song = song.songName,
             artist = song.artist,
             album = song.album,

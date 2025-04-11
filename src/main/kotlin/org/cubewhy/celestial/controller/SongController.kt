@@ -20,11 +20,7 @@ class SongController(
         @RequestBody dto: CreateSongDTO,
         @AuthenticationPrincipal authentication: Authentication
     ): ResponseEntity<RestBean<SongVO>> {
-        return try {
-            ResponseEntity.ok(RestBean.success(jamService.createSong(dto, authentication)))
-        } catch (e: IllegalArgumentException) {
-            ResponseEntity.badRequest().body(RestBean.failure(400, e))
-        }
+        return ResponseEntity.ok(RestBean.success(jamService.createSong(dto, authentication)))
     }
 
     @PatchMapping
