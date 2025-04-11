@@ -1,8 +1,8 @@
 package org.cubewhy.celestial.filter
 
-import org.cubewhy.celestial.config.responseFailure
 import org.cubewhy.celestial.service.UserService
 import org.cubewhy.celestial.util.JwtUtil
+import org.cubewhy.celestial.util.responseFailure
 import org.springframework.http.HttpHeaders
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
@@ -27,7 +27,8 @@ class JwtFilter(
             jwtUtil.resolveJwt(jwtUtil.convertToken(token)) ?: return exchange.responseFailure(401, "Unauthorized")
         val username = (jwt.claims["name"] ?: return exchange.responseFailure(401, "Bad Token")).asString()
         return userService.findByUsername(username).flatMap { userDetails ->
-            val auth: Authentication = UsernamePasswordAuthenticationToken(userDetails, userDetails.password, userDetails.authorities)
+            val auth: Authentication =
+                UsernamePasswordAuthenticationToken(userDetails, userDetails.password, userDetails.authorities)
             val securityContext: SecurityContext = SecurityContextImpl(auth)
             return@flatMap chain.filter(exchange)
                 .contextWrite(ReactiveSecurityContextHolder.withSecurityContext(Mono.just(securityContext)))

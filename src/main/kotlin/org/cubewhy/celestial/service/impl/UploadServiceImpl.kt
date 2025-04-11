@@ -12,9 +12,15 @@ import org.cubewhy.celestial.repository.UploadRepository
 import org.cubewhy.celestial.service.UploadMapper
 import org.cubewhy.celestial.service.UploadService
 import org.cubewhy.celestial.util.parseSizeString
+import org.cubewhy.celestial.util.responseFailure
+import org.cubewhy.celestial.util.streamData
+import org.springframework.core.io.buffer.DataBuffer
+import org.springframework.core.io.buffer.DataBufferUtils
+import org.springframework.core.io.buffer.DefaultDataBufferFactory
 import org.springframework.http.HttpHeaders
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ServerWebExchange
+import reactor.core.publisher.Flux
 import java.io.File
 import java.nio.ByteBuffer
 import java.nio.channels.FileChannel
@@ -34,6 +40,8 @@ class UploadServiceImpl(
         private val logger = KotlinLogging.logger {}
     }
 
+    private val maxUploadSize = parseSizeString(lunarProperties.upload.maxSize)
+
     @PostConstruct
     private fun init() {
         if (!UPLOAD_DIR.exists()) {
@@ -42,8 +50,6 @@ class UploadServiceImpl(
             UPLOAD_DIR.mkdirs()
         }
     }
-
-    private val maxUploadSize = parseSizeString(lunarProperties.upload.maxSize)
 
     override suspend fun upload(exchange: ServerWebExchange): UploadVO {
         val contentLength = (exchange.request.headers.getFirst(HttpHeaders.CONTENT_LENGTH)
@@ -79,6 +85,19 @@ class UploadServiceImpl(
                 )
             ).awaitFirst()
         )
+    }
+
+    override suspend fun download(uploadId: String, exchange: ServerWebExchange) {
+        // find upload
+        val upload = uploadRepository.findById(uploadId).awaitFirstOrNull()
+        if (upload == null) {
+            exchange.responseFailure(404, "Upload not found").awaitFirstOrNull()
+            return
+        }
+        // get file & open as buffer
+        logger.info { "Streaming download $uploadId" }
+        val publisher = DataBufferUtils.read(Path(UPLOAD_DIR.absolutePath, upload.sha256), DefaultDataBufferFactory(), 4096)
+        exchange.streamData(publisher).awaitFirstOrNull()
     }
 
     private fun saveFile(hash: String, buffer: ByteBuffer) {

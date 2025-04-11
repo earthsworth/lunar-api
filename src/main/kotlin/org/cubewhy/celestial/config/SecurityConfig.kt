@@ -6,9 +6,12 @@ import org.cubewhy.celestial.entity.vo.AuthorizeVO
 import org.cubewhy.celestial.filter.JwtFilter
 import org.cubewhy.celestial.service.UserService
 import org.cubewhy.celestial.util.JwtUtil
+import org.cubewhy.celestial.util.responseFailure
+import org.cubewhy.celestial.util.responseSuccess
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.security.access.AccessDeniedException
@@ -44,6 +47,14 @@ class SecurityConfig(
         return http {
 
             authorizeExchange {
+                authorize(
+                    pathMatchers(HttpMethod.GET, "/api/upload"),
+                    permitAll
+                )
+                authorize(
+                    pathMatchers(HttpMethod.POST, "/api/upload"),
+                    hasAnyRole(Role.ADMIN.name, Role.SPONSOR.name, Role.YELLOW_FISH.name, Role.DEVELOPER.name)
+                )
                 authorize(
                     pathMatchers("/api/**"),
                     authenticated
@@ -142,22 +153,4 @@ class SecurityConfig(
             return exchange.responseFailure(403, denied.message!!)
         }
     }
-}
-
-fun <T> ServerWebExchange.responseSuccess(data: T?): Mono<Void> {
-    this.response.statusCode = HttpStatus.OK
-    this.response.headers.contentType = MediaType.APPLICATION_JSON
-    return this.response.writeWith(
-        this.response.bufferFactory()
-            .wrap(RestBean.success<T?>(data).toJson().encodeToByteArray()).toMono()
-    ).then(Mono.defer { this.response.setComplete() })
-}
-
-fun ServerWebExchange.responseFailure(code: Int, message: String): Mono<Void> {
-    this.response.statusCode = HttpStatus.valueOf(code)
-    this.response.headers.contentType = MediaType.APPLICATION_JSON
-    return this.response.writeWith(
-        this.response.bufferFactory()
-            .wrap(RestBean.failure<Nothing?>(code, message).toJson().encodeToByteArray()).toMono()
-    ).then(Mono.defer { this.response.setComplete() })
 }
