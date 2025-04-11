@@ -10,10 +10,12 @@ import kotlinx.coroutines.reactive.awaitFirstOrNull
 import kotlinx.coroutines.reactive.awaitLast
 import org.cubewhy.celestial.entity.*
 import org.cubewhy.celestial.entity.dto.CreateSongDTO
+import org.cubewhy.celestial.entity.dto.ModifySongDTO
 import org.cubewhy.celestial.entity.vo.LunarSongVO
 import org.cubewhy.celestial.entity.vo.SongVO
 import org.cubewhy.celestial.entity.vo.styngr.StyngrSongVO
 import org.cubewhy.celestial.repository.SongRepository
+import org.cubewhy.celestial.repository.UploadRepository
 import org.cubewhy.celestial.repository.UserRepository
 import org.cubewhy.celestial.service.JamService
 import org.cubewhy.celestial.service.SongMapper
@@ -31,6 +33,7 @@ class JamServiceImpl(
     private val songMapper: SongMapper,
     private val scope: CoroutineScope,
     private val userRepository: UserRepository,
+    private val uploadRepository: UploadRepository,
 ) : JamService {
 
     companion object {
@@ -235,7 +238,16 @@ class JamServiceImpl(
     override suspend fun createSong(dto: CreateSongDTO, authentication: Authentication): SongVO {
         val user = userRepository.findByUsername(authentication.name).awaitFirst()
         // check contentType
-        songRepository
+        val thumbnailUpload = uploadRepository.findById(dto.thumbnail).awaitFirstOrNull()
+            ?: throw IllegalArgumentException("Bad thumbnail upload id")
+        if (!thumbnailUpload.contentType.startsWith("image/")) {
+            throw IllegalArgumentException("Thumbnail is not a image")
+        }
+        val songUpload = uploadRepository.findById(dto.uploadId).awaitFirstOrNull()
+            ?: throw IllegalArgumentException("Bad song upload id")
+        if (songUpload.contentType != "audio/mpeg") {
+            throw IllegalArgumentException("Bad song content type, only mp3 allowed")
+        }
         val song = Song(
             user = user.id!!,
             name = dto.name,
@@ -249,6 +261,10 @@ class JamServiceImpl(
         // save the song
         logger.info { "Song ${song.name} was created by user ${user.username}" }
         return songMapper.mapToSongVO(songRepository.save(song).awaitFirst())
+    }
+
+    override suspend fun modifySong(dto: ModifySongDTO, authentication: Authentication): SongVO {
+        TODO("Not yet implemented")
     }
 
     private fun buildJam(song: Song): OwnedJam {

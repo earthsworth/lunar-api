@@ -8,11 +8,7 @@ import org.cubewhy.celestial.service.JamService
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.annotation.AuthenticationPrincipal
-import org.springframework.web.bind.annotation.PatchMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/song")
@@ -20,12 +16,22 @@ class SongController(
     private val jamService: JamService
 ) {
     @PostMapping
-    suspend fun createSong(@RequestBody dto: CreateSongDTO, @AuthenticationPrincipal authentication: Authentication): ResponseEntity<RestBean<SongVO>> {
-        return ResponseEntity.ok(RestBean.success(jamService.createSong(dto, authentication)))
+    suspend fun createSong(
+        @RequestBody dto: CreateSongDTO,
+        @AuthenticationPrincipal authentication: Authentication
+    ): ResponseEntity<RestBean<SongVO>> {
+        return try {
+            ResponseEntity.ok(RestBean.success(jamService.createSong(dto, authentication)))
+        } catch (e: IllegalArgumentException) {
+            ResponseEntity.badRequest().body(RestBean.failure(400, e))
+        }
     }
 
-//    @PatchMapping
-//    suspend fun modifySong(@RequestBody dto: ModifySongDTO, @AuthenticationPrincipal authentication: Authentication): ResponseEntity<RestBean<SongVO>> {
-//        return ResponseEntity.ok(RestBean.success(jamService.modifySong(dto, authentication)))
-//    }
+    @PatchMapping
+    suspend fun modifySong(
+        @RequestBody dto: ModifySongDTO,
+        @AuthenticationPrincipal authentication: Authentication
+    ): ResponseEntity<RestBean<SongVO>> {
+        return ResponseEntity.ok(RestBean.success(jamService.modifySong(dto, authentication)))
+    }
 }
