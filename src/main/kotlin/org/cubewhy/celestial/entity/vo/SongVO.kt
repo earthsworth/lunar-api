@@ -1,14 +1,14 @@
 package org.cubewhy.celestial.entity.vo
 
 data class SongVO(
-    val id: Int,
-    val styngrId: String,
+    val id: String,
     val name: String,
-    val image: String,
-    val song: String,
+    val thumbnail: String, // thumbnail upload id
+    val songName: String,
     val artist: String,
     val album: String,
     val durationMillis: Int,
-    val copyrightSafe: Boolean
-)
 
+    val uploadId: String, // song upload id
+    val createdAt: Long
+)

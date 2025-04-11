@@ -7,9 +7,11 @@ import org.springframework.data.mongodb.core.mapping.Document
 @Document
 data class Song(
     @Id val id: String? = null,
+    val user: String,
+
     val name: String, // in game name
-    val image: String, // image upload id
-    val song: String, // song name
+    val thumbnail: String, // image upload id
+    val songName: String, // song name
     val artist: String,
     val album: String, // description
     val durationMillis: Int,

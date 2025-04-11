@@ -1,6 +1,6 @@
 package org.cubewhy.celestial.controller.lunar
 
-import org.cubewhy.celestial.entity.vo.SongVO
+import org.cubewhy.celestial.entity.vo.LunarSongVO
 import org.cubewhy.celestial.entity.vo.StyngrJwtVO
 import org.cubewhy.celestial.service.JamService
 import org.springframework.web.bind.annotation.GetMapping
@@ -16,7 +16,7 @@ class LunarStyngrController(
 ) {
 
     @GetMapping("jams")
-    suspend fun jams(exchange: ServerWebExchange): List<SongVO> {
+    suspend fun jams(exchange: ServerWebExchange): List<LunarSongVO> {
         return jamService.availableSongs(exchange)
     }
 

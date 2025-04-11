@@ -5,16 +5,21 @@ import com.lunarclient.websocket.jam.v1.LoginResponse
 import com.lunarclient.websocket.jam.v1.OwnedJam
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.reactive.awaitFirst
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import kotlinx.coroutines.reactive.awaitLast
 import org.cubewhy.celestial.entity.*
+import org.cubewhy.celestial.entity.dto.CreateSongDTO
+import org.cubewhy.celestial.entity.vo.LunarSongVO
 import org.cubewhy.celestial.entity.vo.SongVO
 import org.cubewhy.celestial.entity.vo.styngr.StyngrSongVO
 import org.cubewhy.celestial.repository.SongRepository
+import org.cubewhy.celestial.repository.UserRepository
 import org.cubewhy.celestial.service.JamService
 import org.cubewhy.celestial.service.SongMapper
 import org.cubewhy.celestial.util.extractBaseUrl
 import org.cubewhy.celestial.util.toProtobufType
+import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.socket.WebSocketSession
 import org.springframework.web.server.ServerWebExchange
@@ -25,6 +30,7 @@ class JamServiceImpl(
     private val songRepository: SongRepository,
     private val songMapper: SongMapper,
     private val scope: CoroutineScope,
+    private val userRepository: UserRepository,
 ) : JamService {
 
     companion object {
@@ -226,6 +232,25 @@ class JamServiceImpl(
         return StyngrSongVO("${baseUrl}api/upload?id=${song.uploadId}")
     }
 
+    override suspend fun createSong(dto: CreateSongDTO, authentication: Authentication): SongVO {
+        val user = userRepository.findByUsername(authentication.name).awaitFirst()
+        // check contentType
+        songRepository
+        val song = Song(
+            user = user.id!!,
+            name = dto.name,
+            thumbnail = dto.thumbnail,
+            songName = dto.songName,
+            artist = dto.artist,
+            album = dto.album,
+            durationMillis = dto.durationMillis,
+            uploadId = dto.uploadId
+        )
+        // save the song
+        logger.info { "Song ${song.name} was created by user ${user.username}" }
+        return songMapper.mapToSongVO(songRepository.save(song).awaitFirst())
+    }
+
     private fun buildJam(song: Song): OwnedJam {
         return OwnedJam.newBuilder().apply {
             this.jamId = song.numberId
@@ -233,9 +258,9 @@ class JamServiceImpl(
         }.build()
     }
 
-    override suspend fun availableSongs(exchange: ServerWebExchange): List<SongVO> {
+    override suspend fun availableSongs(exchange: ServerWebExchange): List<LunarSongVO> {
         return songRepository.findAll().map { song ->
-            songMapper.mapToSongVO(song, exchange.extractBaseUrl())
+            songMapper.mapToLunarSongVO(song, exchange.extractBaseUrl())
         }.collectList().awaitLast()
     }
 }

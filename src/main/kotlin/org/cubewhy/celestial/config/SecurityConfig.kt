@@ -52,7 +52,7 @@ class SecurityConfig(
                     permitAll
                 )
                 authorize(
-                    pathMatchers(HttpMethod.POST, "/api/upload"),
+                    pathMatchers(HttpMethod.POST, "/api/upload", "/api/music"),
                     hasAnyRole(Role.ADMIN.name, Role.SPONSOR.name, Role.YELLOW_FISH.name, Role.DEVELOPER.name)
                 )
                 authorize(
