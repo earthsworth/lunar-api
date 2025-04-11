@@ -26,3 +26,7 @@ Frontend at `dashboard`
 - The [LunarClient OpenAPI spec](https://api.lunarclientprod.com/f5278921b2d4429d95531e025f5318fd/openapi)
 - Everything about [serviceOverride](https://github.com/earthsworth/celestial/wiki/Service-Override)
 - Everything about [reactor](https://projectreactor.io/)
+
+# Guildline
+
+[CONTRIBUTING.md](./CONTRIBUTING.md)
