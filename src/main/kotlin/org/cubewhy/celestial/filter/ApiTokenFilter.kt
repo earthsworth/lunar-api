@@ -1,6 +1,6 @@
 package org.cubewhy.celestial.filter
 
-import org.cubewhy.celestial.config.responseFailure
+import org.cubewhy.celestial.util.responseFailure
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication

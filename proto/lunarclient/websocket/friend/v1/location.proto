@@ -2,10 +2,10 @@ syntax = "proto3";
 
 package lunarclient.websocket.friend.v1;
 
-import "lunarclient/common/v1/uuid.proto";
 import "lunarclient/common/v1/location.proto";
-import "lunarclient/common/v1/version.proto";
 import "lunarclient/common/v1/modpack.proto";
+import "lunarclient/common/v1/uuid.proto";
+import "lunarclient/common/v1/version.proto";
 
 option java_package = "com.lunarclient.websocket.friend.v1";
 option java_outer_classname = "LocationProto";

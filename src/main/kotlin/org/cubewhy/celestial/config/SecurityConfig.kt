@@ -3,15 +3,20 @@ package org.cubewhy.celestial.config
 import org.cubewhy.celestial.entity.RestBean
 import org.cubewhy.celestial.entity.Role
 import org.cubewhy.celestial.entity.vo.AuthorizeVO
+import org.cubewhy.celestial.filter.JwtFilter
 import org.cubewhy.celestial.service.UserService
 import org.cubewhy.celestial.util.JwtUtil
+import org.cubewhy.celestial.util.responseFailure
+import org.cubewhy.celestial.util.responseSuccess
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity
+import org.springframework.security.config.web.server.SecurityWebFiltersOrder
 import org.springframework.security.config.web.server.ServerHttpSecurity
 import org.springframework.security.config.web.server.invoke
 import org.springframework.security.core.Authentication
@@ -38,16 +43,28 @@ class SecurityConfig(
 //    private val apiTokenFilter: ApiTokenFilter,
 ) {
     @Bean
-    fun springSecurityFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain {
+    fun springSecurityFilterChain(http: ServerHttpSecurity, jwtFilter: JwtFilter): SecurityWebFilterChain {
         return http {
 
             authorizeExchange {
                 authorize(
-                    pathMatchers("/ws/**", "/ws", "/api/user/register", "/api/analysis/**", "/api/user/login"),
+                    pathMatchers(HttpMethod.GET, "/api/upload"),
                     permitAll
                 )
+//                authorize(
+//                    pathMatchers(HttpMethod.POST, "/api/upload", "/api/music"),
+//                    hasAnyRole(Role.ADMIN.name, Role.SPONSOR.name, Role.YELLOW_FISH.name, Role.DEVELOPER.name)
+//                )
+                authorize(
+                    pathMatchers("/api/user/login", "/api/lunar/**", "/ws", "/ws/**"),
+                    permitAll
+                )
+                authorize(
+                    pathMatchers("/api/**"),
+                    authenticated
+                )
                 authorize(pathMatchers("/api/admin/**"), hasAnyRole(Role.ADMIN.name))
-                authorize(anyExchange, authenticated)
+                authorize(anyExchange, permitAll)
             }
             formLogin {
                 loginPage = "/api/user/login"
@@ -56,6 +73,7 @@ class SecurityConfig(
             }
             // todo api token filter
 //            addFilterBefore(apiTokenFilter, SecurityWebFiltersOrder.AUTHENTICATION)
+            addFilterBefore(jwtFilter, SecurityWebFiltersOrder.AUTHENTICATION)
             logout {
                 logoutUrl = "/api/user/logout"
                 logoutSuccessHandler = LogoutSuccessHandler(jwtUtil = jwtUtil)
@@ -91,7 +109,7 @@ class SecurityConfig(
                     username = user.username,
                     token = jwt,
                     expire = parsedJwt.expiresAt.time,
-                    roles = user.roles.map { it.name }).toMono()
+                    roles = user.resolvedRoles.map { it.name }).toMono()
             }.flatMap { vo ->
                 webFilterExchange.exchange.responseSuccess(vo)
             }
@@ -135,22 +153,4 @@ class SecurityConfig(
             return exchange.responseFailure(403, denied.message!!)
         }
     }
-}
-
-fun <T> ServerWebExchange.responseSuccess(data: T?): Mono<Void> {
-    this.response.statusCode = HttpStatus.OK
-    this.response.headers.contentType = MediaType.APPLICATION_JSON
-    return this.response.writeWith(
-        this.response.bufferFactory()
-            .wrap(RestBean.success<T?>(data).toJson().encodeToByteArray()).toMono()
-    ).then(Mono.defer { this.response.setComplete() })
-}
-
-fun ServerWebExchange.responseFailure(code: Int, message: String): Mono<Void> {
-    this.response.statusCode = HttpStatus.valueOf(code)
-    this.response.headers.contentType = MediaType.APPLICATION_JSON
-    return this.response.writeWith(
-        this.response.bufferFactory()
-            .wrap(RestBean.failure<Nothing?>(code, message).toJson().encodeToByteArray()).toMono()
-    ).then(Mono.defer { this.response.setComplete() })
 }

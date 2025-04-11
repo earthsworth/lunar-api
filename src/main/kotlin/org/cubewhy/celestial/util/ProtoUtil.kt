@@ -6,18 +6,20 @@ import com.google.protobuf.GeneratedMessage
 import com.google.protobuf.Timestamp
 import com.google.protobuf.util.JsonFormat
 import com.lunarclient.authenticator.v1.AuthSuccessMessage
-import com.lunarclient.authenticator.v1.ClientboundWebSocketMessage as AuthenticatorClientboundWebsocketMessage
-import com.lunarclient.common.v1.*
+import com.lunarclient.authenticator.v1.EncryptionRequestMessage
+import com.lunarclient.common.v1.Color
+import com.lunarclient.common.v1.Uuid
 import com.lunarclient.common.v1.UuidAndUsername
 import com.lunarclient.websocket.conversation.v1.*
-import com.lunarclient.websocket.protocol.v1.*
-import com.lunarclient.websocket.protocol.v1.ClientboundWebSocketMessage as AssetsClientboundWebsocketMessage
+import com.lunarclient.websocket.protocol.v1.WebSocketRpcResponse
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import org.cubewhy.celestial.entity.Message
 import org.springframework.web.reactive.socket.WebSocketSession
 import reactor.kotlin.core.publisher.toMono
 import java.time.Instant
 import java.util.*
+import com.lunarclient.authenticator.v1.ClientboundWebSocketMessage as AuthenticatorClientboundWebsocketMessage
+import com.lunarclient.websocket.protocol.v1.ClientboundWebSocketMessage as AssetsClientboundWebsocketMessage
 
 
 /**
@@ -43,10 +45,14 @@ fun GeneratedMessage.wrapPush(): AssetsClientboundWebsocketMessage {
     }.build()
 }
 
-fun AuthSuccessMessage.wrapAuthenticator(): AuthenticatorClientboundWebsocketMessage {
-    return AuthenticatorClientboundWebsocketMessage.newBuilder()
-        .setAuthSuccess(this)
-        .build()
+fun GeneratedMessage.wrapAuthenticator(): AuthenticatorClientboundWebsocketMessage {
+    return AuthenticatorClientboundWebsocketMessage.newBuilder().apply {
+        when (this@wrapAuthenticator) {
+            is AuthSuccessMessage -> this.authSuccess = this@wrapAuthenticator
+            is EncryptionRequestMessage -> this.encryptionRequest = this@wrapAuthenticator
+            else -> throw IllegalArgumentException("Unsupported authenticator type ${this@wrapAuthenticator.descriptorForType}")
+        }
+    }.build()
 }
 
 fun Uuid.toUUIDString(): String {
@@ -113,7 +119,7 @@ fun Message.buildBotResponsePush(botUsername: String): List<ConversationMessageP
                 this.sender = ConversationSender.newBuilder().apply {
                     this.player = botUsername.toLunarClientPlayer(bot = true)
                 }.build()
-                this.sentAt = this@buildBotResponsePush.timestamp.toProtobufType()
+                this.sentAt = this@buildBotResponsePush.createdAt.toProtobufType()
             }.build()
             this.conversationReference = ConversationReference.newBuilder().apply {
                 this.friendUuid = botUuid.toLunarClientUUID()

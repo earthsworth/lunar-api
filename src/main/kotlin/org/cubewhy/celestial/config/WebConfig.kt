@@ -8,12 +8,12 @@ import org.springframework.web.reactive.HandlerMapping
 import org.springframework.web.reactive.handler.SimpleUrlHandlerMapping
 
 @Configuration
-open class WebConfig(
+class WebConfig(
     private val authorizeHandler: AuthorizeHandler,
     private val assetsHandler: AssetsHandler
 ) {
     @Bean
-    open fun handlerMapping(): HandlerMapping {
+    fun handlerMapping(): HandlerMapping {
         val map = mapOf(
             "/ws" to authorizeHandler,
             "/ws/game" to assetsHandler

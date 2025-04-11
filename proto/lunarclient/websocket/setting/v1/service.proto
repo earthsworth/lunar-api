@@ -23,5 +23,19 @@ message UpdateLauncherSettingRequest {
 message UpdateLauncherSettingResponse {
 }
 
+message UpdateClientSettingRequest {
+  lunarclient.websocket.setting.v1.ClientSetting setting = 1;
+  lunarclient.websocket.setting.v1.UpdateClientSettingRequest.Initiator initiator = 2;
+
+  enum Initiator {
+    INITIATOR_UNSPECIFIED = 0;
+    INITIATOR_RESET = 1;
+    INITIATOR_SET = 2;
+  }
+}
+
+message UpdateClientSettingResponse {
+}
+
 
 

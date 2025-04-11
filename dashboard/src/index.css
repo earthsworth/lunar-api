@@ -1,0 +1,7 @@
+@import "tailwindcss";
+
+@plugin "daisyui";
+
+:root {
+    @apply dark:bg-[#222] dark:text-white;
+}

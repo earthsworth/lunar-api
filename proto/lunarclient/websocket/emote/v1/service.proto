@@ -25,6 +25,7 @@ message UseEmoteRequest {
   int32 emote_id = 1;
   int32 emote_metadata = 2;
   string emote_soundtrack_url = 3;
+  int32 emote_jam_id = 4;
 }
 
 message UseEmoteResponse {
@@ -36,6 +37,8 @@ message UseEmoteResponse {
     STATUS_UNSPECIFIED = 0;
     STATUS_OK = 1;
     STATUS_EMOTE_NOT_OWNED = 2;
+    STATUS_ILLEGAL_SOUNDTRACK = 3;
+    STATUS_RATE_LIMITED = 4;
   }
 }
 

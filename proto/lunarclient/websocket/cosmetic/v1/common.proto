@@ -2,8 +2,8 @@ syntax = "proto3";
 
 package lunarclient.websocket.cosmetic.v1;
 
-import "google/protobuf/timestamp.proto";
 import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
 import "lunarclient/common/v1/color.proto";
 
 option java_package = "com.lunarclient.websocket.cosmetic.v1";

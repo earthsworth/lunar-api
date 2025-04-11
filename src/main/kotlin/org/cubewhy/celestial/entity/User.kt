@@ -22,10 +22,9 @@ data class User(
     var password: String? = null,
     @Indexed(unique = true)
     val uuid: String,
-    val roles: MutableList<Role> = mutableListOf(Role.USER),
+    val roles: MutableList<Role> = mutableListOf(),
 
     var radioPremium: Boolean = false,
-    var createdAt: Instant = Instant.now(),
     var lastSeenAt: Instant = Instant.now(),
     var allowFriendRequests: Boolean = true,
     var pinFriends: List<String> = mutableListOf(),
@@ -34,7 +33,7 @@ data class User(
 
     var cosmetic: UserCosmeticSettings = UserCosmeticSettings(),
     var emote: UserEmoteSettings = UserEmoteSettings(),
-) {
+) : TrackingEntity() {
     fun toLunarClientPlayer(): UuidAndUsername = UuidAndUsername.newBuilder().apply {
         this.uuid = this@User.uuid.toLunarClientUUID()
         this.username = this@User.username
@@ -42,24 +41,36 @@ data class User(
 
     val logoColor: Color
         get() {
-            // normal users with lunar+
-            if (this.cosmetic.lunarPlusState && this.roles.size == 1 && this.roles[0] == Role.USER) return PlusColor.PINK.toLunarClientColor()
+            // lunar+
+            if (this.cosmetic.lunarPlusState && this.cosmetic.lunarLogoColor == LogoColor.WHITE) return LogoColor.PINK.color.toLunarClientColor()
             return this.cosmetic.lunarLogoColor.color.toLunarClientColor()
         }
 
     val availableLogoColors: Set<LogoColor>
-        get() = this.roles.flatMap { it.availableLogoColors.toList() }.toSet()
+        get() = this.resolvedRoles.flatMap { it.availableLogoColors.toList() }.toSet()
+
+    val resolvedRoles: List<Role>
+        get() {
+            val roles = this.roles.toMutableSet()
+            if (!this.roles.contains(Role.USER)) {
+                // add the default role
+                roles.add(Role.USER)
+            }
+            return roles.toList()
+        }
 }
 
 /**
  * An entity to store user sessions among clusters, loadbalancer
  * */
-data class UserWebsocketSession(
+data class UserSession(
     var userId: String,
     var userUuid: String,
     var websocketId: String,
     var location: String? = null,
-    var minecraftVersion: String? = null
+    var minecraftVersion: String? = null,
+
+    val instanceId: String? = null, // k8s pod id
 ) : Serializable
 
 data class UserEmoteSettings(

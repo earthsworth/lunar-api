@@ -2,8 +2,8 @@ syntax = "proto3";
 
 package lunarclient.websocket.socials.v1;
 
-import "lunarclient/common/v1/social.proto";
 import "google/protobuf/timestamp.proto";
+import "lunarclient/common/v1/social.proto";
 
 option java_package = "com.lunarclient.websocket.socials.v1";
 option java_outer_classname = "CommonProto";

@@ -2,8 +2,8 @@ syntax = "proto3";
 
 package lunarclient.websocket.heartbeat.v1;
 
-import "lunarclient/common/v1/version.proto";
 import "lunarclient/common/v1/modpack.proto";
+import "lunarclient/common/v1/version.proto";
 import "lunarclient/websocket/friend/v1/location.proto";
 
 option java_package = "com.lunarclient.websocket.heartbeat.v1";

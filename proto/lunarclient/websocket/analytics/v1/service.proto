@@ -2,8 +2,8 @@ syntax = "proto3";
 
 package lunarclient.websocket.analytics.v1;
 
-import "lunarclient/websocket/protocol/v1/common.proto";
 import "lunarclient/websocket/analytics/v1/common.proto";
+import "lunarclient/websocket/protocol/v1/common.proto";
 
 option java_package = "com.lunarclient.websocket.analytics.v1";
 option java_outer_classname = "ServiceProto";

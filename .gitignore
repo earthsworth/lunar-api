@@ -1,9 +1,12 @@
-HELP.md
+/data
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
+
+# Spring Boot Configurations
+/config
 
 ### STS ###
 .apt_generated

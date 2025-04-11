@@ -2,10 +2,6 @@ package org.cubewhy.celestial.service.impl
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.reactive.awaitFirst
-import org.cubewhy.celestial.entity.PlusColor
-import org.cubewhy.celestial.entity.Role
-import org.cubewhy.celestial.entity.dto.EditRoleDTO
-import org.cubewhy.celestial.entity.dto.TogglePlusDTO
 import org.cubewhy.celestial.entity.vo.PlayerInfoVO
 import org.cubewhy.celestial.repository.UserRepository
 import org.cubewhy.celestial.service.AdminService
@@ -30,7 +26,7 @@ class AdminServiceImpl(
             mcName = target.username,
             mcUuid = target.uuid,
             roleColor = target.cosmetic.lunarLogoColor.color,
-            roles = target.roles,
+            roles = target.resolvedRoles,
             plus = target.cosmetic.lunarPlusState,
         )
         return res

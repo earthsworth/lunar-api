@@ -44,7 +44,7 @@ class JwtUtil(
         return JWT.create()
             .withJWTId(UUID.randomUUID().toString())
             .withClaim("id", user.id) // internal id
-            .withClaim("name", user.username) // minecraft username
+            .withClaim("name", user.username) // username
             .withClaim("mcuuid", user.uuid) // minecraft uuid
             .withExpiresAt(expireDate) // now + {date}
             .withIssuedAt(Date()) // time now
@@ -58,10 +58,11 @@ class JwtUtil(
             return calendar.time
         }
 
-    private fun convertToken(headerToken: String?): String? {
-        if (headerToken == null || !headerToken.startsWith("Bearer ")) {
+    fun convertToken(headerToken: String?): String? {
+        if (headerToken == null) {
             return null // incorrect token
         }
+        if (!headerToken.startsWith("Bearer ")) return headerToken // fk u lunarclient
         // cut "Bearer "
         return headerToken.substring(7)
     }

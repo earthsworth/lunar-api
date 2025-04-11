@@ -497,7 +497,7 @@ class FriendServiceImpl(
         return OfflineFriend.newBuilder().apply {
             player = friendUser.toLunarClientPlayer()
             rankName = "Player"
-            friendsSince = friend.timestamp.toProtobufType()
+            friendsSince = friend.createdAt.toProtobufType()
             if (friendUser.cosmetic.lunarPlusState) {
                 plusColor = friendUser.cosmetic.lunarPlusColor.toLunarClientColor()
             }

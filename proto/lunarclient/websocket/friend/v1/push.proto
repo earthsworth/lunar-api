@@ -3,8 +3,8 @@ syntax = "proto3";
 package lunarclient.websocket.friend.v1;
 
 import "lunarclient/common/v1/color.proto";
-import "lunarclient/common/v1/uuid.proto";
 import "lunarclient/common/v1/radio.proto";
+import "lunarclient/common/v1/uuid.proto";
 import "lunarclient/websocket/friend/v1/common.proto";
 
 option java_package = "com.lunarclient.websocket.friend.v1";

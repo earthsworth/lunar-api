@@ -2,81 +2,17 @@ syntax = "proto3";
 
 package lunarclient.websocket.store.v1;
 
-import "google/protobuf/timestamp.proto";
 
 option java_package = "com.lunarclient.websocket.store.v1";
 option java_outer_classname = "CommonProto";
 option java_multiple_files = true;
 
-message RichText {
-  string html = 1;
+
+enum IncomingGiftPrivacy {
+  INCOMING_GIFT_PRIVACY_UNSPECIFIED = 0;
+  INCOMING_GIFT_PRIVACY_EVERYONE = 1;
+  INCOMING_GIFT_PRIVACY_FRIENDS = 2;
+  INCOMING_GIFT_PRIVACY_NOONE = 3;
 }
-
-message Money {
-  string amount = 1;
-  string currency_iso4217_code = 2;
-}
-
-message BasketCoupon {
-  string code = 2;
-  string description = 3;
-}
-
-message BasketItem {
-  string id = 1;
-  lunarclient.websocket.store.v1.Money price_in_basket = 2;
-  lunarclient.websocket.store.v1.Package package = 3;
-  int32 quantity = 4;
-  repeated lunarclient.websocket.store.v1.BasketItem.OptionsEntry options = 5;
-
-  message OptionsEntry {
-    string key = 1;
-    string value = 2;
-  }
-}
-
-message Basket {
-  lunarclient.websocket.store.v1.Money subtotal = 1;
-  repeated lunarclient.websocket.store.v1.BasketItem items = 2;
-  repeated lunarclient.websocket.store.v1.BasketCoupon coupons = 3;
-  repeated string available_gateways = 4;
-}
-
-message Package {
-  string id = 1;
-  string name = 2;
-  lunarclient.websocket.store.v1.RichText description = 3;
-  lunarclient.websocket.store.v1.Money original_price = 4;
-  lunarclient.websocket.store.v1.Money effective_price = 5;
-  bool custom_price = 6;
-  lunarclient.websocket.store.v1.Package.Type type = 7;
-  bool can_purchase = 8;
-  string image_url = 9;
-  bool disable_gifting = 11;
-  bool disable_quantity = 12;
-  google.protobuf.Timestamp availability_end = 13;
-
-  enum Type {
-    TYPE_UNSPECIFIED = 0;
-    TYPE_SINGLE = 1;
-    TYPE_SUBSCRIPTION = 2;
-  }
-}
-
-message Category {
-  string id = 1;
-  string name = 2;
-  lunarclient.websocket.store.v1.RichText description = 3;
-  lunarclient.websocket.store.v1.Category.DisplayType display_type = 4;
-  repeated lunarclient.websocket.store.v1.Package packages = 5;
-  repeated lunarclient.websocket.store.v1.Category subcategories = 6;
-
-  enum DisplayType {
-    DISPLAY_TYPE_UNSPECIFIED = 0;
-    DISPLAY_TYPE_GRID = 1;
-    DISPLAY_TYPE_LIST = 2;
-  }
-}
-
 
 

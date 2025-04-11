@@ -3,9 +3,7 @@ package org.cubewhy.celestial.service.impl
 import com.google.protobuf.ByteString
 import com.google.protobuf.GeneratedMessage
 import com.lunarclient.websocket.cosmetic.v1.*
-import com.opencsv.CSVReader
 import io.github.oshai.kotlinlogging.KotlinLogging
-import jakarta.annotation.PostConstruct
 import kotlinx.coroutines.reactive.awaitFirst
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import kotlinx.coroutines.reactor.mono
@@ -18,12 +16,10 @@ import org.cubewhy.celestial.service.SubscriptionService
 import org.cubewhy.celestial.util.pushEvent
 import org.cubewhy.celestial.util.toLunarClientUUID
 import org.springframework.context.event.EventListener
-import org.springframework.core.io.ClassPathResource
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.socket.WebSocketSession
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toFlux
-import java.io.InputStreamReader
 import java.time.Instant
 
 @Service
@@ -37,28 +33,28 @@ class CosmeticServiceImpl(
         private val logger = KotlinLogging.logger {}
     }
 
-    private val cosmeticList = mutableListOf<Cosmetic>()
-
-    @PostConstruct
-    private fun init() {
-        logger.info { "Loading cosmetics from csv" }
-        val resource = ClassPathResource("cosmetic/index.csv")
-        // load cosmetics
-        resource.inputStream.use { inputStream ->
-            InputStreamReader(inputStream).use { reader ->
-                CSVReader(reader).use { csvReader ->
-                    csvReader.forEach { row ->
-                        if (row.size >= 4) {
-                            val id = row[0].trim().toInt()
-                            val name = row[3].trim()
-                            cosmeticList.add(Cosmetic(id, name))
-                        }
-                    }
-                }
-            }
-        }
-        logger.info { "Loaded ${cosmeticList.size} cosmetics" }
-    }
+//    private val cosmeticList = mutableListOf<Cosmetic>()
+//
+//    @PostConstruct
+//    private fun init() {
+//        logger.info { "Loading cosmetics from csv" }
+//        val resource = ClassPathResource("cosmetic/index.csv")
+//        // load cosmetics
+//        resource.inputStream.use { inputStream ->
+//            InputStreamReader(inputStream).use { reader ->
+//                CSVReader(reader).use { csvReader ->
+//                    csvReader.forEach { row ->
+//                        if (row.size >= 4) {
+//                            val id = row[0].trim().toInt()
+//                            val name = row[3].trim()
+//                            cosmeticList.add(Cosmetic(id, name))
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//        logger.info { "Loaded ${cosmeticList.size} cosmetics" }
+//    }
 
     override suspend fun refreshCosmetics(user: User) {
         sessionService.push(user, RefreshCosmeticsPush.getDefaultInstance())
@@ -138,9 +134,10 @@ class CosmeticServiceImpl(
             if (user.cosmetic.lunarPlusState) {
                 addAllAvailableLunarPlusColors(PlusColor.entries.map { it.toLunarClientColor() })
             }
-            addAllOwnedCosmeticIds(cosmeticList.map { it.cosmeticId })
-            addAllOwnedCosmetics(cosmeticList.map { it.toUserCosmetic().toOwnedCosmetic() })
+//            addAllOwnedCosmeticIds(cosmeticList.map { it.cosmeticId })
+//            addAllOwnedCosmetics(cosmeticList.map { it.toUserCosmetic().toOwnedCosmetic() })
             logoAlwaysShow = user.cosmetic.logoAlwaysShow
+            // hack: use LunarClient's hasAllCosmeticsFlag
             hasAllCosmeticsFlag = true
         }.build()
     }

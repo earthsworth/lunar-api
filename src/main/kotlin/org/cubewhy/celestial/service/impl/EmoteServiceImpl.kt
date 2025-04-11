@@ -3,9 +3,6 @@ package org.cubewhy.celestial.service.impl
 import com.google.protobuf.ByteString
 import com.google.protobuf.GeneratedMessage
 import com.lunarclient.websocket.emote.v1.*
-import com.opencsv.CSVReader
-import io.github.oshai.kotlinlogging.KotlinLogging
-import jakarta.annotation.PostConstruct
 import kotlinx.coroutines.reactive.awaitFirst
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import org.cubewhy.celestial.entity.*
@@ -14,10 +11,8 @@ import org.cubewhy.celestial.service.EmoteService
 import org.cubewhy.celestial.service.SessionService
 import org.cubewhy.celestial.service.SubscriptionService
 import org.cubewhy.celestial.util.toLunarClientUUID
-import org.springframework.core.io.ClassPathResource
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.socket.WebSocketSession
-import java.io.InputStreamReader
 
 @Service
 class EmoteServiceImpl(
@@ -26,34 +21,34 @@ class EmoteServiceImpl(
     private val userRepository: UserRepository
 ) : EmoteService {
 
-    companion object {
-        private val logger = KotlinLogging.logger {}
-    }
+//    companion object {
+//        private val logger = KotlinLogging.logger {}
+//    }
 
-    private val emoteList = mutableListOf<Emote>()
+//    private val emoteList = mutableListOf<Emote>()
+//
+//    @PostConstruct
+//    private fun init() {
+//        logger.info { "Loading emotes from csv" }
+//        val resource = ClassPathResource("emote/emotes.csv")
+//        // load emotes
+//        resource.inputStream.use { inputStream ->
+//            InputStreamReader(inputStream).use { reader ->
+//                CSVReader(reader).use { csvReader ->
+//                    csvReader.forEach { row ->
+//                        if (row.size >= 4) {
+//                            val id = row[0].trim().toInt()
+//                            val name = row[1].trim()
+//                            emoteList.add(Emote(id, name))
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//        logger.info { "Loaded ${emoteList.size} emotes" }
+//    }
 
-    @PostConstruct
-    private fun init() {
-        logger.info { "Loading emotes from csv" }
-        val resource = ClassPathResource("emote/emotes.csv")
-        // load emotes
-        resource.inputStream.use { inputStream ->
-            InputStreamReader(inputStream).use { reader ->
-                CSVReader(reader).use { csvReader ->
-                    csvReader.forEach { row ->
-                        if (row.size >= 4) {
-                            val id = row[0].trim().toInt()
-                            val name = row[1].trim()
-                            emoteList.add(Emote(id, name))
-                        }
-                    }
-                }
-            }
-        }
-        logger.info { "Loaded ${emoteList.size} emotes" }
-    }
-
-    override suspend fun refreshEmote(user: User) {
+    override fun refreshEmote(user: User) {
         sessionService.push(user, RefreshEmotesPush.getDefaultInstance())
     }
 
@@ -91,18 +86,19 @@ class EmoteServiceImpl(
         session: WebSocketSession,
         user: User
     ): UpdateEquippedEmotesResponse {
-        user.emote.equippedEmotes = emoteList.stream().filter {
-            request.equippedEmoteIdsList.contains(it.emoteId)
-        }.toList()
+        user.emote.equippedEmotes = request.equippedEmotesList.map { Emote(it.emoteId, it.slotNumber, it.attachedJamId) }
         userRepository.save(user).awaitFirst()
         return UpdateEquippedEmotesResponse.newBuilder().build()
     }
 
     override suspend fun processLogin(user: User): GeneratedMessage {
         return LoginResponse.newBuilder().apply {
-            addAllOwnedEmotes(emoteList.map { it.toOwnedEmote(it.emoteId) })
-            addAllOwnedEmoteIds(emoteList.map { it.emoteId })
+            addAllOwnedEmotes(user.emote.equippedEmotes.map { it.toOwnedEmote() })
+            addAllOwnedEmoteIds(user.emote.equippedEmotes.map { it.emoteId })
+
+            addAllEquippedEmotes(user.emote.equippedEmotes.map { it.toEquippedEmote() })
             addAllEquippedEmoteIds(user.emote.equippedEmotes.map { it.emoteId })
+            // hack: use LunarClient's hasAllEmotesFlag
             hasAllEmotesFlag = true
         }.build()
     }
@@ -123,6 +119,7 @@ class EmoteServiceImpl(
         return UseEmoteResponse.newBuilder().apply {
             this.emoteId = request.emoteId
             this.emoteMetadata = request.emoteMetadata
+
             this.status = UseEmoteResponse.Status.STATUS_OK
         }.build()
     }
@@ -147,6 +144,7 @@ class EmoteServiceImpl(
             this.emoteMetadata = request.emoteMetadata
             this.playerUuid = user.uuid.toLunarClientUUID()
             this.emoteSoundtrackUrl = request.emoteSoundtrackUrl
+            this.emoteJamId = request.emoteJamId
         }.build()
 
     private fun buildStopEmotePush(user: User) = StopEmotePush.newBuilder().apply {

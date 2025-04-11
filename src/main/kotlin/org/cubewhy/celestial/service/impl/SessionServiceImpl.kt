@@ -4,38 +4,57 @@ import com.google.protobuf.GeneratedMessage
 import com.lunarclient.common.v1.Location
 import com.lunarclient.websocket.friend.v1.InboundLocation
 import io.github.oshai.kotlinlogging.KotlinLogging
+import jakarta.annotation.PostConstruct
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.reactive.awaitFirst
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import kotlinx.coroutines.reactive.awaitLast
 import kotlinx.coroutines.reactor.mono
 import org.cubewhy.celestial.avro.FederationMessage
 import org.cubewhy.celestial.entity.User
-import org.cubewhy.celestial.entity.UserWebsocketSession
+import org.cubewhy.celestial.entity.UserSession
+import org.cubewhy.celestial.entity.config.InstanceProperties
 import org.cubewhy.celestial.handler.AssetsHandler
 import org.cubewhy.celestial.repository.UserRepository
 import org.cubewhy.celestial.service.SessionService
 import org.cubewhy.celestial.util.Const
-import org.cubewhy.celestial.util.Const.SHARED_SESSION
-import org.cubewhy.celestial.util.toJson
-import org.cubewhy.celestial.util.toProtobufMessage
 import org.cubewhy.celestial.util.wrapPush
 import org.springframework.cloud.stream.function.StreamBridge
-import org.springframework.data.redis.core.*
+import org.springframework.data.redis.core.ReactiveRedisTemplate
+import org.springframework.data.redis.core.removeAndAwait
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.socket.WebSocketSession
 import reactor.kotlin.core.publisher.toFlux
-import java.time.Duration
 import java.time.Instant
 
 @Service
 class SessionServiceImpl(
-    private val userWebsocketSessionReactiveRedisTemplate: ReactiveRedisTemplate<String, UserWebsocketSession>,
+    private val userSessionReactiveRedisTemplate: ReactiveRedisTemplate<String, UserSession>,
     private val streamBridge: StreamBridge,
     private val userRepository: UserRepository,
+    private val instanceProperties: InstanceProperties,
+    private val scope: CoroutineScope
 ) : SessionService {
 
     companion object {
         private val logger = KotlinLogging.logger {}
+    }
+
+    @PostConstruct
+    private fun clearGhostSessions() {
+        scope.launch {
+            val ghostSessions = userSessionReactiveRedisTemplate.opsForSet().scan(Const.USER_WEBSOCKET_SESSION_STORE)
+                .filter { it.instanceId == instanceProperties.id || it.instanceId == null }
+                .collectList()
+                .awaitLast()
+            ghostSessions.forEach { ghostSession ->
+                logger.info { "Remove ghost session ${ghostSession.websocketId}" }
+                userSessionReactiveRedisTemplate
+                    .opsForSet()
+                    .removeAndAwait(Const.USER_WEBSOCKET_SESSION_STORE, ghostSession)
+            }
+        }
     }
 
     override suspend fun saveSession(user: User, websocketSession: WebSocketSession) {
@@ -44,12 +63,13 @@ class SessionServiceImpl(
             return
         }
         logger.info { "Saving session for ${user.username} at connection ${websocketSession.id}" }
-        val wsSessionObject = UserWebsocketSession(
+        val wsSessionObject = UserSession(
             websocketId = websocketSession.id,
             userId = user.id!!,
-            userUuid = user.uuid
+            userUuid = user.uuid,
+            instanceId = instanceProperties.id
         )
-        userWebsocketSessionReactiveRedisTemplate.opsForSet().add(Const.USER_WEBSOCKET_SESSION_STORE, wsSessionObject)
+        userSessionReactiveRedisTemplate.opsForSet().add(Const.USER_WEBSOCKET_SESSION_STORE, wsSessionObject)
             .awaitFirst()
     }
 
@@ -62,7 +82,7 @@ class SessionServiceImpl(
     }
 
     override suspend fun isOnline(user: User): Boolean {
-        return userWebsocketSessionReactiveRedisTemplate.opsForSet().scan(Const.USER_WEBSOCKET_SESSION_STORE)
+        return userSessionReactiveRedisTemplate.opsForSet().scan(Const.USER_WEBSOCKET_SESSION_STORE)
             .any { it.userId == user.id!! }
             .awaitFirst()
     }
@@ -84,16 +104,21 @@ class SessionServiceImpl(
         // find the user
         val user = userRepository.findById(userId).awaitFirst()
         // find all available sessions
-        this.findSessions(user).toFlux().mapNotNull {
-            // find on local session map
-            AssetsHandler.sessions[it.websocketId]
-        }.flatMap { session ->
-            mono { func.invoke(session!!) }
-        }.awaitLast()
+        this.findSessions(user)
+            .toFlux()
+            .mapNotNull {
+                // find on local session map
+                AssetsHandler.sessions[it.websocketId]
+            }
+            .flatMap { session ->
+                mono { func.invoke(session!!) }
+            }
+            .collectList()
+            .awaitFirstOrNull()
     }
 
-    override suspend fun findSessions(user: User): List<UserWebsocketSession> =
-        userWebsocketSessionReactiveRedisTemplate.opsForSet().scan(Const.USER_WEBSOCKET_SESSION_STORE)
+    override suspend fun findSessions(user: User): List<UserSession> =
+        userSessionReactiveRedisTemplate.opsForSet().scan(Const.USER_WEBSOCKET_SESSION_STORE)
             .filter { it.userId == user.id }
             .collectList()
             .awaitLast()
@@ -132,34 +157,33 @@ class SessionServiceImpl(
         this.getUserSession(session)?.let { userWebsocketSession ->
             val user = userRepository.findById(userWebsocketSession.userId).awaitFirst()
             logger.info { "Remove ${user.username} from shared session store" }
-            userWebsocketSessionReactiveRedisTemplate.opsForSet().remove(Const.USER_WEBSOCKET_SESSION_STORE, userWebsocketSession)
+            userSessionReactiveRedisTemplate.opsForSet()
+                .removeAndAwait(Const.USER_WEBSOCKET_SESSION_STORE, userWebsocketSession)
         }
     }
 
-    override suspend fun getUserSession(session: WebSocketSession): UserWebsocketSession? {
-        return userWebsocketSessionReactiveRedisTemplate.opsForSet().scan(Const.USER_WEBSOCKET_SESSION_STORE)
+    override suspend fun getUserSession(session: WebSocketSession): UserSession? {
+        return userSessionReactiveRedisTemplate.opsForSet().scan(Const.USER_WEBSOCKET_SESSION_STORE)
             .filter { it.websocketId == session.id }
             .awaitLast()
     }
 
     override suspend fun countAvailableSessions(): Long {
-        return userWebsocketSessionReactiveRedisTemplate.opsForSet().scan(Const.USER_WEBSOCKET_SESSION_STORE).count()
+        return userSessionReactiveRedisTemplate.opsForSet().scan(Const.USER_WEBSOCKET_SESSION_STORE).count()
             .awaitLast()
     }
 
-    override suspend fun pushAll(func: suspend (User, WebSocketSession) -> Unit) {
+    override suspend fun pushAll(func: suspend (User) -> Unit) {
         // find all sessions
-        userWebsocketSessionReactiveRedisTemplate.opsForSet()
+        userSessionReactiveRedisTemplate.opsForSet()
             .scan(Const.USER_WEBSOCKET_SESSION_STORE)
             .collectList()
             .awaitLast()
             .forEach { onlineUser ->
                 // find user
                 userRepository.findByUuid(onlineUser!!.userUuid).awaitFirstOrNull()?.let { user ->
-                    // find session
-                    this.processWithSessionLocally(user.id!!) { session ->
-                        func.invoke(user, session)
-                    }
+                    // process with session
+                    func.invoke(user)
                 }
             }
     }

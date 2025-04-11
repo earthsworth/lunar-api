@@ -13,6 +13,7 @@ message UseEmotePush {
   int32 emote_id = 2;
   int32 emote_metadata = 3;
   string emote_soundtrack_url = 4;
+  int32 emote_jam_id = 5;
 }
 
 message StopEmotePush {
