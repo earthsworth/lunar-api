@@ -99,7 +99,7 @@ class UploadServiceImpl(
         // get file & open as buffer
         logger.debug { "Streaming download $uploadId" }
         val publisher =
-            DataBufferUtils.read(Path(UPLOAD_DIR.absolutePath, upload.sha256), DefaultDataBufferFactory(), 4096)
+            DataBufferUtils.read(Path(UPLOAD_DIR.absolutePath, upload.sha256), exchange.response.bufferFactory(), 4096)
         exchange.streamData(publisher).awaitFirstOrNull()
     }
 

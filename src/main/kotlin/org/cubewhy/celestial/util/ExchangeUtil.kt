@@ -1,7 +1,10 @@
 package org.cubewhy.celestial.util
 
+import kotlinx.coroutines.reactive.collect
+import kotlinx.coroutines.reactor.mono
 import org.cubewhy.celestial.entity.RestBean
 import org.springframework.core.io.buffer.DataBuffer
+import org.springframework.core.io.buffer.DataBufferUtils
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.web.server.ServerWebExchange
@@ -29,5 +32,8 @@ fun ServerWebExchange.responseFailure(code: Int, message: String): Mono<Void> {
 
 fun ServerWebExchange.streamData(publisher: Flux<DataBuffer>): Mono<Void> {
     this.response.headers.contentType = MediaType.APPLICATION_OCTET_STREAM
-    return this.response.writeWith(publisher).then(Mono.defer { this.response.setComplete() })
+    return this.response.writeWith(publisher).then(mono {
+        // release data buffer
+        publisher.collect { DataBufferUtils.release(it) }
+    }).then(Mono.defer { this.response.setComplete() })
 }
