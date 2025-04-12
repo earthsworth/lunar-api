@@ -1,12 +1,18 @@
-import image from "../../assets/login-image.webp";
-import { Button, Input } from "@headlessui/react";
-import { FormEvent, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "react-router-dom";
+import image from '../../assets/login-image.webp';
+import registerTutorialImage from '../../assets/register_tutorial.webp'
+import { Button, Description, Dialog, DialogPanel, DialogTitle, Input } from '@headlessui/react';
+import { FormEvent, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 
 const LoginPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const [registerDialogState, setRegisterDialogState] = useState(false);
+
+  const handleClickRegister = () => {
+    setRegisterDialogState(true); // open the dialog
+  };
 
   const processLogin = async (e: FormEvent) => {
     e.preventDefault();
@@ -25,7 +31,6 @@ const LoginPage = () => {
           className="w-full h-full object-cover"
         />
       </div>
-
 
       <div className="flex w-full lg:w-1/2 items-center justify-center px-8">
         <div className="w-full max-w-md space-y-6">
@@ -69,15 +74,43 @@ const LoginPage = () => {
             <p className=" text-sm">
               Do not input your Microsoft password
             </p>
-            <p className="text-red-500 font-semibold">.passwd &lt;new password&gt;</p>
-            <Link to="/statistics"
-                  className="text-blue-500 dark:text-sky-500 underline hover:dark:text-blue-500 hover:text-sky-500">View
-              Statistics</Link>
+            <p className="text-blue-500 underline hover:text-sky-500 cursor-pointer"
+               onClick={handleClickRegister}>Register</p>
           </div>
         </div>
       </div>
+
+      <AnimatePresence>
+        {registerDialogState && (
+          <Dialog static open={registerDialogState} onClose={() => setRegisterDialogState(false)}
+                  className="relative z-50">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/30"
+            />
+            <div className="fixed inset-0 flex w-screen items-center justify-center p-4 backdrop-blur-xl">
+              <DialogPanel
+                as={motion.div}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="max-w-lg space-y-4 bg-[#222] rounded-xl p-12"
+              >
+                <DialogTitle className="text-lg font-bold">Register a LunarCN Account</DialogTitle>
+                <Description>Type <strong className="text-red-500">.passwd &lt;your_password&gt;</strong> in the bot to set a password!</Description>
+                <img src={registerTutorialImage} className="rounded-xl"/>
+                <div className="flex gap-4">
+                  <button onClick={() => setRegisterDialogState(false)} className="btn btn-soft btn-primary">I know, thanks</button>
+                </div>
+              </DialogPanel>
+            </div>
+          </Dialog>
+        )}
+      </AnimatePresence>
     </div>
   );
-}
+};
 
 export default LoginPage;

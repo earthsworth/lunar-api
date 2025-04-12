@@ -1,5 +1,5 @@
 import { Route, Routes } from "react-router-dom";
-import { NotFound } from "./NotFound.tsx";
+import NotFound from "./NotFound.tsx";
 
 const DashboardRoutes = () => {
   return (

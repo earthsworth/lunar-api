@@ -3,8 +3,7 @@ import RequireAuth from "./RequireAuth.tsx";
 import LoginPage from "./LoginPage/LoginPage.tsx";
 import DashboardRoutes from "./DashboardRoutes.tsx";
 
-function App() {
-
+const App = () => {
   return (
     <HashRouter>
       <Routes>
