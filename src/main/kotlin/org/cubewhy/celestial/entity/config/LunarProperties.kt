@@ -6,7 +6,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 data class LunarProperties(
     var user: UserProperties,
     var discord: DiscordProperties,
-    var upload: UploadProperties
+    var upload: UploadProperties,
+    var sentry: SentryProperties
 ) {
     data class UserProperties(
         var verify: Boolean
@@ -23,4 +24,13 @@ data class LunarProperties(
     data class UploadProperties(
         var maxSize: String
     )
+
+    data class SentryProperties(
+        var filters: List<SentryFilter> = emptyList()
+    ) {
+        data class SentryFilter(
+            var identifier: String,
+            var regex: String
+        )
+    }
 }

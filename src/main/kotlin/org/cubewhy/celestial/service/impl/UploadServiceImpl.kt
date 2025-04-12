@@ -5,6 +5,7 @@ import jakarta.annotation.PostConstruct
 import kotlinx.coroutines.reactive.awaitFirst
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import kotlinx.coroutines.reactive.awaitLast
+import kotlinx.coroutines.reactive.collect
 import org.cubewhy.celestial.entity.Upload
 import org.cubewhy.celestial.entity.config.LunarProperties
 import org.cubewhy.celestial.entity.vo.UploadVO
@@ -14,13 +15,13 @@ import org.cubewhy.celestial.service.UploadService
 import org.cubewhy.celestial.util.parseSizeString
 import org.cubewhy.celestial.util.responseFailure
 import org.cubewhy.celestial.util.streamData
-import org.springframework.core.io.buffer.DataBuffer
 import org.springframework.core.io.buffer.DataBufferUtils
 import org.springframework.core.io.buffer.DefaultDataBufferFactory
 import org.springframework.http.HttpHeaders
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ServerWebExchange
-import reactor.core.publisher.Flux
+import reactor.core.scheduler.Schedulers
+import reactor.kotlin.core.publisher.toMono
 import java.io.File
 import java.nio.ByteBuffer
 import java.nio.channels.FileChannel
@@ -53,7 +54,7 @@ class UploadServiceImpl(
 
     override suspend fun upload(exchange: ServerWebExchange): UploadVO {
         val contentLength = (exchange.request.headers.getFirst(HttpHeaders.CONTENT_LENGTH)
-            ?: throw IllegalArgumentException("Bad request")).toLong()
+            ?: throw IllegalArgumentException("Bad request")).toInt()
         val contentType = exchange.request.headers.getFirst(HttpHeaders.CONTENT_TYPE) ?: throw IllegalArgumentException(
             "No content type header provided"
         )
@@ -62,11 +63,12 @@ class UploadServiceImpl(
         }
         val digest = MessageDigest.getInstance("SHA-256")
         // receive file
-        val body = exchange.request.body.awaitLast()
-        val bb = ByteBuffer.allocateDirect(body.capacity())
-        body.toByteBuffer(bb)
-        // read buffer
-        digest.update(bb.duplicate())
+        val byteArray = exchange.request.body
+            .publishOn(Schedulers.boundedElastic())
+            .concatMap { it.asInputStream().readAllBytes().toMono() }
+            .reduce(ByteArray(0)) { acc, bytes -> acc + bytes }
+            .awaitFirst()
+        digest.update(byteArray)
         // calc sha256
         val sha256Hash = digest.digest().joinToString("") { "%02x".format(it) }
         // check is exist
@@ -76,7 +78,7 @@ class UploadServiceImpl(
         }
         logger.info { "Receiving file with hash $sha256Hash" }
         // save to local
-        this.saveFile(sha256Hash, bb)
+        this.saveFile(sha256Hash, byteArray)
         return uploadMapper.mapToUploadVO(
             uploadRepository.save(
                 Upload(
@@ -96,21 +98,24 @@ class UploadServiceImpl(
         }
         // get file & open as buffer
         logger.debug { "Streaming download $uploadId" }
-        val publisher = DataBufferUtils.read(Path(UPLOAD_DIR.absolutePath, upload.sha256), DefaultDataBufferFactory(), 4096)
+        val publisher =
+            DataBufferUtils.read(Path(UPLOAD_DIR.absolutePath, upload.sha256), DefaultDataBufferFactory(), 4096)
         exchange.streamData(publisher).awaitFirstOrNull()
     }
 
-    private fun saveFile(hash: String, buffer: ByteBuffer) {
-        FileChannel.open(
-            Path(UPLOAD_DIR.absolutePath, hash),
-            StandardOpenOption.CREATE,
-            StandardOpenOption.WRITE,
-            StandardOpenOption.TRUNCATE_EXISTING
-        ).use { channel ->
-            buffer.rewind()
-            while (buffer.hasRemaining()) {
-                channel.write(buffer)
-            }
-        }
+    private fun saveFile(hash: String, bytes: ByteArray) {
+//        FileChannel.open(
+//            Path(UPLOAD_DIR.absolutePath, hash),
+//            StandardOpenOption.CREATE,
+//            StandardOpenOption.WRITE,
+//            StandardOpenOption.TRUNCATE_EXISTING
+//        ).use { channel ->
+//            buffer.rewind()
+//            while (buffer.hasRemaining()) {
+//                channel.write(buffer)
+//            }
+//        }
+        val file = File(UPLOAD_DIR, hash)
+        file.outputStream().use { it.write(bytes) }
     }
 }

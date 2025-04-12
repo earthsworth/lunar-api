@@ -14,12 +14,10 @@ import org.springframework.web.server.ServerWebExchange
 class UploadController(private val uploadService: UploadService) {
     @PostMapping
     suspend fun upload(exchange: ServerWebExchange): ResponseEntity<RestBean<UploadVO>> {
-        return withContext(Dispatchers.IO) {
-            try {
-                return@withContext ResponseEntity.ok(RestBean.success(uploadService.upload(exchange)))
-            } catch (e: IllegalArgumentException) {
-                return@withContext ResponseEntity.badRequest().body(RestBean.failure(400, e))
-            }
+        return try {
+            return ResponseEntity.ok(RestBean.success(uploadService.upload(exchange)))
+        } catch (e: IllegalArgumentException) {
+            return ResponseEntity.badRequest().body(RestBean.failure(400, e))
         }
     }
 
