@@ -29,8 +29,8 @@ class GameServiceImpl : GameService {
                     brand = "Hypixel BungeeCord",
                     modSettings = mapOf(
                         "textHotKey" to ModSetting(enabled = false),
-                        "freelook" to ModSetting(enabled = false),
-                        "MINIMAP" to ModSetting(enabled = false),
+                        "freelook" to ModSetting(enabled = true),
+                        "MINIMAP" to ModSetting(enabled = true),
                         "particleMod" to ModSetting(properties = mapOf("particleMod_footstep" to "false"))
                     )
                 )

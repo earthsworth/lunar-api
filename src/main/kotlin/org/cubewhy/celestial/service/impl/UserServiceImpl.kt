@@ -111,13 +111,13 @@ class UserServiceImpl(
     override fun findByUsername(username: String): Mono<UserDetails> {
         // find the username in webUser repository
         return userRepository.findByUsernameIgnoreCase(username)
-            .map { user ->
+            .flatMap { user ->
                 // build User details
                 org.springframework.security.core.userdetails.User.builder()
                     .username(user.username)
-                    .password(user.password!!)
+                    .password(user.password?: return@flatMap Mono.empty())
                     .roles(*user.resolvedRoles.map { it.name }.toTypedArray())
-                    .build()
+                    .build().toMono()
             }
     }
 }
