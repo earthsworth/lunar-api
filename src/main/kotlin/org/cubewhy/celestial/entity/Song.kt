@@ -8,7 +8,7 @@ import java.util.UUID
 @Document
 data class Song(
     @Id val id: String? = null,
-    val uuid: String = UUID.randomUUID().toString(),
+    val uuid: UUID = UUID.randomUUID(),
     val owner: String,
 
     var name: String, // in game name

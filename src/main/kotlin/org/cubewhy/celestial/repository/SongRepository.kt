@@ -4,8 +4,9 @@ import org.cubewhy.celestial.entity.Song
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Mono
+import java.util.UUID
 
 @Repository
 interface SongRepository : ReactiveMongoRepository<Song, String> {
-    fun findByUuid(uuid: String): Mono<Song>
+    fun findByUuid(uuid: UUID): Mono<Song>
 }

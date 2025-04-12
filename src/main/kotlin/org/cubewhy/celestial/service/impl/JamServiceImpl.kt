@@ -28,6 +28,8 @@ import org.springframework.web.reactive.socket.WebSocketSession
 import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.server.ServerWebExchange
 import java.time.Instant
+import java.time.temporal.ChronoUnit
+import java.util.*
 
 @Service
 class JamServiceImpl(
@@ -232,10 +234,14 @@ class JamServiceImpl(
     override suspend fun styngrPlaySong(songId: String, baseUrl: String): StyngrSongVO {
         // find song
         logger.info { "Request song $songId" }
-        // todo fix: find by uuid
-        val song = songRepository.findByUuid(songId).awaitFirstOrNull()
+        // parse uuid
+        val parsedUuid = UUID.fromString(songId)
+        val song = songRepository.findByUuid(parsedUuid).awaitFirstOrNull()
             ?: throw IllegalStateException("Song with uuid $songId not found")
-        return StyngrSongVO("${baseUrl}api/upload?id=${song.uploadId}")
+        return StyngrSongVO(
+            url = "${baseUrl}api/upload?id=${song.uploadId}",
+            expiresAt = Instant.now().plus(1, ChronoUnit.DAYS).toString()
+        )
     }
 
     override suspend fun createSong(dto: CreateSongDTO, authentication: Authentication): SongVO {
