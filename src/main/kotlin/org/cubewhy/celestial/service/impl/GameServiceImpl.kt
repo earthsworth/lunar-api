@@ -80,7 +80,7 @@ class GameServiceImpl : GameService {
             blogPosts = listOf(
                 BlogPost(
                     title = "Skyward4",
-                    link = "https://discord.gg/8GuNA6zN4c",
+                    link = "https://discord.gg/cubewhy",
                     image = "https://launcherimages.lunarclientcdn.com/…/SkywardsBillboard4-alt.png"
                 ),
                 BlogPost(

@@ -8,6 +8,7 @@ data class LunarSongVO(
     val song: String,
     val artist: String,
     val album: String,
+    val genres: List<String> = listOf("Soundtracks"),
     val durationMillis: Int,
     val copyrightSafe: Boolean
 )

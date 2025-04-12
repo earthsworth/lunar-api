@@ -1,5 +1,7 @@
 package org.cubewhy.celestial.entity
 
+import com.fasterxml.jackson.annotation.JsonInclude
+
 data class GameMetadataResponse(
     val blogPosts: List<BlogPost>,
     val alert: Alert,
@@ -41,6 +43,7 @@ data class AlertActive(
     val link: String? = null
 )
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 data class ModSetting(
     val enabled: Boolean? = null,
     val properties: Map<String, Any?>? = null
@@ -59,6 +62,7 @@ data class StarServer(
     val resource: String? = null
 )
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 data class ServerIntegration(
     val ip: List<String>,
     val brand: String? = null,
