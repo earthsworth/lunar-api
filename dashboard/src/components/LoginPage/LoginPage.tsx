@@ -100,7 +100,8 @@ const LoginPage = () => {
               >
                 <DialogTitle className="text-lg font-bold">Register a LunarCN Account</DialogTitle>
                 <Description>Type <strong className="text-red-500">.passwd &lt;your_password&gt;</strong> in the bot to set a password!</Description>
-                <img src={registerTutorialImage} className="rounded-xl"/>
+                <p className="text-red-400">DO NOT INPUT YOUR MINECRAFT PASSWORD.</p>
+                <img src={registerTutorialImage} className="rounded-xl" alt="register tutorial"/>
                 <div className="flex gap-4">
                   <button onClick={() => setRegisterDialogState(false)} className="btn btn-soft btn-primary">I know, thanks</button>
                 </div>
