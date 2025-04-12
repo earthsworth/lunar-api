@@ -254,8 +254,8 @@ class JamServiceImpl(
         }
         val songUpload = uploadRepository.findById(dto.uploadId).awaitFirstOrNull()
             ?: throw ResponseStatusException(HttpStatusCode.valueOf(400), "Bad song upload id")
-        if (songUpload.contentType != "audio/mpeg") {
-            throw ResponseStatusException(HttpStatusCode.valueOf(400), "Bad song content type, only mp3 allowed")
+        if (songUpload.contentType != "audio/x-wav" && songUpload.contentType != "audio/vnd.wave") {
+            throw ResponseStatusException(HttpStatusCode.valueOf(400), "Bad song content type, only wave files allowed")
         }
         val song = Song(
             owner = user.id!!,
