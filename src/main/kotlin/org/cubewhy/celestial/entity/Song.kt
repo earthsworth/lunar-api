@@ -3,10 +3,12 @@ package org.cubewhy.celestial.entity
 import org.bson.types.ObjectId
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
+import java.util.UUID
 
 @Document
 data class Song(
     @Id val id: String? = null,
+    val uuid: String = UUID.randomUUID().toString(),
     val owner: String,
 
     var name: String, // in game name

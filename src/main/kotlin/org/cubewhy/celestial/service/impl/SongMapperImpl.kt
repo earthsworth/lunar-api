@@ -11,7 +11,7 @@ class SongMapperImpl : SongMapper {
     override fun mapToLunarSongVO(song: Song, baseUrl: String): LunarSongVO {
         return LunarSongVO(
             id = song.numberId,
-            styngrId = song.id!!,
+            styngrId = song.uuid,
             name = song.name,
             image = "${baseUrl}api/upload?id=${song.thumbnail}",
             song = song.songName,

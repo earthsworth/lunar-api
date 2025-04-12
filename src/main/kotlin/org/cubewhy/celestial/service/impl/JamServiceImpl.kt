@@ -232,8 +232,9 @@ class JamServiceImpl(
     override suspend fun styngrPlaySong(songId: String, baseUrl: String): StyngrSongVO {
         // find song
         logger.info { "Request song $songId" }
-        val song = songRepository.findById(songId).awaitFirstOrNull()
-            ?: throw IllegalStateException("Song with id $songId not found")
+        // todo fix: find by uuid
+        val song = songRepository.findByUuid(songId).awaitFirstOrNull()
+            ?: throw IllegalStateException("Song with uuid $songId not found")
         return StyngrSongVO("${baseUrl}api/upload?id=${song.uploadId}")
     }
 
