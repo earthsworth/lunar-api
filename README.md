@@ -19,6 +19,17 @@ The backend is available at `src`
 
 Frontend at `dashboard`
 
+## Debugging
+
+Add these JVM params to your client
+
+```text
+-DserviceOverrideAuthenticator=ws://127.0.0.1:8080/ws
+-DserviceOverrideAssetServer=ws://127.0.0.1:8080/ws
+-DserviceOverrideApi=http://127.0.0.1:8080/api/lunar
+-DserviceOverrideStyngr=http://127.0.0.1:8080/api/styngr
+```
+
 ## Resources
 
 - The [ProtoDumper](https://github.com/ManTouQAQ/ProtoDumper)
@@ -27,6 +38,6 @@ Frontend at `dashboard`
 - Everything about [serviceOverride](https://github.com/earthsworth/celestial/wiki/Service-Override)
 - Everything about [reactor](https://projectreactor.io/)
 
-# Guildline
+# Guideline
 
 [CONTRIBUTING.md](./CONTRIBUTING.md)
