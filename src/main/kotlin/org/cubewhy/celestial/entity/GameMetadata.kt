@@ -1,26 +1,23 @@
 package org.cubewhy.celestial.entity
 
 import com.fasterxml.jackson.annotation.JsonInclude
+import org.cubewhy.celestial.entity.vo.BlogPostVO
+import org.cubewhy.celestial.entity.vo.PinnedServerVO
+import org.cubewhy.celestial.entity.vo.StarServerVO
 
 data class GameMetadataResponse(
-    val blogPosts: List<BlogPost>,
+    val blogPosts: List<BlogPostVO>,
     val alert: Alert,
     val modSettings: Map<String, ModSetting>,
     val clientSettings: Map<String, Map<String, Any?>>,
-    val pinnedServers: List<PinnedServer>,
-    val starServers: List<StarServer>,
+    val pinnedServers: List<PinnedServerVO>,
+    val starServers: List<StarServerVO>,
     val featureFlag: List<FeatureFlag>,
     val serverIntegration: List<ServerIntegration>,
     val store: Map<String, Any>, // unknown
     val sentryFilteredExceptions: List<SentryFilter>,
     val langOverride: Map<String, Any>, // unknown
     val links: Links
-)
-
-data class BlogPost(
-    val title: String,
-    val image: String,
-    val link: String
 )
 
 data class Alert(
@@ -47,19 +44,6 @@ data class AlertActive(
 data class ModSetting(
     val enabled: Boolean? = null,
     val properties: Map<String, Any?>? = null
-)
-
-data class PinnedServer(
-    val name: String,
-    val ip: String,
-    val expirationDate: Long,
-    val versions: List<String>,
-    val removable: Boolean
-)
-
-data class StarServer(
-    val pattern: String,
-    val resource: String? = null
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
