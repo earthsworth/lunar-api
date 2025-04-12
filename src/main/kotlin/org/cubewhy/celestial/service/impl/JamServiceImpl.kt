@@ -225,7 +225,7 @@ class JamServiceImpl(
         val response = LoginResponse.newBuilder().apply {
             // find available songs
             this.addAllOwnedJams(
-                songRepository.findAll().map { this@JamServiceImpl.buildJam(it) }.collectList().awaitLast()
+                songRepository.findAllByOwner(user.id!!).map { this@JamServiceImpl.buildJam(it) }.collectList().awaitLast()
             )
         }.build().toWebsocketResponse()
         return response
