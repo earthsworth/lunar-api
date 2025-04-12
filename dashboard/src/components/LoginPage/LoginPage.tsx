@@ -1,12 +1,23 @@
-import image from '../../assets/login-image.webp';
-import registerTutorialImage from '../../assets/register_tutorial.webp'
-import { Button, Description, Dialog, DialogPanel, DialogTitle, Input } from '@headlessui/react';
-import { FormEvent, useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import image from "../../assets/login-image.webp";
+import registerTutorialImage from "../../assets/register_tutorial.webp";
+import { Button, Description, Dialog, DialogPanel, DialogTitle, Input } from "@headlessui/react";
+import { FormEvent, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { login } from "../../api/user.ts";
+import { isAxiosError } from "axios";
+import { setAuth } from "../../store/slices/authSlice.ts";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 
 const LoginPage = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
   const [registerDialogState, setRegisterDialogState] = useState(false);
 
@@ -18,8 +29,28 @@ const LoginPage = () => {
     e.preventDefault();
     setError(null);
     setLoading(true);
-    // login
-
+    // process login
+    try {
+      const response = await login(username, password);
+      if (response.code === 200 && response.data) {
+        // store auth data
+        dispatch(setAuth({
+          token: response.data.token,
+          tokenExpiry: response.data.expire,
+        }));
+        navigate("/");
+      }
+    } catch (err: any) {
+      if (isAxiosError(err)) {
+        if (err.response) {
+          setError(err.response.data.message);
+        } else {
+          setError(err.message);
+        }
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -54,18 +85,28 @@ const LoginPage = () => {
             <label className="floating-label">
               <span>Minecraft Username</span>
               <Input type="text" placeholder="Minecraft Username" pattern="^[a-zA-Z0-9_]{3,16}$"
-                     className="input validator input-md w-full" required />
+                     className="input validator input-md w-full"
+                     value={username}
+                     onChange={(e) => setUsername(e.target.value)}
+                     required
+              />
             </label>
 
             <label className="floating-label">
               <span>Password</span>
-              <Input type="password" placeholder="Password" className="input input-md w-full" required />
+              <Input type="password"
+                     placeholder="Password"
+                     className="input input-md w-full"
+                     value={password}
+                     onChange={(e) => setPassword(e.target.value)}
+                     required
+              />
             </label>
 
             <div className="form-control mt-6">
               <Button type="submit" className="btn btn-primary w-full" disabled={loading}>
                 {loading && <span className="loading loading-spinner"></span>}
-                {loading ? "Loading" : "Login"}
+                {loading ? "Please wait..." : "Login"}
               </Button>
             </div>
           </form>
@@ -99,11 +140,14 @@ const LoginPage = () => {
                 className="max-w-lg space-y-4 bg-[#222] rounded-xl p-12"
               >
                 <DialogTitle className="text-lg font-bold">Register a LunarCN Account</DialogTitle>
-                <Description>Type <strong className="text-red-500">.passwd &lt;your_password&gt;</strong> in the bot to set a password!</Description>
+                <Description>Type <strong className="text-red-500">.passwd &lt;your_password&gt;</strong> in the bot to
+                  set a password!</Description>
                 <p className="text-red-400">DO NOT INPUT YOUR MINECRAFT PASSWORD.</p>
-                <img src={registerTutorialImage} className="rounded-xl" alt="register tutorial"/>
+                <img src={registerTutorialImage} className="rounded-xl" alt="register tutorial" />
                 <div className="flex gap-4">
-                  <button onClick={() => setRegisterDialogState(false)} className="btn btn-soft btn-primary">I know, thanks</button>
+                  <button onClick={() => setRegisterDialogState(false)} className="btn btn-soft btn-primary">I know,
+                    thanks
+                  </button>
                 </div>
               </DialogPanel>
             </div>
