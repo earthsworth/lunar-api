@@ -1,8 +1,8 @@
-import { HashRouter, Route, Routes } from "react-router-dom";
-import RequireAuth from "./RequireAuth.tsx";
-import LoginPage from "@/components/login/login-page.tsx";
-import DashboardRoutes from "./dashboard/dashboard-routes.tsx";
-import { ThemeProvider } from "@/components/theme-provider.tsx";
+import { HashRouter, Route, Routes } from 'react-router-dom';
+import RequireAuth from './RequireAuth.tsx';
+import LoginPage from '@/components/login/login-page.tsx';
+import DashboardRoutes from './dashboard/dashboard-routes.tsx';
+import { ThemeProvider } from '@/components/theme-provider.tsx';
 
 const App = () => {
   return (

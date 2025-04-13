@@ -1,5 +1,5 @@
-import axiosInstance from "./axiosInstance.ts";
-import { AuthorizeVO, RestBean } from "./entity.ts";
+import axiosInstance from './axiosInstance.ts';
+import { AuthorizeVO, RestBean, UserVO } from './entity.ts';
 
 export const login = async (username: string, password: string) => {
   const params = new URLSearchParams();
@@ -8,9 +8,14 @@ export const login = async (username: string, password: string) => {
 
   const response = await axiosInstance.post<RestBean<AuthorizeVO>>('/user/login', params, {
     headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
   });
 
+  return response.data;
+};
+
+export const selfInfo = async () => {
+  const response = await axiosInstance.post<RestBean<UserVO>>('/user');
   return response.data;
 };

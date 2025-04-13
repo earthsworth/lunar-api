@@ -10,3 +10,10 @@ export interface AuthorizeVO {
   expire: number;
   roles: string[];
 }
+
+export interface UserVO {
+  id: string;
+  username: string;
+  uuid: string;
+  roles: string[];
+}

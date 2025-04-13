@@ -1,7 +1,7 @@
-import { Route, Routes } from "react-router-dom";
-import NotFound from "../NotFound.tsx";
-import DashboardLayout from "@/components/dashboard/layout.tsx";
-import { dashboardRoutes } from "@/components/dashboard/routes.tsx";
+import { Route, Routes } from 'react-router-dom';
+import NotFound from '../NotFound.tsx';
+import DashboardLayout from '@/components/dashboard/layout.tsx';
+import { dashboardRoutes } from '@/components/dashboard/routes.tsx';
 
 const DashboardRoutes = () => {
   return (

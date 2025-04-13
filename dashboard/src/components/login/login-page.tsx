@@ -1,17 +1,17 @@
-import image from "../../assets/login-image.webp";
-import registerTutorialImage from "../../assets/register_tutorial.webp";
-import { FormEvent, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import { login } from "@/api/user.ts";
-import { isAxiosError } from "axios";
-import { setAuth } from "@/store/slices/authSlice.ts";
-import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { Button } from "@/components/ui/button.tsx";
-import { Input } from "@/components/ui/input.tsx";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog.tsx";
-import { AlertCircle, Loader2 } from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert.tsx";
+import image from '../../assets/login-image.webp';
+import registerTutorialImage from '../../assets/register_tutorial.webp';
+import { FormEvent, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { login } from '@/api/user.ts';
+import { isAxiosError } from 'axios';
+import { setAuth } from '@/store/slices/authSlice.ts';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { Button } from '@/components/ui/button.tsx';
+import { Input } from '@/components/ui/input.tsx';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog.tsx';
+import { AlertCircle, Loader2 } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert.tsx';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -20,8 +20,8 @@ const LoginPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
   const [registerDialogState, setRegisterDialogState] = useState(false);
 
@@ -42,7 +42,7 @@ const LoginPage = () => {
           token: response.data.token,
           tokenExpiry: response.data.expire
         }));
-        navigate("/");
+        navigate('/');
       }
     } catch (err) {
       if (isAxiosError(err)) {
@@ -116,7 +116,7 @@ const LoginPage = () => {
             <div className="form-control mt-6">
               <Button type="submit" className="btn btn-primary w-full" disabled={loading}>
                 {loading && <Loader2 className="animate-spin" />}
-                {loading ? "Please wait..." : "Login"}
+                {loading ? 'Please wait...' : 'Login'}
               </Button>
             </div>
           </form>
@@ -138,10 +138,10 @@ const LoginPage = () => {
               Register a LunarCN Account
             </DialogTitle>
             <DialogDescription>
-              Type{" "}
+              Type{' '}
               <strong className="text-red-500">
                 .passwd &lt;your_password&gt;
-              </strong>{" "}
+              </strong>{' '}
               in the bot to set a password!
             </DialogDescription>
           </DialogHeader>

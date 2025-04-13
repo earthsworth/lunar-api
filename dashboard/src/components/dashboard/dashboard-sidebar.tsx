@@ -7,9 +7,9 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem
-} from "@/components/ui/sidebar";
-import { dashboardRoutes } from "@/components/dashboard/routes.tsx";
-import { Link } from "react-router-dom";
+} from '@/components/ui/sidebar';
+import { dashboardRoutes } from '@/components/dashboard/routes.tsx';
+import { Link } from 'react-router-dom';
 
 
 const DashboardSideBar = () => {
