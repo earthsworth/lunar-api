@@ -19,7 +19,11 @@ The backend is available at `src`
 
 Frontend at `dashboard`
 
-## Debugging
+## Develop on the servlet
+
+Please see [develop.md](docs/develop.md)
+
+## Connect to the server
 
 Enable LunarClient debug mode and add these JVM params to your client
 
