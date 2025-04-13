@@ -14,13 +14,11 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    setAuth(state, action: PayloadAction<{ token: string; tokenExpiry: number }>) {
-      state.token = action.payload.token;
-      state.tokenExpiry = action.payload.tokenExpiry;
+    setAuth(state, action: PayloadAction<AuthState>) {
+      return { ...state, ...action.payload };
     },
-    clearAuth(state) {
-      state.token = null;
-      state.tokenExpiry = null;
+    clearAuth() {
+      return initialState;
     }
   }
 });
