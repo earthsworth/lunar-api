@@ -1,6 +1,7 @@
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -10,6 +11,7 @@ import {
 } from '@/components/ui/sidebar';
 import { dashboardRoutes } from '@/components/dashboard/routes.tsx';
 import { Link } from 'react-router-dom';
+import UserInfo from '@/components/dashboard/user-info.tsx';
 
 
 const DashboardSideBar = () => {
@@ -34,6 +36,11 @@ const DashboardSideBar = () => {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter>
+        <SidebarMenu>
+          <UserInfo />
+        </SidebarMenu>
+      </SidebarFooter>
     </Sidebar>
   );
 };

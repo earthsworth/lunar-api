@@ -16,6 +16,6 @@ export const login = async (username: string, password: string) => {
 };
 
 export const selfInfo = async () => {
-  const response = await axiosInstance.post<RestBean<UserVO>>('/user');
+  const response = await axiosInstance.get<RestBean<UserVO>>('/user');
   return response.data;
 };
