@@ -5,5 +5,6 @@ data class UserVO(
 
     val username: String,
     val uuid: String,
-    val roles: List<String> = listOf(),
+    val roles: List<String>,
+    val logoColor: Int
 )

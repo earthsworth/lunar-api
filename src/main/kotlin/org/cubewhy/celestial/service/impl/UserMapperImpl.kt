@@ -15,6 +15,8 @@ class UserMapperImpl(private val jwtUtil: JwtUtil) : UserMapper {
         id = user.id!!,
         username = user.username,
         uuid = user.uuid,
+        roles = user.resolvedRoles.map { it.name },
+        logoColor = user.cosmetic.lunarLogoColor.color
     )
 
     override fun mapToStyngrUserVO(user: User, exchange: ServerWebExchange): StyngrUserVO {

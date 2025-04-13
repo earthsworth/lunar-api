@@ -16,4 +16,5 @@ export interface UserVO {
   username: string;
   uuid: string;
   roles: string[];
+  logoColor: number;
 }

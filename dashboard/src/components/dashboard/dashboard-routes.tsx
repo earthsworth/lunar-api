@@ -30,7 +30,8 @@ const DashboardRoutes = () => {
           id: info.id,
           roles: info.roles,
           username: info.username,
-          uuid: info.uuid
+          uuid: info.uuid,
+          logoColor: info.logoColor
         }));
       } catch (err) {
         console.error('Failed to fetch user info', err);

@@ -5,13 +5,15 @@ interface UserState {
   username: string | null;
   uuid: string | null;
   roles: string[];
+  logoColor: number;
 }
 
 const initialState: UserState = {
   id: null,
   username: null,
   uuid: null,
-  roles: []
+  roles: [],
+  logoColor: 0xFFFFFF
 };
 
 const userSlice = createSlice({

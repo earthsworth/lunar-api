@@ -15,6 +15,10 @@ export const login = async (username: string, password: string) => {
   return response.data;
 };
 
+export const logout = async () => {
+  await axiosInstance.post<RestBean<AuthorizeVO>>('/user/logout');
+};
+
 export const selfInfo = async () => {
   const response = await axiosInstance.get<RestBean<UserVO>>('/user');
   return response.data;
