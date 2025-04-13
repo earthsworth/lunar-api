@@ -1,13 +1,17 @@
 import image from "../../assets/login-image.webp";
 import registerTutorialImage from "../../assets/register_tutorial.webp";
-import { Button, Description, Dialog, DialogPanel, DialogTitle, Input } from "@headlessui/react";
 import { FormEvent, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { login } from "../../api/user.ts";
+import { login } from "@/api/user.ts";
 import { isAxiosError } from "axios";
-import { setAuth } from "../../store/slices/authSlice.ts";
+import { setAuth } from "@/store/slices/authSlice.ts";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import { Button } from "@/components/ui/button.tsx";
+import { Input } from "@/components/ui/input.tsx";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog.tsx";
+import { AlertCircle, Loader2 } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert.tsx";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -36,11 +40,11 @@ const LoginPage = () => {
         // store auth data
         dispatch(setAuth({
           token: response.data.token,
-          tokenExpiry: response.data.expire,
+          tokenExpiry: response.data.expire
         }));
         navigate("/");
       }
-    } catch (err: any) {
+    } catch (err) {
       if (isAxiosError(err)) {
         if (err.response) {
           setError(err.response.data.message);
@@ -70,13 +74,19 @@ const LoginPage = () => {
           <AnimatePresence>
             {error && (
               <motion.div
-                className="alert alert-error shadow-sm text-sm"
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.2 }}
               >
-                {error}
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertTitle>Error</AlertTitle>
+                  <AlertDescription>
+                    {error}
+                  </AlertDescription>
+                </Alert>
+
               </motion.div>
             )}
           </AnimatePresence>
@@ -105,7 +115,7 @@ const LoginPage = () => {
 
             <div className="form-control mt-6">
               <Button type="submit" className="btn btn-primary w-full" disabled={loading}>
-                {loading && <span className="loading loading-spinner"></span>}
+                {loading && <Loader2 className="animate-spin" />}
                 {loading ? "Please wait..." : "Login"}
               </Button>
             </div>
@@ -121,39 +131,36 @@ const LoginPage = () => {
         </div>
       </div>
 
-      <AnimatePresence>
-        {registerDialogState && (
-          <Dialog static open={registerDialogState} onClose={() => setRegisterDialogState(false)}
-                  className="relative z-50">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/30"
-            />
-            <div className="fixed inset-0 flex w-screen items-center justify-center p-4 backdrop-blur-xl">
-              <DialogPanel
-                as={motion.div}
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                className="max-w-lg space-y-4 bg-[#222] rounded-xl p-12"
-              >
-                <DialogTitle className="text-lg font-bold">Register a LunarCN Account</DialogTitle>
-                <Description>Type <strong className="text-red-500">.passwd &lt;your_password&gt;</strong> in the bot to
-                  set a password!</Description>
-                <p className="text-red-400">DO NOT INPUT YOUR MINECRAFT PASSWORD.</p>
-                <img src={registerTutorialImage} className="rounded-xl" alt="register tutorial" />
-                <div className="flex gap-4">
-                  <button onClick={() => setRegisterDialogState(false)} className="btn btn-soft btn-primary">I know,
-                    thanks
-                  </button>
-                </div>
-              </DialogPanel>
-            </div>
-          </Dialog>
-        )}
-      </AnimatePresence>
+      <Dialog open={registerDialogState} onOpenChange={setRegisterDialogState}>
+        <DialogContent className="max-w-lg rounded-xl p-12 space-y-4 backdrop-blur-xl">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold">
+              Register a LunarCN Account
+            </DialogTitle>
+            <DialogDescription>
+              Type{" "}
+              <strong className="text-red-500">
+                .passwd &lt;your_password&gt;
+              </strong>{" "}
+              in the bot to set a password!
+            </DialogDescription>
+          </DialogHeader>
+
+          <p className="text-red-400">DO NOT INPUT YOUR MINECRAFT PASSWORD.</p>
+
+          <img
+            src={registerTutorialImage}
+            className="rounded-xl"
+            alt="register tutorial"
+          />
+
+          <div className="flex gap-4">
+            <Button onClick={() => setRegisterDialogState(false)}>
+              I know, thanks
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
