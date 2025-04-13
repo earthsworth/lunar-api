@@ -1,5 +1,6 @@
 package org.cubewhy.celestial.util
 
+import cn.hutool.crypto.SecureUtil
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.JWTVerificationException
@@ -46,6 +47,10 @@ class JwtUtil(
             .withClaim("id", user.id) // internal id
             .withClaim("name", user.username) // username
             .withClaim("mcuuid", user.uuid) // minecraft uuid
+            .withClaim(
+                "pwd-hash",
+                SecureUtil.sha1(user.password ?: "no-password")
+            ) // used to verify the user has the same password
             .withExpiresAt(expireDate) // now + {date}
             .withIssuedAt(Date()) // time now
             .sign(algorithm)
@@ -78,4 +83,12 @@ class JwtUtil(
         // expire token
         return stringReactiveRedisTemplate.opsForValue().set(Const.EXPIRED_TOKEN + jwt.id, "0").then(Mono.just(true))
     }
+}
+
+fun DecodedJWT.isValid(password: String?): Boolean {
+    // verify the password hash
+    val claim = this.getClaim("pwd-hash")
+    if (claim.isNull || claim.isMissing) return false
+    if (password == null) return true // this user does not have a password, skip checking
+    return claim.asString() == SecureUtil.sha1(password)
 }

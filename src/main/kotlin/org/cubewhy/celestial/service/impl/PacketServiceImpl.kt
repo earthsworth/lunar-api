@@ -15,10 +15,7 @@ import org.cubewhy.celestial.entity.config.LunarProperties
 import org.cubewhy.celestial.entity.emptyWebsocketResponse
 import org.cubewhy.celestial.repository.UserRepository
 import org.cubewhy.celestial.service.*
-import org.cubewhy.celestial.util.CryptUtil
-import org.cubewhy.celestial.util.JwtUtil
-import org.cubewhy.celestial.util.generateRandomBytes
-import org.cubewhy.celestial.util.toUUIDString
+import org.cubewhy.celestial.util.*
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.socket.CloseStatus
 import org.springframework.web.reactive.socket.WebSocketSession
@@ -152,6 +149,10 @@ class PacketServiceImpl(
             return null // uuid not match
         }
         val user = userService.loadUserByUuid(providedUUID)
+        // valid token
+        if (!decodedJWT.isValid(user.password) || jwtUtil.isInvalidToken(decodedJWT.id).awaitFirst()) {
+            return null // jwt was revoked
+        }
         // add to shared store
         sessionService.saveSession(user, session)
         // save game info to shared store

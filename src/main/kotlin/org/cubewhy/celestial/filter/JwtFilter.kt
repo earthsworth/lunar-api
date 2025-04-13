@@ -1,7 +1,11 @@
 package org.cubewhy.celestial.filter
 
+import kotlinx.coroutines.reactive.awaitFirst
+import kotlinx.coroutines.reactive.awaitFirstOrNull
+import kotlinx.coroutines.reactor.mono
 import org.cubewhy.celestial.service.UserService
 import org.cubewhy.celestial.util.JwtUtil
+import org.cubewhy.celestial.util.isValid
 import org.cubewhy.celestial.util.responseFailure
 import org.springframework.http.HttpHeaders
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -20,18 +24,33 @@ class JwtFilter(
     private val jwtUtil: JwtUtil,
     private val userService: UserService
 ) : WebFilter {
-    override fun filter(exchange: ServerWebExchange, chain: WebFilterChain): Mono<Void> {
-        val token = exchange.request.headers.getFirst(HttpHeaders.AUTHORIZATION) ?: return chain.filter(exchange)
-        // parse token
-        val jwt =
-            jwtUtil.resolveJwt(jwtUtil.convertToken(token)) ?: return exchange.responseFailure(401, "Unauthorized")
-        val username = (jwt.claims["name"] ?: return exchange.responseFailure(401, "Bad Token")).asString()
-        return userService.findByUsername(username).flatMap { userDetails ->
-            val auth: Authentication =
-                UsernamePasswordAuthenticationToken(userDetails, userDetails.password, userDetails.authorities)
-            val securityContext: SecurityContext = SecurityContextImpl(auth)
-            return@flatMap chain.filter(exchange)
-                .contextWrite(ReactiveSecurityContextHolder.withSecurityContext(Mono.just(securityContext)))
+    override fun filter(exchange: ServerWebExchange, chain: WebFilterChain): Mono<Void> = mono {
+        val token = exchange.request.headers.getFirst(HttpHeaders.AUTHORIZATION)
+            ?: return@mono chain.filter(exchange).awaitFirstOrNull()
+
+        val jwt = jwtUtil.resolveJwt(jwtUtil.convertToken(token))
+            ?: return@mono exchange.responseFailure(401, "Unauthorized").awaitFirstOrNull()
+
+        val username = (jwt.claims["name"]
+            ?: return@mono exchange.responseFailure(401, "Bad Token").awaitFirstOrNull()).asString()
+
+        val isInvalidToken = jwtUtil.isInvalidToken(jwt.id).awaitFirst()
+        if (isInvalidToken) {
+            return@mono exchange.responseFailure(401, "Unauthorized").awaitFirstOrNull()
         }
+
+        val userDetails = userService.findByUsername(username).awaitFirst()
+        if (!jwt.isValid(userDetails.password)) {
+            return@mono exchange.responseFailure(401, "Expired session").awaitFirstOrNull()
+        }
+
+        val auth: Authentication = UsernamePasswordAuthenticationToken(
+            userDetails, userDetails.password, userDetails.authorities
+        )
+        val securityContext: SecurityContext = SecurityContextImpl(auth)
+
+        return@mono chain.filter(exchange)
+            .contextWrite(ReactiveSecurityContextHolder.withSecurityContext(Mono.just(securityContext)))
+            .awaitFirstOrNull()
     }
 }
