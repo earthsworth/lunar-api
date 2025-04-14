@@ -7,10 +7,10 @@ A 3rd party LunarClient backend implementation like Solar-Sockets
 - [x] Authenticator
 - [x] Cosmetics
 - [x] Emotes
-- [ ] Jams
+- [x] Jams
 - [x] Conversation & Friends
 - [x] Styngr API
-- [ ] Game Metadata
+- [x] Game Metadata
 - [ ] Launcher Metadata
 
 ## Structure

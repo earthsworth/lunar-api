@@ -5,11 +5,15 @@ import org.cubewhy.celestial.bot.command.Command
 import org.cubewhy.celestial.entity.Message
 import org.cubewhy.celestial.entity.User
 import org.cubewhy.celestial.service.CommandService
+import org.cubewhy.celestial.service.ConversationService
+import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 
 @Service
 class CommandServiceImpl(
-    commandList: List<Command>
+    commandList: MutableList<out Command>,
+    @Lazy
+    private val conversationService: ConversationService
 ) : CommandService {
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -27,10 +31,15 @@ class CommandServiceImpl(
     }
 
     override suspend fun process(message: String, user: User): Message? {
-        // parse command
         if (!message.startsWith(".")) {
-            return Message.createBotResponse("Not a command, type .help for help", user)
+            // irc message
+            if (message.startsWith("passwd ") || message.startsWith("/passwd")) {
+                return Message.createBotResponse("Message blocked! Use .passwd to set a password", user)
+            }
+            conversationService.pushIrc(user.username, message, user, fromDiscord = false)
+            return null
         }
+        // parse command
         val response = parseCommand(user, message) ?: return null
         return Message.createBotResponse(response, user)
     }

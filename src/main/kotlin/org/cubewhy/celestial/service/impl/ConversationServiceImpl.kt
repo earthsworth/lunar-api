@@ -73,7 +73,7 @@ class ConversationServiceImpl(
         // is bot
         if (recipientUuid == botUuid.toString()) {
             // process bot commands
-            logger.info { "User ${user.username} send message to bot (${chatMessage})" }
+            logger.info { "User ${user.username} send message to bot: $chatMessage" }
             val msg = Message(
                 senderId = user.id!!,
                 targetId = user.id,
@@ -82,9 +82,9 @@ class ConversationServiceImpl(
             val events =
                 mutableListOf(this.buildConversationMessagePush(msg, user, request.conversationReference))
             // process command
-            commandService.process(chatMessage, user)?.let { msg ->
+            commandService.process(chatMessage, user)?.let { responseMsg ->
                 // build pushes
-                events.addAll(msg.buildBotResponsePush(botUsername))
+                events.addAll(responseMsg.buildBotResponsePush(botUsername))
             }
             return SendConversationMessageResponse.newBuilder().apply {
                 status =
