@@ -33,6 +33,8 @@ data class User(
 
     var cosmetic: UserCosmeticSettings = UserCosmeticSettings(),
     var emote: UserEmoteSettings = UserEmoteSettings(),
+
+    var irc: UserIrcSettings = UserIrcSettings()
 ) : TrackingEntity() {
     fun toLunarClientPlayer(): UuidAndUsername = UuidAndUsername.newBuilder().apply {
         this.uuid = this@User.uuid.toLunarClientUUID()
@@ -95,3 +97,7 @@ data class UserCosmeticSettings(
     var logoAlwaysShow: Boolean = true
 )
 
+
+data class UserIrcSettings(
+    var muted: Boolean = false,
+)

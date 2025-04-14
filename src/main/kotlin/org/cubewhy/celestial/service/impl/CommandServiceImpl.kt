@@ -36,6 +36,9 @@ class CommandServiceImpl(
             if (message.startsWith("passwd ") || message.startsWith("/passwd")) {
                 return Message.createBotResponse("Message blocked! Use .passwd to set a password", user)
             }
+            if (user.irc.muted) {
+                return Message.createBotResponse("You're muted from the IRC", user)
+            }
             conversationService.pushIrc(user.username, message, user, fromDiscord = false)
             return null
         }
