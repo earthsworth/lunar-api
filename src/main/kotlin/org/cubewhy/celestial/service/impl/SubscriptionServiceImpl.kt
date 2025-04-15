@@ -22,6 +22,9 @@ class SubscriptionServiceImpl(
         private val logger = KotlinLogging.logger {}
     }
 
+
+    override val serviceName: String = "lunarclient.websocket.subscription.v1.SubscriptionService"
+
     override suspend fun process(
         method: String,
         payload: ByteString,

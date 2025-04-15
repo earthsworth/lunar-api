@@ -17,6 +17,8 @@ class LanguageServiceImpl : LanguageService {
         private val logger = KotlinLogging.logger {}
     }
 
+    override val serviceName: String = "lunarclient.websocket.language.v1.LanguageService"
+
     override suspend fun processUpdateLanguageRequest(
         request: UpdateLanguageRequest,
         session: WebSocketSession,
@@ -26,6 +28,7 @@ class LanguageServiceImpl : LanguageService {
         session.attributes["language"] = request.newLanguage
         return UpdateLanguageResponse.getDefaultInstance()
     }
+
 
     override suspend fun process(
         method: String,

@@ -6,6 +6,8 @@ import org.cubewhy.celestial.entity.WebsocketResponse
 import org.springframework.web.reactive.socket.WebSocketSession
 
 interface PacketProcessor {
+    val serviceName: String
+
     /**
      * Process packet
      *

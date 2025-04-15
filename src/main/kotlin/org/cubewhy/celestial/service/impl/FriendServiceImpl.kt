@@ -51,6 +51,9 @@ class FriendServiceImpl(
     @Value("\${lunar.friend.max}")
     var maxFriend: Long = -1
 
+
+    override val serviceName: String = "lunarclient.websocket.friend.v1.FriendService"
+
     override suspend fun process(
         method: String,
         payload: ByteString,

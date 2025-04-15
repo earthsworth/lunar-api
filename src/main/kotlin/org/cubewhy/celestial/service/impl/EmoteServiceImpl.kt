@@ -52,6 +52,8 @@ class EmoteServiceImpl(
         sessionService.push(user, RefreshEmotesPush.getDefaultInstance())
     }
 
+    override val serviceName: String = "lunarclient.websocket.emote.v1.EmoteService"
+
     override suspend fun process(
         method: String,
         payload: ByteString,

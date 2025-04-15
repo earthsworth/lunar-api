@@ -29,6 +29,8 @@ class CosmeticServiceImpl(
     private val sessionService: SessionService,
 ) : CosmeticService {
 
+    override val serviceName: String = "lunarclient.websocket.cosmetic.v1.CosmeticService"
+
     companion object {
         private val logger = KotlinLogging.logger {}
     }

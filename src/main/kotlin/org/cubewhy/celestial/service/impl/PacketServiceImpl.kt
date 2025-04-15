@@ -28,20 +28,19 @@ import com.lunarclient.websocket.protocol.v1.ServerboundWebSocketMessage as Asse
 @Service
 class PacketServiceImpl(
     private val userService: UserService,
-    private val cosmeticService: CosmeticService,
-    private val emoteService: EmoteService,
     private val friendService: FriendService,
     private val sessionService: SessionService,
-    private val subscriptionService: SubscriptionService,
-    private val languageService: LanguageService,
-    private val conversationService: ConversationService,
-    private val jamService: JamService,
     private val jwtUtil: JwtUtil,
     private val userRepository: UserRepository,
     private val mojangService: MojangService,
 
+    packetProcessors: List<PacketProcessor>,
+
     private val lunarProperties: LunarProperties
 ) : PacketService {
+
+    private val packetProcessorMap = packetProcessors.associateBy { it.serviceName }
+
     companion object {
         private val logger = KotlinLogging.logger {}
     }
@@ -187,60 +186,9 @@ class PacketServiceImpl(
         // find user
         val user = userRepository.findById(userId).awaitFirst()
         logger.info { "User ${user.username} send packet ${message.service}:${message.method}" }
-        return when (message.service) {
-            "lunarclient.websocket.cosmetic.v1.CosmeticService" -> cosmeticService.process(
-                message.method,
-                message.input,
-                session,
-                user
-            )
 
-            "lunarclient.websocket.emote.v1.EmoteService" -> emoteService.process(
-                message.method,
-                message.input,
-                session,
-                user
-            )
-
-
-            "lunarclient.websocket.subscription.v1.SubscriptionService" -> subscriptionService.process(
-                message.method,
-                message.input,
-                session,
-                user
-            )
-
-
-            "lunarclient.websocket.language.v1.LanguageService" -> languageService.process(
-                message.method,
-                message.input,
-                session,
-                user
-            )
-
-
-            "lunarclient.websocket.friend.v1.FriendService" -> friendService.process(
-                message.method,
-                message.input,
-                session,
-                user
-            )
-
-            "lunarclient.websocket.conversation.v1.ConversationService" -> conversationService.process(
-                message.method,
-                message.input,
-                session,
-                user
-            )
-
-            "lunarclient.websocket.jam.v1.JamService" -> jamService.process(
-                message.method,
-                message.input,
-                session,
-                user
-            )
-
-            else -> emptyWebsocketResponse()
-        }
+        val processor = packetProcessorMap[message.service]
+        return processor?.process(message.method, message.input, session, user)
+            ?: emptyWebsocketResponse()
     }
 }

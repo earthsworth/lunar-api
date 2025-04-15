@@ -42,6 +42,8 @@ class JamServiceImpl(
         private val logger = KotlinLogging.logger {}
     }
 
+    override val serviceName: String = "lunarclient.websocket.jam.v1.JamService"
+
     override suspend fun process(
         method: String,
         payload: ByteString,
@@ -105,7 +107,6 @@ class JamServiceImpl(
         logger.info { "Song ${song.name} was created by user ${user.username}" }
         return songMapper.mapToSongVO(songRepository.save(song).awaitFirst())
     }
-
     override suspend fun modifySong(dto: ModifySongDTO, authentication: Authentication): SongVO {
         // find song
         val song = songRepository.findById(dto.songId).awaitFirstOrNull()
@@ -127,6 +128,7 @@ class JamServiceImpl(
         // save song
         return songMapper.mapToSongVO(songRepository.save(song).awaitFirst())
     }
+
 
     private fun buildJam(song: Song): OwnedJam {
         return OwnedJam.newBuilder().apply {

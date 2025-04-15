@@ -46,6 +46,8 @@ class ConversationServiceImpl(
     @Value("\${lunar.friend.bot.username}")
     var botUsername = "lunar_cn"
 
+    override val serviceName: String = "lunarclient.websocket.conversation.v1.ConversationService"
+
     override suspend fun process(
         method: String,
         payload: ByteString,
