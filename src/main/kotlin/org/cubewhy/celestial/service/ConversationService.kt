@@ -13,4 +13,6 @@ interface ConversationService : PacketProcessor {
     ): WebsocketResponse
 
     suspend fun pushIrc(nickname: String, content: String, self: User? = null, fromDiscord: Boolean = false)
+    suspend fun muteUserInIrc(username: String)
+    suspend fun unmuteUserInIrc(username: String)
 }

@@ -8,6 +8,7 @@ import discord4j.core.`object`.entity.channel.GuildMessageChannel
 import discord4j.core.spec.EmbedCreateSpec
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.reactive.awaitFirst
+import kotlinx.coroutines.reactive.awaitFirstOrNull
 import org.cubewhy.celestial.entity.*
 import org.cubewhy.celestial.entity.config.LunarProperties
 import org.cubewhy.celestial.repository.MessageRepository
@@ -161,6 +162,30 @@ class ConversationServiceImpl(
                 }
                 .subscribe()
         }
+    }
+
+    override suspend fun muteUserInIrc(username: String) {
+        // find user
+        val user = userRepository.findByUsernameIgnoreCase(username).awaitFirstOrNull()
+            ?: throw IllegalArgumentException("Unknown user $username")
+        if (user.irc.muted) throw IllegalArgumentException("This user is already muted")
+        // check permission
+        if (user.roles.contains(Role.ADMIN) || user.roles.contains(Role.STAFF)) throw IllegalArgumentException("You cannot mute this user")
+        logger.info { "Mute user ${user.username} in irc" }
+        user.irc.muted = true
+        // save user
+        userRepository.save(user).awaitFirst()
+    }
+
+    override suspend fun unmuteUserInIrc(username: String) {
+        // find user
+        val user = userRepository.findByUsernameIgnoreCase(username).awaitFirstOrNull()
+            ?: throw IllegalArgumentException("Unknown user $username")
+        if (!user.irc.muted) throw IllegalArgumentException("This user is not muted")
+        logger.info { "Unmute user ${user.username} in irc" }
+        user.irc.muted = false
+        // save user
+        userRepository.save(user).awaitFirst()
     }
 
     private fun buildConversationMessagePush(
