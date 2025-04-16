@@ -50,6 +50,9 @@ RUN npm install -g pnpm
 # Link pnpm that let gradle can access it
 RUN ln -s /usr/local/lib/nodejs/node-v$NODE_VERSION-linux-x64/bin/pnpm /usr/bin/pnpm
 
+# Docker will cache this dir
+ENV GRADLE_USER_HOME=/tmp/gradle
+
 # Build
 WORKDIR /app
 # Copy build scripts

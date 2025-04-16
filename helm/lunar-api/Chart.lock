@@ -1,0 +1,12 @@
+dependencies:
+- name: mongodb
+  repository: https://charts.bitnami.com/bitnami
+  version: 16.5.1
+- name: redis
+  repository: https://charts.bitnami.com/bitnami
+  version: 20.12.0
+- name: strimzi-kafka-operator
+  repository: https://strimzi.io/charts/
+  version: 0.39.0
+digest: sha256:3d9b53501d123069446405831cda9525defdfd9aafe864f9c4769653d738ded8
+generated: "2025-04-16T18:41:25.317064293+08:00"
