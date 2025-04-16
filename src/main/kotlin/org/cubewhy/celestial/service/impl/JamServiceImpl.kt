@@ -67,9 +67,17 @@ class JamServiceImpl(
         return response
     }
 
+    override suspend fun listOwn(authentication: Authentication): List<SongVO> {
+        // find user
+        val user = userRepository.findByUsername(authentication.name).awaitFirstOrNull() ?: return emptyList()
+        // find songs
+        val songs = songRepository.findAllByOwner(user.id!!).collectList().awaitFirst()
+        return songs.map { songMapper.mapToSongVO(it) }
+    }
+
     override suspend fun styngrPlaySong(songId: String, baseUrl: String): StyngrSongVO {
         // find song
-        logger.info { "Request song $songId" }
+        logger.debug { "Request song $songId" }
         // parse uuid
         val parsedUuid = UUID.fromString(songId)
         val song = songRepository.findByUuid(parsedUuid).awaitFirstOrNull()

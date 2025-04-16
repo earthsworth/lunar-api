@@ -17,4 +17,5 @@ interface JamService : PacketProcessor {
     suspend fun styngrPlaySong(songId: String, baseUrl: String): StyngrSongVO
     suspend fun createSong(dto: CreateSongDTO, authentication: Authentication): SongVO
     suspend fun modifySong(dto: ModifySongDTO, authentication: Authentication): SongVO
+    suspend fun listOwn(authentication: Authentication): List<SongVO>
 }

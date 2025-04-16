@@ -9,7 +9,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem
 } from '@/components/ui/sidebar';
-import { dashboardRoutes } from '@/components/dashboard/routes.tsx';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   DropdownMenu,
@@ -17,13 +16,33 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu.tsx';
-import { ChevronUp } from 'lucide-react';
+import { ChevronUp, Home, Music } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from '@/store/store.ts';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.tsx';
 import { logout } from '@/api/user.ts';
 import { clearAuth } from '@/store/slices/authSlice.ts';
+import * as React from 'react';
 
+type SideBarItemProps = {
+  href: string;
+  icon: React.ReactNode;
+  name: string;
+}
+
+
+const SideBarLink = ({ href, icon, name }: SideBarItemProps) => {
+  return (
+    <SidebarMenuItem>
+      <SidebarMenuButton asChild>
+        <Link to={href}>
+          {icon}
+          <span>{name}</span>
+        </Link>
+      </SidebarMenuButton>
+    </SidebarMenuItem>
+  );
+};
 
 const DashboardSideBar = () => {
   const dispatch = useDispatch();
@@ -54,16 +73,10 @@ const DashboardSideBar = () => {
           <SidebarGroupLabel>LunarCN</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {dashboardRoutes.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <Link to={item.path}>
-                      {item.icon}
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {/* Menu content */}
+              <SideBarLink href="/" icon={<Home />} name={'Home'} />
+              <SideBarLink href="/jams" icon={<Music />} name={'Jams'} />
+
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

@@ -15,6 +15,11 @@ import org.springframework.web.bind.annotation.*
 class SongController(
     private val jamService: JamService
 ) {
+    @GetMapping
+    suspend fun listSongs(@AuthenticationPrincipal authentication: Authentication): ResponseEntity<RestBean<List<SongVO>>> {
+        return ResponseEntity.ok(RestBean.success(jamService.listOwn(authentication)))
+    }
+
     @PostMapping
     suspend fun createSong(
         @RequestBody dto: CreateSongDTO,

@@ -16,12 +16,17 @@ const HomePage = () => {
           <CardTitle>Your info</CardTitle>
         </CardHeader>
         <CardContent>
-          <p>Username: <LunarLogo color={logoColor} /> {username}</p>
+          <p>Username:
+            <div className="inline bg-gray-400 m-1 rounded-sm">
+              <LunarLogo logoColor={logoColor} className="inline align-middle size-4 ml-1" />
+              <label className="p-1">{username}</label>
+            </div>
+          </p>
           <p>UUID: {uuid}</p>
           <p>Roles: {roles.join(', ')}</p>
         </CardContent>
         <CardFooter>
-          <p>Change your password by using .passwd in lunar_bot.</p>
+          <p>Change your password by using <strong>.passwd</strong> in lunar_bot.</p>
         </CardFooter>
       </Card>
     </div>

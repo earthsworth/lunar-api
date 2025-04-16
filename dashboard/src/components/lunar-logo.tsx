@@ -1,14 +1,13 @@
 import * as React from 'react';
 import { intToHexColor } from '@/lib/utils.ts';
 
-interface Props {
-  color: number;
-}
+type Props = {
+  logoColor: number;
+} & React.ComponentProps<'svg'>
 
-const LunarLogo: React.FC<Props> = ({ color }: Props) => {
+const LunarLogo = ({ logoColor, ...rest }: Props) => {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 167.8 152.86" style={{ fill: intToHexColor(color) }}
-         className="c-iiBHHN c-iiBHHN-gnsFuh-twinkle-false inline align-middle size-4" width="200" height="182">
+    <svg {...rest} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 167.8 152.86" style={{ fill: intToHexColor(logoColor) }} width="200" height="182">
       <g id="Top_LC" data-name="Layer 12">
         <path className="cls-1"
               d="M162,55.81v63l-11-.68V58.76a18.53,18.53,0,0,0-9.83-16.16L94.23,15.83a20.54,20.54,0,0,0-19.66,0L27.74,42.6a18.51,18.51,0,0,0-9.83,16.16v59.35l-11.06.67v-63A22.92,22.92,0,0,1,18.32,36L72.94,3.07a22.94,22.94,0,0,1,22.92,0L150.49,36A22.93,22.93,0,0,1,162,55.81Z"
