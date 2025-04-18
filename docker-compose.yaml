@@ -12,9 +12,9 @@ services:
       - mongo:/data/db
     restart: always
 
-  redis:
-    image: redis:latest
-    container_name: lunar-redis
+  valkey:
+    image: valkey/valkey:latest
+    container_name: lunar-valkey
     ports:
       - '6379:6379'
     restart: always
