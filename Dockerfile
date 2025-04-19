@@ -59,12 +59,12 @@ WORKDIR /app
 COPY build.gradle.kts settings.gradle.kts ./
 COPY gradle gradle
 
-RUN gradle --no-daemon dependencies
+RUN --mount=type=cache,target=/tmp/gradle gradle --no-daemon dependencies
 
 # Copy source code
 COPY . .
 
-RUN gradle --no-daemon clean bootJar --info -x test
+RUN --mount=type=cache,target=/tmp/gradle gradle --no-daemon clean bootJar --info -x test
 
 FROM amazoncorretto:21.0.6-al2023-headless
 
