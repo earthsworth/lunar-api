@@ -7,11 +7,11 @@ replicaCount: 3
 
 # This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
 image:
-  repository: 192.168.18.23:5000/lunar-api
+  repository: lunarclient.top/lunar-api
   # This sets the pull policy for images.
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "latest"
+  tag: "1.0.5"
 
 # This is for the secrets for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
 imagePullSecrets: [ ]
@@ -86,14 +86,14 @@ resources: { }
 #   memory: 128Mi
 
 # This is to setup the liveness and readiness probes more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
-livenessProbe:
-  httpGet:
-    path: /
-    port: http
-readinessProbe:
-  httpGet:
-    path: /
-    port: http
+livenessProbe: { }
+#  httpGet:
+#    path: /
+#    port: http
+readinessProbe: { }
+#  httpGet:
+#    path: /
+#    port: http
 
 # This section is for setting up autoscaling more information can be found here: https://kubernetes.io/docs/concepts/workloads/autoscaling/
 autoscaling:
@@ -129,10 +129,13 @@ tolerations: [ ]
 
 affinity: { }
 
-
-
 kafka:
   enabled: true
+
+valkey:
+  auth:
+    enabled: true
+    password: password
 
 mongo:
   # Authentication settings
@@ -147,15 +150,3 @@ mongo:
   persistence:
     enabled: true
     size: 8Gi
-
-redis:
-  auth:
-    password: ""
-
-#schemaRegistry:
-#  kafka:
-#    bootstrapServers: "kafka:9092"
-#  listener:
-#    external:
-#      enabled: true
-#      port: 8081

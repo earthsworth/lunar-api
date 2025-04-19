@@ -44,6 +44,17 @@ spec:
             - name: http
               containerPort: {{ .Values.service.port }}
               protocol: TCP
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: k8s
+            - name: FULL_NAME
+              value: {{ include "lunar-api.fullname" . }}
+            - name: MONGO_USERNAME
+              value: {{ .Values.mongo.auth.username }}
+            - name: MONGO_PASSWORD
+              value: {{ .Values.mongo.auth.password }}
+            - name: REDIS_PASSWORD
+              value: {{ .Values.valkey.auth.password }}
           {{- with .Values.livenessProbe }}
           livenessProbe:
             {{- toYaml . | nindent 12 }}
@@ -59,17 +70,28 @@ spec:
           {{- with .Values.volumeMounts }}
           volumeMounts:
             - name: config-volume
-              mountPath: /app/config/application.yaml
+              mountPath: /etc/config/lunar-api.yaml
               subPath: application.yaml
               readOnly: true
             {{- toYaml . | nindent 12 }}
           {{- end }}
 
+      initContainers:
+        - name: wait-for-redis
+          image: busybox
+          command: ['sh', '-c', 'until nc -z {{ include "lunar-api.fullname" . }}-valkey-primary 6379; do sleep 2; done']
+        - name: wait-for-mongo
+          image: busybox
+          command: [ 'sh', '-c', 'until nc -z {{ include "lunar-api.fullname" . }}-mongo 27017; do sleep 2; done' ]
+        - name: wait-for-kafka
+          image: busybox
+          command: [ 'sh', '-c', 'until nc -z {{ include "lunar-api.fullname" . }}-kafka-bootstrap 9092; do sleep 2; done' ]
       {{- with .Values.volumes }}
       volumes:
         - name: config-volume
           configMap:
-            name: {{ include "lunar-api.fullname" . }}-config
+            name: lunar-api-config
+            defaultMode: 0644
         {{- toYaml . | nindent 8 }}
       {{- end }}
       {{- with .Values.nodeSelector }}

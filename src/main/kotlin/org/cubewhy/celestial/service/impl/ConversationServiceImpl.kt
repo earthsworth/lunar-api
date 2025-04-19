@@ -24,6 +24,7 @@ import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.socket.WebSocketSession
 import java.time.Instant
+import java.util.Optional
 
 
 @Service
@@ -35,8 +36,7 @@ class ConversationServiceImpl(
     @Lazy
     private val commandService: CommandService,
     @Lazy
-    @Autowired(required = false)
-    private val gatewayDiscordClient: GatewayDiscordClient?,
+    private val gatewayDiscordClient: Optional<GatewayDiscordClient>,
 
     private val lunarProperties: LunarProperties
 ) : ConversationService {
@@ -143,7 +143,7 @@ class ConversationServiceImpl(
                 }
             }
         }
-        if (!fromDiscord && gatewayDiscordClient != null) {
+        if (!fromDiscord && gatewayDiscordClient.isPresent) {
             // push to discord
             val channelId = Snowflake.of(lunarProperties.discord.irc.channel)
             val embed = EmbedCreateSpec.builder()
@@ -154,7 +154,7 @@ class ConversationServiceImpl(
                 .footer("Powered by Celestial", "https://lunarclient.top/favicon.webp")
                 .build()
 
-            gatewayDiscordClient.getChannelById(channelId)
+            gatewayDiscordClient.get().getChannelById(channelId)
                 .ofType(GuildMessageChannel::class.java)
                 .flatMap { channel ->
                     logger.info { "IRC -> Discord: $nickname > $content" }

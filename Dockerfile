@@ -66,7 +66,7 @@ COPY . .
 
 RUN --mount=type=cache,target=/tmp/gradle gradle --no-daemon clean bootJar --info -x test
 
-FROM amazoncorretto:21.0.6-al2023-headless
+FROM amazoncorretto:21.0.7-alpine3.21
 
 WORKDIR /app
 
