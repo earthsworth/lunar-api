@@ -5,6 +5,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.reactive.awaitFirst
 import org.cubewhy.celestial.entity.LogoColor
 import org.cubewhy.celestial.entity.User
+import org.cubewhy.celestial.entity.dto.UpdatePasswordDTO
 import org.cubewhy.celestial.entity.vo.UserVO
 import org.cubewhy.celestial.entity.vo.styngr.StyngrUserVO
 import org.cubewhy.celestial.event.UserOfflineEvent
@@ -13,10 +14,12 @@ import org.cubewhy.celestial.service.UserMapper
 import org.cubewhy.celestial.service.UserService
 import org.cubewhy.celestial.util.toUUIDString
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.http.HttpStatusCode
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
+import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.server.ServerWebExchange
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
@@ -101,8 +104,30 @@ class UserServiceImpl(
         userRepository.save(user).awaitFirst()
     }
 
+    override suspend fun updatePassword(
+        authentication: Authentication,
+        dto: UpdatePasswordDTO
+    ) {
+        // find user
+        val user = userRepository.findByUsername(authentication.name).awaitFirst()
+        if (user.password == null) {
+            throw ResponseStatusException(
+                HttpStatusCode.valueOf(400),
+                "You doesn't have a password, please set it via lunar_bot"
+            )
+        }
+        // verify old password
+        if (!(passwordEncoder.matches(dto.oldPassword, user.password))) {
+            throw ResponseStatusException(HttpStatusCode.valueOf(400), "The old password didn't match.")
+        }
+        // change password
+        user.password = passwordEncoder.encode(dto.newPassword)
+        // save user
+        userRepository.save(user).awaitFirst()
+    }
+
     override suspend fun updatePassword(user: User, newPassword: String) {
-        logger.info { "User ${user.username} updated his password" }
+        // change password
         user.password = passwordEncoder.encode(newPassword)
         // save user
         userRepository.save(user).awaitFirst()
@@ -115,7 +140,7 @@ class UserServiceImpl(
                 // build User details
                 org.springframework.security.core.userdetails.User.builder()
                     .username(user.username)
-                    .password(user.password?: return@flatMap Mono.empty())
+                    .password(user.password ?: return@flatMap Mono.empty())
                     .roles(*user.resolvedRoles.map { it.name }.toTypedArray())
                     .build().toMono()
             }

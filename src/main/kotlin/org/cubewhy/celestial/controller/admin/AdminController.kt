@@ -1,11 +1,12 @@
-package org.cubewhy.celestial.controller
+package org.cubewhy.celestial.controller.admin
 
 import org.cubewhy.celestial.entity.RestBean
-import org.cubewhy.celestial.entity.dto.EditRoleDTO
-import org.cubewhy.celestial.entity.dto.TogglePlusDTO
 import org.cubewhy.celestial.entity.vo.PlayerInfoVO
 import org.cubewhy.celestial.service.AdminService
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/admin")
@@ -15,6 +16,6 @@ class AdminController(
 
     @GetMapping("playerInfo/{playerName}")
     suspend fun getPlayerInfo(@PathVariable playerName: String): RestBean<PlayerInfoVO> {
-        return RestBean.success(adminService.playerInfo(playerName))
+        return RestBean.Companion.success(adminService.playerInfo(playerName))
     }
 }

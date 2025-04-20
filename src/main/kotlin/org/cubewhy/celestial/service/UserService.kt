@@ -3,6 +3,7 @@ package org.cubewhy.celestial.service
 import com.lunarclient.common.v1.UuidAndUsername
 import org.cubewhy.celestial.entity.LogoColor
 import org.cubewhy.celestial.entity.User
+import org.cubewhy.celestial.entity.dto.UpdatePasswordDTO
 import org.cubewhy.celestial.entity.vo.UserVO
 import org.cubewhy.celestial.entity.vo.styngr.StyngrUserVO
 import org.springframework.security.core.Authentication
@@ -18,6 +19,7 @@ interface UserService : ReactiveUserDetailsService {
     suspend fun loadUserByUuid(uuid: String): User
     suspend fun markOffline(user: User)
     suspend fun switchLogoColor(user: User, color: LogoColor)
+    suspend fun updatePassword(authentication: Authentication, dto: UpdatePasswordDTO)
     suspend fun updatePassword(user: User, newPassword: String)
 
     suspend fun selfInfo(authentication: Authentication): UserVO
