@@ -50,20 +50,23 @@ RUN npm install -g pnpm
 # Link pnpm that let gradle can access it
 RUN ln -s /usr/local/lib/nodejs/node-v$NODE_VERSION-linux-x64/bin/pnpm /usr/bin/pnpm
 
+# Docker will cache this dir
+ENV GRADLE_USER_HOME=/tmp/gradle
+
 # Build
 WORKDIR /app
 # Copy build scripts
 COPY build.gradle.kts settings.gradle.kts ./
 COPY gradle gradle
 
-RUN gradle --no-daemon dependencies
+RUN --mount=type=cache,target=/tmp/gradle gradle --no-daemon dependencies
 
 # Copy source code
 COPY . .
 
-RUN gradle --no-daemon clean bootJar --info -x test
+RUN --mount=type=cache,target=/tmp/gradle gradle --no-daemon clean bootJar --info -x test
 
-FROM amazoncorretto:21.0.6-al2023-headless
+FROM amazoncorretto:21.0.7-alpine3.21
 
 WORKDIR /app
 

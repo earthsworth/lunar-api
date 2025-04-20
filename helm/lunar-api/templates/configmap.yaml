@@ -1,0 +1,59 @@
+# templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: lunar-api-config
+  labels:
+    {{- include "lunar-api.labels" . | nindent 4 }}
+data:
+  application.yaml: |
+    application:
+      name: lunar-api
+    data:
+      mongodb:
+        uri: mongodb://{{ .Values.mongo.auth.username }}:{{ .Values.mongo.auth.password }}@mongodb.{{ .Release.Namespace }}.svc.cluster.local:27017/{{ .Values.mongo.auth.database }}?authSource=admin
+      redis:
+        url: redis://{{ .Release.Name }}-redis.{{ .Release.Namespace }}.svc.cluster.local:6379/0
+    security:
+      jwt:
+        key: 3cfa76ef14937c1c0ea519f8fc057a80fcd04a7420f8e8bcd0a7567c272e007b
+        expire: 1
+    cloud:
+      stream:
+        bindings:
+          lunarWebsocketPayloadConsumer-in-0:
+            destination: lunar-1
+        kafka:
+          bindings:
+            supplier-out-0:
+              producer:
+                configuration:
+                  schema.registry.url: http://schema-registry:8081
+                  value.serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+          binder:
+            brokers: kafka:9092
+
+    lunar:
+      user:
+        # Check if the player is authenticated with a valid Mojang/Microsoft account.
+        verify: true
+      friend:
+        bot:
+          enabled: true
+          username: lunar_bot
+        # max friends
+        max: 200
+      sentry:
+        filters:
+          - identifier: everything
+            regex: ".*"
+        # max number have friend
+        max: 50
+      upload:
+        maxSize: 5mb
+      discord:
+        enabled: false
+        token: discord_token
+        irc:
+          # Channel ID to sync irc messages
+          channel: 1358028995899293746

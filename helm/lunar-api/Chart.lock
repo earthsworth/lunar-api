@@ -1,0 +1,12 @@
+dependencies:
+- name: mongodb
+  repository: https://charts.bitnami.com/bitnami
+  version: 16.5.1
+- name: valkey
+  repository: https://charts.bitnami.com/bitnami
+  version: 3.0.1
+- name: strimzi-kafka-operator
+  repository: https://strimzi.io/charts/
+  version: 0.39.0
+digest: sha256:8a9b4a8f7dabb1cd7358afcfaf719f5a5cbc04cce51e67b0aa2a22e5443de639
+generated: "2025-04-19T13:01:42.847740143+08:00"
