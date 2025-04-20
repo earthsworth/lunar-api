@@ -9,6 +9,7 @@ plugins {
 
 val frontendDir = "./dashboard"
 val springCloudVersion by extra("2025.0.0-M3")
+val protobufVersion by extra("4.31.0-RC1")
 
 group = "org.cubewhy"
 version = "0.0.1-SNAPSHOT"
@@ -40,14 +41,13 @@ dependencies {
 
     implementation("cn.hutool:hutool-crypto:5.8.37")
     implementation("com.discord4j:discord4j-core:3.2.7")
-//    implementation("com.opencsv:opencsv:5.10")
     implementation("com.auth0:java-jwt:4.4.0")
     implementation("io.confluent:kafka-streams-avro-serde:7.8.0")
     implementation("io.confluent:kafka-schema-registry-client:7.8.0")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     implementation("io.github.oshai:kotlin-logging-jvm:7.0.3")
-    implementation("com.google.protobuf:protobuf-kotlin:4.30.0-RC1")
-    implementation("com.google.protobuf:protobuf-java-util:4.30.0-RC1")
+    implementation("com.google.protobuf:protobuf-kotlin:$protobufVersion")
+    implementation("com.google.protobuf:protobuf-java-util:$protobufVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 //    implementation("org.springframework.cloud:spring-cloud-starter-config")
     implementation("org.springframework.cloud:spring-cloud-stream")
@@ -85,7 +85,7 @@ kotlin {
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:4.30.0-RC1"
+        artifact = "com.google.protobuf:protoc:$protobufVersion"
     }
 }
 
