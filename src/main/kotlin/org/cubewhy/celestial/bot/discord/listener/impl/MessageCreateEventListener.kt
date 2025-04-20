@@ -6,11 +6,13 @@ import kotlinx.coroutines.reactive.awaitFirst
 import org.cubewhy.celestial.bot.discord.listener.DiscordEventListener
 import org.cubewhy.celestial.entity.config.LunarProperties
 import org.cubewhy.celestial.service.ConversationService
+import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 
 @Service
 class MessageCreateEventListener(
     private val lunarProperties: LunarProperties,
+    @Lazy
     private val conversationService: ConversationService
 ) : DiscordEventListener<MessageCreateEvent> {
     companion object {

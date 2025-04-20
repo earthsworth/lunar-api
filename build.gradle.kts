@@ -1,14 +1,14 @@
 plugins {
     kotlin("jvm") version "2.1.0"
     kotlin("plugin.spring") version "1.9.25"
-    id("org.springframework.boot") version "3.4.2"
+    id("org.springframework.boot") version "3.5.0-SNAPSHOT"
     id("io.spring.dependency-management") version "1.1.7"
     id("com.google.protobuf") version "0.9.4"
     id("com.github.davidmc24.gradle.plugin.avro") version "1.9.1"
 }
 
 val frontendDir = "./dashboard"
-val springCloudVersion by extra("2024.0.0")
+val springCloudVersion by extra("2025.0.0-M3")
 
 group = "org.cubewhy"
 version = "0.0.1-SNAPSHOT"
@@ -24,9 +24,15 @@ avro {
     outputCharacterEncoding = "UTF-8"
 }
 
+configurations.all {
+    exclude(group = "commons-logging", module = "commons-logging")
+}
+
 repositories {
-    maven("https://packages.confluent.io/maven/")
     mavenCentral()
+    maven { url = uri("https://repo.spring.io/milestone") }
+    maven { url = uri("https://repo.spring.io/snapshot") }
+    maven { url = uri("https://packages.confluent.io/maven/") }
 }
 
 dependencies {
@@ -34,14 +40,12 @@ dependencies {
 
     implementation("cn.hutool:hutool-crypto:5.8.37")
     implementation("com.discord4j:discord4j-core:3.2.7")
-    implementation("com.opencsv:opencsv:5.10")
+//    implementation("com.opencsv:opencsv:5.10")
     implementation("com.auth0:java-jwt:4.4.0")
     implementation("io.confluent:kafka-streams-avro-serde:7.8.0")
     implementation("io.confluent:kafka-schema-registry-client:7.8.0")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
-    implementation("io.github.oshai:kotlin-logging-jvm:7.0.3") {
-        exclude(group = "commons-logging", module = "commons-logging")
-    }
+    implementation("io.github.oshai:kotlin-logging-jvm:7.0.3")
     implementation("com.google.protobuf:protobuf-kotlin:4.30.0-RC1")
     implementation("com.google.protobuf:protobuf-java-util:4.30.0-RC1")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
