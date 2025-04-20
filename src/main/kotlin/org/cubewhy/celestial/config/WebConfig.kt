@@ -1,7 +1,7 @@
 package org.cubewhy.celestial.config
 
-import org.cubewhy.celestial.handler.AssetsHandler
-import org.cubewhy.celestial.handler.AuthorizeHandler
+import org.cubewhy.celestial.handler.websocket.AssetsHandler
+import org.cubewhy.celestial.handler.websocket.AuthorizeHandler
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.reactive.HandlerMapping

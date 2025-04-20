@@ -1,4 +1,4 @@
-package org.cubewhy.celestial.handler
+package org.cubewhy.celestial.handler.websocket
 
 import com.lunarclient.websocket.handshake.v1.Handshake
 import com.lunarclient.websocket.protocol.v1.ServerboundWebSocketMessage
@@ -9,7 +9,6 @@ import kotlinx.coroutines.reactor.mono
 import org.cubewhy.celestial.repository.UserRepository
 import org.cubewhy.celestial.service.PacketService
 import org.cubewhy.celestial.service.SessionService
-import org.cubewhy.celestial.service.UserService
 import org.cubewhy.celestial.util.pushEvent
 import org.cubewhy.celestial.util.wrapCommon
 import org.springframework.stereotype.Component

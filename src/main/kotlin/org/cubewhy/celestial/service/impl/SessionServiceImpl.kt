@@ -15,7 +15,7 @@ import org.cubewhy.celestial.avro.FederationMessage
 import org.cubewhy.celestial.entity.User
 import org.cubewhy.celestial.entity.UserSession
 import org.cubewhy.celestial.entity.config.InstanceProperties
-import org.cubewhy.celestial.handler.AssetsHandler
+import org.cubewhy.celestial.handler.websocket.AssetsHandler
 import org.cubewhy.celestial.repository.UserRepository
 import org.cubewhy.celestial.service.SessionService
 import org.cubewhy.celestial.util.Const

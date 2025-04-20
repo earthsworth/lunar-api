@@ -1,4 +1,4 @@
-package org.cubewhy.celestial.handler
+package org.cubewhy.celestial.handler.websocket
 
 import com.lunarclient.authenticator.v1.ServerboundWebSocketMessage
 import io.github.oshai.kotlinlogging.KotlinLogging
