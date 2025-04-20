@@ -1,17 +1,24 @@
-# Lunar API
+# 🌙 Lunar API
 
-A 3rd party LunarClient backend implementation like Solar-Sockets
+**A 3rd-party LunarClient backend implementation inspired by Solar-Sockets**
 
-## Features
+[![Project Status](https://img.shields.io/badge/status-active-brightgreen.svg)]()
+[![Java](https://img.shields.io/badge/Java-17+-orange?logo=openjdk)]()
+[![WebSocket](https://img.shields.io/badge/WebSocket-API-blue?logo=websocket)]()
 
-- [x] Authenticator
-- [x] Cosmetics
-- [x] Emotes
-- [x] Jams
-- [x] Conversation & Friends
-- [x] Styngr API
-- [x] Game Metadata
-- [ ] Launcher Metadata
+## ✨ Features
+
+| Feature                | Status       |
+|------------------------|--------------|
+| ✅ Authenticator       | Implemented  |
+| ✅ Cosmetics           | Implemented  |
+| ✅ Emotes              | Implemented  |
+| ✅ Jams                | Implemented  |
+| ✅ Conversation & Friends | Implemented |
+| ✅ Styngr API          | Implemented  |
+| ✅ Game Metadata       | Implemented  |
+| ❌ Launcher Metadata   | Pending      |
+
 
 ## Structure
 
