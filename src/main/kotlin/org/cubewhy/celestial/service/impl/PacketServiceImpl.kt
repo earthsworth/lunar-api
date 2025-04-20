@@ -58,7 +58,7 @@ class PacketServiceImpl(
                 val user = userService.loadUser(hello.identity)
                 // generate jwt
                 val jwt = jwtUtil.createJwt(user)
-                logger.info { "User ${user.username} successfully authenticated" }
+                logger.debug { "User ${user.username} successfully authenticated" }
                 return AuthSuccessMessage.newBuilder().apply {
                     this.jwt = jwt
                 }.build()
@@ -112,14 +112,14 @@ class PacketServiceImpl(
             val serverHash = CryptUtil.getServerIdHash("", keypair.public!!, clientSecretKey)
             // get identity
             val identity = session.attributes["identity"] as UuidAndUsername
-            logger.info { "Verifying player ${identity.username} with Mojang API" }
+            logger.debug { "Verifying player ${identity.username} with Mojang API" }
             // verify with Mojang API
             if (mojangService.hasJoined(identity.username, serverHash.toString())) {
                 // create or find user
                 val user = userService.loadUser(identity)
                 // generate jwt
                 val jwt = jwtUtil.createJwt(user)
-                logger.info { "User ${user.username} successfully authenticated (via Mojang API)" }
+                logger.debug { "User ${user.username} successfully authenticated (via Mojang API)" }
                 return AuthSuccessMessage.newBuilder().apply {
                     this.jwt = jwt
                 }.build()
@@ -161,15 +161,15 @@ class PacketServiceImpl(
                 sessionService.saveLocation(user, it.location)
             }
         }
-        logger.info { "User ${user.username} logged in to the assets service" }
+        logger.debug { "User ${user.username} logged in to the assets service" }
         return user
     }
 
     override suspend fun processDisconnect(signalType: SignalType, session: WebSocketSession, user: User) {
         // remove user from shared store
         sessionService.removeSession(session)
-        logger.info { "User ${user.username} disconnected" }
-        logger.info { "Websocket terminated [${signalType.name}]" }
+        logger.debug { "User ${user.username} disconnected" }
+        logger.debug { "Websocket terminated [${signalType.name}]" }
         if (!sessionService.isOnline(user)) {
             // save last seen timestamp
             userService.markOffline(user)
@@ -185,7 +185,7 @@ class PacketServiceImpl(
         val userId = session.attributes["user-id"] as String
         // find user
         val user = userRepository.findById(userId).awaitFirst()
-        logger.info { "User ${user.username} send packet ${message.service}:${message.method}" }
+        logger.debug { "User ${user.username} send packet ${message.service}:${message.method}" }
 
         val processor = packetProcessorMap[message.service]
         return processor?.process(message.method, message.input, session, user)

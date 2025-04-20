@@ -3,17 +3,21 @@ package org.cubewhy.celestial.service.impl
 import com.lunarclient.common.v1.UuidAndUsername
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.reactive.awaitFirst
+import kotlinx.coroutines.reactive.awaitFirstOrNull
 import org.cubewhy.celestial.entity.LogoColor
 import org.cubewhy.celestial.entity.User
 import org.cubewhy.celestial.entity.dto.UpdatePasswordDTO
+import org.cubewhy.celestial.entity.vo.PlayerInfoVO
 import org.cubewhy.celestial.entity.vo.UserVO
 import org.cubewhy.celestial.entity.vo.styngr.StyngrUserVO
 import org.cubewhy.celestial.event.UserOfflineEvent
 import org.cubewhy.celestial.repository.UserRepository
+import org.cubewhy.celestial.service.SessionService
 import org.cubewhy.celestial.service.UserMapper
 import org.cubewhy.celestial.service.UserService
 import org.cubewhy.celestial.util.toUUIDString
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatusCode
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.userdetails.UserDetails
@@ -31,7 +35,8 @@ class UserServiceImpl(
     private val userRepository: UserRepository,
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val passwordEncoder: PasswordEncoder,
-    private val userMapper: UserMapper
+    private val userMapper: UserMapper,
+    private val sessionService: SessionService
 ) : UserService {
 
     companion object {
@@ -54,7 +59,7 @@ class UserServiceImpl(
                 user.toMono()
             }
             .doOnNext { user ->
-                logger.info { "Successfully loaded user ${user.username}" }
+                logger.debug { "Successfully loaded user ${user.username}" }
             }
             .awaitFirst()
     }
@@ -63,6 +68,29 @@ class UserServiceImpl(
         // find user
         val user = userRepository.findByUsername(authentication.name).awaitFirst()
         return userMapper.mapToStyngrUserVO(user, exchange)
+    }
+
+    override suspend fun getPlayerInfo(playerName: String): PlayerInfoVO {
+        val target = userRepository.findByUsernameIgnoreCase(playerName).awaitFirst()
+        val res = PlayerInfoVO(
+            user = playerName,
+            online = sessionService.isOnline(target),
+            mcName = target.username,
+            mcUuid = target.uuid,
+            roleColor = target.cosmetic.lunarLogoColor.color,
+            roles = target.resolvedRoles,
+            plus = target.cosmetic.lunarPlusState,
+        )
+        return res
+    }
+
+    override suspend fun getUserRoles(username: String): List<String> {
+        val user =
+            userRepository.findByUsernameIgnoreCase(username).awaitFirstOrNull() ?: throw ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                "User with username $username not found"
+            )
+        return user.resolvedRoles.map { it.name }
     }
 
     override suspend fun selfInfo(authentication: Authentication): UserVO {

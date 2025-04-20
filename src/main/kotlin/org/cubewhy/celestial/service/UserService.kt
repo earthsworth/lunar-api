@@ -4,6 +4,7 @@ import com.lunarclient.common.v1.UuidAndUsername
 import org.cubewhy.celestial.entity.LogoColor
 import org.cubewhy.celestial.entity.User
 import org.cubewhy.celestial.entity.dto.UpdatePasswordDTO
+import org.cubewhy.celestial.entity.vo.PlayerInfoVO
 import org.cubewhy.celestial.entity.vo.UserVO
 import org.cubewhy.celestial.entity.vo.styngr.StyngrUserVO
 import org.springframework.security.core.Authentication
@@ -24,4 +25,7 @@ interface UserService : ReactiveUserDetailsService {
 
     suspend fun selfInfo(authentication: Authentication): UserVO
     suspend fun loadStyngrUser(authentication: Authentication, exchange: ServerWebExchange): StyngrUserVO
+
+    suspend fun getPlayerInfo(playerName: String): PlayerInfoVO
+    suspend fun getUserRoles(username: String): List<String>
 }

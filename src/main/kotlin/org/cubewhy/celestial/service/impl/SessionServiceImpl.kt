@@ -62,7 +62,7 @@ class SessionServiceImpl(
             logger.warn { "Skipping save session of user ${user.username} on websocket connection ${websocketSession.id} (already exists)" }
             return
         }
-        logger.info { "Saving session for ${user.username} at connection ${websocketSession.id}" }
+        logger.debug { "Saving session for ${user.username} at connection ${websocketSession.id}" }
         val wsSessionObject = UserSession(
             websocketId = websocketSession.id,
             userId = user.id!!,
