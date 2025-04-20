@@ -3,21 +3,21 @@
 **A 3rd-party LunarClient backend implementation inspired by Solar-Sockets**
 
 [![Project Status](https://img.shields.io/badge/status-active-brightgreen.svg)]()
-[![Java](https://img.shields.io/badge/Java-17+-orange?logo=openjdk)]()
+[![Java](https://img.shields.io/badge/Java-21+-orange?logo=openjdk)]()
 [![WebSocket](https://img.shields.io/badge/WebSocket-API-blue?logo=websocket)]()
 
 ## ✨ Features
 
-| Feature                | Status       |
-|------------------------|--------------|
-| ✅ Authenticator       | Implemented  |
-| ✅ Cosmetics           | Implemented  |
-| ✅ Emotes              | Implemented  |
-| ✅ Jams                | Implemented  |
+| Feature                  | Status      |
+|--------------------------|-------------|
+| ✅ Authenticator          | Implemented |
+| ✅ Cosmetics              | Implemented |
+| ✅ Emotes                 | Implemented |
+| ✅ Jams                   | Implemented |
 | ✅ Conversation & Friends | Implemented |
-| ✅ Styngr API          | Implemented  |
-| ✅ Game Metadata       | Implemented  |
-| ❌ Launcher Metadata   | Pending      |
+| ✅ Styngr API             | Implemented |
+| ✅ Game Metadata          | Implemented |
+| ❌ Launcher Metadata      | Pending     |
 
 
 ## Structure
