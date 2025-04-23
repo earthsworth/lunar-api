@@ -23,6 +23,9 @@ class LogoCommand(private val userService: UserService) : Command {
             "available" -> "Available logo colors: ${user.availableLogoColors}"
             "set" -> {
                 // get color
+                if (args.size != 2) {
+                    return "Bad usage: set <color>"
+                }
                 val colorName = args[1]
                 val color = findEnumByNameIgnoreCase<LogoColor>(colorName) ?: return "Bad color"
                 try {
