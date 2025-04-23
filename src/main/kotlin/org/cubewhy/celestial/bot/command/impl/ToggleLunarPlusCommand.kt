@@ -1,18 +1,17 @@
 package org.cubewhy.celestial.bot.command.impl
 
-import com.lunarclient.websocket.cosmetic.v1.RefreshCosmeticsPush
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.reactive.awaitFirst
 import org.cubewhy.celestial.bot.command.Command
 import org.cubewhy.celestial.entity.User
 import org.cubewhy.celestial.repository.UserRepository
-import org.cubewhy.celestial.service.SessionService
+import org.cubewhy.celestial.service.CosmeticService
 import org.springframework.stereotype.Component
 
 @Component
 class ToggleLunarPlusCommand(
     private val userRepository: UserRepository,
-    private val sessionService: SessionService
+    private val cosmeticService: CosmeticService
 ) : Command {
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -32,7 +31,7 @@ class ToggleLunarPlusCommand(
         userRepository.save(user).awaitFirst()
 
         // push event
-        sessionService.push(user, RefreshCosmeticsPush.getDefaultInstance())
+        cosmeticService.refreshCosmetics(user)
         return "Success ${if (!oldState) "enabled" else "disabled"} Lunar+ feature."
     }
 }

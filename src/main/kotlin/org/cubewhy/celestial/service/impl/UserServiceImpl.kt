@@ -13,6 +13,7 @@ import org.cubewhy.celestial.entity.vo.UserVO
 import org.cubewhy.celestial.entity.vo.styngr.StyngrUserVO
 import org.cubewhy.celestial.event.UserOfflineEvent
 import org.cubewhy.celestial.repository.UserRepository
+import org.cubewhy.celestial.service.CosmeticService
 import org.cubewhy.celestial.service.SessionService
 import org.cubewhy.celestial.service.UserMapper
 import org.cubewhy.celestial.service.UserService
@@ -39,7 +40,8 @@ class UserServiceImpl(
     private val passwordEncoder: PasswordEncoder,
     private val userMapper: UserMapper,
     private val sessionService: SessionService,
-    private val lunarProperties: LunarProperties
+    private val lunarProperties: LunarProperties,
+    private val cosmeticService: CosmeticService
 ) : UserService {
 
     companion object {
@@ -144,6 +146,8 @@ class UserServiceImpl(
         user.cosmetic.lunarLogoColor = color
         // save user
         userRepository.save(user).awaitFirst()
+        // refresh settings
+        cosmeticService.refreshCosmetics(user)
     }
 
     override suspend fun updatePassword(
