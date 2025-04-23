@@ -1,6 +1,8 @@
 package org.cubewhy.celestial.entity.config
 
+import org.cubewhy.celestial.entity.Role
 import org.springframework.boot.context.properties.ConfigurationProperties
+import java.util.UUID
 
 @ConfigurationProperties(prefix = "lunar")
 data class LunarProperties(
@@ -10,8 +12,14 @@ data class LunarProperties(
     var sentry: SentryProperties
 ) {
     data class UserProperties(
-        var verify: Boolean
-    )
+        var verify: Boolean,
+        var roleAssignments: List<RoleAssignment>
+    ) {
+        data class RoleAssignment(
+            val uuid: UUID,
+            val roles: List<Role>
+        )
+    }
 
     data class DiscordProperties(
         var irc: DiscordIrcSyncProperties

@@ -33,6 +33,17 @@ lunar:
   user:
     # Check if the player is authenticated with a valid Mojang/Microsoft account.
     verify: true
+    # Default roles
+    # They will automatically receive roles when joining the server.
+    roleAssignments:
+      # CubeWhy
+      - uuid: ee0d0448-641e-405a-96ba-242c92845d85
+        roles:
+          - ADMIN
+      # USTC
+      - uuid: a04d619a-2e75-41b7-b510-1da91ef001c4
+        roles:
+          - ADMIN
   friend:
     bot:
       enabled: ${LUNAR_BOT_ENABLED:true}

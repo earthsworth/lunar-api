@@ -6,6 +6,7 @@ import kotlinx.coroutines.reactive.awaitFirst
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import org.cubewhy.celestial.entity.LogoColor
 import org.cubewhy.celestial.entity.User
+import org.cubewhy.celestial.entity.config.LunarProperties
 import org.cubewhy.celestial.entity.dto.UpdatePasswordDTO
 import org.cubewhy.celestial.entity.vo.PlayerInfoVO
 import org.cubewhy.celestial.entity.vo.UserVO
@@ -29,6 +30,7 @@ import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
 import reactor.kotlin.core.publisher.toMono
 import java.time.Instant
+import java.util.UUID
 
 @Service
 class UserServiceImpl(
@@ -36,7 +38,8 @@ class UserServiceImpl(
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val passwordEncoder: PasswordEncoder,
     private val userMapper: UserMapper,
-    private val sessionService: SessionService
+    private val sessionService: SessionService,
+    private val lunarProperties: LunarProperties
 ) : UserService {
 
     companion object {
@@ -55,6 +58,17 @@ class UserServiceImpl(
                     logger.info { "Update username ${user.username} -> $username" }
                     user.username = username // update username in database
                     return@flatMap userRepository.save(user)
+                }
+                // grant roles
+                lunarProperties.user.roleAssignments.find { it.uuid == UUID.fromString(user.uuid) }?.let { roleAssignment ->
+                    // find missing roles
+                    val missingRoles = roleAssignment.roles.filterNot { user.roles.contains(it) }
+                    if (missingRoles.isNotEmpty()) {
+                        // add roles
+                        logger.info { "Add missing roles to user ${user.username} ${missingRoles}" }
+                        user.roles.addAll(missingRoles)
+                        return@flatMap userRepository.save(user)
+                    }
                 }
                 user.toMono()
             }
