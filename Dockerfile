@@ -64,7 +64,15 @@ RUN --mount=type=cache,target=/tmp/gradle gradle --no-daemon dependencies
 # Copy source code
 COPY . .
 
-RUN --mount=type=cache,target=/tmp/gradle gradle --no-daemon clean bootJar --info -x test
+# Setup dashboard dependencies
+WORKDIR /app/dashboard
+
+RUN pnpm install
+
+WORKDIR /app
+
+# Build the servlet
+RUN --mount=type=cache,target=/tmp/gradle gradle --no-daemon clean bootJar --info -x test npmInstall
 
 FROM amazoncorretto:21.0.7-alpine3.21
 
