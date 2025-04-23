@@ -18,13 +18,12 @@ import org.cubewhy.celestial.service.ConversationService
 import org.cubewhy.celestial.service.FriendService
 import org.cubewhy.celestial.service.SessionService
 import org.cubewhy.celestial.util.*
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.socket.WebSocketSession
 import java.time.Instant
-import java.util.Optional
+import java.util.*
 
 
 @Service
@@ -130,9 +129,10 @@ class ConversationServiceImpl(
         }.build().toWebsocketResponse()
     }
 
-    override suspend fun pushIrc(nickname: String, content: String, self: User?, fromDiscord: Boolean) {
+    override suspend fun pushIrc(nickname: String, content: String, self: User?, fromDiscord: Boolean, force: Boolean) {
         sessionService.pushAll { target ->
-            if (self?.id != target.id) {
+            // don't push to self & users with DND enabled
+            if (self?.id != target.id && !(target.irc.dnd || !force)) {
                 // build message
                 // To reduce the database size, no irc messages is stored.
                 val message =

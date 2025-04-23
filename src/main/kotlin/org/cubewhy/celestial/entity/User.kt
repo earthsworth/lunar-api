@@ -100,4 +100,5 @@ data class UserCosmeticSettings(
 
 data class UserIrcSettings(
     var muted: Boolean = false,
+    var dnd: Boolean = false
 )
