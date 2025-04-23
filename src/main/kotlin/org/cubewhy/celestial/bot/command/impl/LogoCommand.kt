@@ -4,6 +4,7 @@ import org.cubewhy.celestial.bot.command.Command
 import org.cubewhy.celestial.entity.LogoColor
 import org.cubewhy.celestial.entity.User
 import org.cubewhy.celestial.service.UserService
+import org.cubewhy.celestial.util.findEnumByNameIgnoreCase
 import org.springframework.stereotype.Component
 
 @Component
@@ -23,7 +24,7 @@ class LogoCommand(private val userService: UserService) : Command {
             "set" -> {
                 // get color
                 val colorName = args[1]
-                val color = LogoColor.findIgnoreCase(colorName) ?: return "Bad color"
+                val color = findEnumByNameIgnoreCase<LogoColor>(colorName) ?: return "Bad color"
                 try {
                     userService.switchLogoColor(user, color)
                 } catch (e: IllegalStateException) {

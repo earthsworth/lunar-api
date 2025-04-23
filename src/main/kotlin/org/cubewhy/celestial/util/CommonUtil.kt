@@ -42,3 +42,6 @@ fun parseSizeString(sizeStr: String): Long {
     return total
 }
 
+inline fun <reified T : Enum<T>> findEnumByNameIgnoreCase(name: String): T? {
+    return enumValues<T>().firstOrNull { it.name.equals(name, ignoreCase = true) }
+}
