@@ -188,6 +188,11 @@ class ConversationServiceImpl(
         userRepository.save(user).awaitFirst()
     }
 
+    override suspend fun toggleDND(user: User): User {
+        user.irc.dnd = !user.irc.dnd
+        return userRepository.save(user).awaitFirst()
+    }
+
     private fun buildConversationMessagePush(
         message: Message,
         sender: User,
