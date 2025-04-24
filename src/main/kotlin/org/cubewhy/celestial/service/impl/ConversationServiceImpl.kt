@@ -132,7 +132,7 @@ class ConversationServiceImpl(
     override suspend fun pushIrc(nickname: String, content: String, self: User?, fromDiscord: Boolean, force: Boolean) {
         sessionService.pushAll { target ->
             // don't push to self & users with DND enabled
-            if (self?.id != target.id && !(target.irc.dnd || !force)) {
+            if (self?.id != target.id && (!target.irc.dnd || force)) {
                 // build message
                 // To reduce the database size, no irc messages is stored.
                 val message =
