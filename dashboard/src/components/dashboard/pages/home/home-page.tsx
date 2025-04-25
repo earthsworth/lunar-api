@@ -1,6 +1,6 @@
-import { useSelector } from 'react-redux';
-import type { RootState } from '@/store/store.ts';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card.tsx';
+import {useSelector} from 'react-redux';
+import type {RootState} from '@/store/store.ts';
+import {Card, CardContent, CardFooter, CardHeader, CardTitle} from '@/components/ui/card.tsx';
 import LunarLogo from '@/components/lunar-logo.tsx';
 
 const HomePage = () => {
@@ -19,7 +19,7 @@ const HomePage = () => {
           <p>Username:
             <div className="inline bg-gray-400 m-1 rounded-sm">
               <LunarLogo logoColor={logoColor} className="inline align-middle size-4 ml-1" />
-              <label className="p-1">{username}</label>
+              <label className="p-1 black shadow">{username}</label>
             </div>
           </p>
           <p>UUID: {uuid}</p>
