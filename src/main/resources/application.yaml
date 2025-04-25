@@ -25,6 +25,11 @@ spring:
         binder:
           brokers: ${KAFKA_BOOTSTRAP_SERVER:localhost:9092}
 
+springdoc:
+  api-docs:
+    enabled: true
+    path: /api-docs
+
 instance:
   # Used to recognize instances in Kubernetes
   id: ${HOSTNAME:earthsworth}

@@ -44,6 +44,12 @@ Enable LunarClient debug mode and add these JVM params to your client
 Use the [Javaagent](https://github.com/earthsworth/LunarDebugger/releases/tag/v1.0.0) to enable Lunar debug mode
 if you don't want to manually modify the file (DO NOT USE THE 1.1.0 VERSION)
 
+## OpenAPI
+
+The OpenAPI is available at `https://<your-backend>/api-docs` (use `http` protocol if you're on the local one)
+
+You can import it via [Swagger Editor](https://editor-next.swagger.io/)
+
 ## Resources
 
 - The [ProtoDumper](https://github.com/ManTouQAQ/ProtoDumper)

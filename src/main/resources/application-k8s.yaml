@@ -25,6 +25,11 @@ spring:
         binder:
           brokers: ${FULL_NAME}-kafka-bootstrap:9092
 
+springdoc:
+  api-docs:
+    enabled: true
+    path: /api-docs
+
 instance:
   # Used to recognize instances in Kubernetes
   id: ${HOSTNAME}

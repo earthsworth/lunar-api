@@ -49,6 +49,7 @@ dependencies {
     implementation("com.google.protobuf:protobuf-kotlin:$protobufVersion")
     implementation("com.google.protobuf:protobuf-java-util:$protobufVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("org.springdoc:springdoc-openapi-starter-webflux-api:2.8.6")
 //    implementation("org.springframework.cloud:spring-cloud-starter-config")
     implementation("org.springframework.cloud:spring-cloud-stream")
     implementation("org.springframework.cloud:spring-cloud-stream-binder-kafka-reactive")
