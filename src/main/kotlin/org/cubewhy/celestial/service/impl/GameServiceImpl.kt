@@ -1,12 +1,11 @@
 package org.cubewhy.celestial.service.impl
 
+import kotlinx.coroutines.reactive.awaitFirstOrNull
 import kotlinx.coroutines.reactive.awaitLast
 import kotlinx.coroutines.reactor.mono
 import org.cubewhy.celestial.entity.*
 import org.cubewhy.celestial.entity.config.LunarProperties
 import org.cubewhy.celestial.entity.vo.BlogPostVO
-import org.cubewhy.celestial.entity.vo.PinnedServerVO
-import org.cubewhy.celestial.entity.vo.StarServerVO
 import org.cubewhy.celestial.repository.BlogPostRepository
 import org.cubewhy.celestial.repository.PinnedServerRepository
 import org.cubewhy.celestial.service.BlogPostMapper
@@ -24,7 +23,11 @@ class GameServiceImpl(
     private val pinnedServerRepository: PinnedServerRepository,
     private val pinnedServerMapper: PinnedServerMapper
 ) : GameService {
+
     override suspend fun metadata(branch: String, exchange: ServerWebExchange): GameMetadataResponse {
+        val pinnedServers = pinnedServerRepository.findRandomItems(3)
+            .collectList().awaitFirstOrNull() ?: listOf()
+
         return GameMetadataResponse(
             store = emptyMap(),
             langOverride = emptyMap(),
@@ -66,7 +69,7 @@ class GameServiceImpl(
                 FeatureFlag("BetaSentryReportHandler", false)
             ),
             sentryFilteredExceptions = lunarProperties.sentry.filters.map { SentryFilter(it.identifier, it.regex) },
-            starServers = this.loadStarServers(),
+            starServers = pinnedServers.mapNotNull { pinnedServerMapper.mapToStarServerVO(it) },
             blogPosts = this.loadBlogPosts(exchange.extractBaseUrl()),
             alert = Alert(
                 colors = mapOf(
@@ -83,20 +86,8 @@ class GameServiceImpl(
                     link = "https://discord.lunarclient.top"
                 )
             ),
-            pinnedServers = this.loadPinnedServers()
+            pinnedServers = pinnedServers.mapNotNull { pinnedServerMapper.mapToPinedServerVO(it) }
         )
-    }
-
-    private suspend fun loadPinnedServers(): List<PinnedServerVO> {
-        return pinnedServerRepository.findAll().map { pinnedServer ->
-            pinnedServerMapper.mapToPinedServerVO(pinnedServer)
-        }.collectList().awaitLast()
-    }
-
-    private suspend fun loadStarServers(): List<StarServerVO> {
-        return pinnedServerRepository.findAll().mapNotNull { pinnedServer ->
-            pinnedServerMapper.mapToStarServerVO(pinnedServer)
-        }.map { it!! }.collectList().awaitLast()
     }
 
     private suspend fun loadBlogPosts(baseUrl: String): List<BlogPostVO> {
