@@ -20,7 +20,7 @@ import org.cubewhy.celestial.service.JamService
 import org.cubewhy.celestial.service.SongMapper
 import org.cubewhy.celestial.util.extractBaseUrl
 import org.cubewhy.celestial.util.toProtobufType
-import org.springframework.http.HttpStatusCode
+import org.springframework.http.HttpStatus
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.socket.WebSocketSession
@@ -92,14 +92,14 @@ class JamServiceImpl(
         val user = userRepository.findByUsername(authentication.name).awaitFirst()
         // check contentType
         val thumbnailUpload = uploadRepository.findById(dto.thumbnail).awaitFirstOrNull()
-            ?: throw ResponseStatusException(HttpStatusCode.valueOf(400), "Bad thumbnail upload id")
+            ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad thumbnail upload id")
         if (!thumbnailUpload.contentType.startsWith("image/")) {
-            throw ResponseStatusException(HttpStatusCode.valueOf(400), "Thumbnail is not a image")
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Thumbnail is not a image")
         }
         val songUpload = uploadRepository.findById(dto.uploadId).awaitFirstOrNull()
-            ?: throw ResponseStatusException(HttpStatusCode.valueOf(400), "Bad song upload id")
+            ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad song upload id")
         if (songUpload.contentType != "audio/x-wav" && songUpload.contentType != "audio/vnd.wave") {
-            throw ResponseStatusException(HttpStatusCode.valueOf(400), "Bad song content type, only wave files allowed")
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad song content type, only wave files allowed")
         }
         val song = Song(
             owner = user.id!!,
@@ -115,14 +115,15 @@ class JamServiceImpl(
         logger.info { "Song ${song.name} was created by user ${user.username}" }
         return songMapper.mapToSongVO(songRepository.save(song).awaitFirst())
     }
+
     override suspend fun modifySong(dto: ModifySongDTO, authentication: Authentication): SongVO {
         // find song
         val song = songRepository.findById(dto.songId).awaitFirstOrNull()
-            ?: throw ResponseStatusException(HttpStatusCode.valueOf(400), "Song with id ${dto.songId} not found")
+            ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Song with id ${dto.songId} not found")
         // check owner
         val user = userRepository.findByUsername(authentication.name).awaitFirst()
         if (song.owner != user.id!! && !user.roles.contains(Role.ADMIN)) {
-            throw ResponseStatusException(HttpStatusCode.valueOf(403), "You had no permission to edit this song")
+            throw ResponseStatusException(HttpStatus.FORBIDDEN, "You had no permission to edit this song")
         }
         song.apply {
             this.songName = dto.songName

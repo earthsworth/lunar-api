@@ -20,7 +20,6 @@ import org.cubewhy.celestial.service.UserService
 import org.cubewhy.celestial.util.toUUIDString
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.http.HttpStatus
-import org.springframework.http.HttpStatusCode
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -31,7 +30,7 @@ import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
 import reactor.kotlin.core.publisher.toMono
 import java.time.Instant
-import java.util.UUID
+import java.util.*
 
 @Service
 class UserServiceImpl(
@@ -62,16 +61,17 @@ class UserServiceImpl(
                     return@flatMap userRepository.save(user)
                 }
                 // grant roles
-                lunarProperties.user.roleAssignments.find { it.uuid == UUID.fromString(user.uuid) }?.let { roleAssignment ->
-                    // find missing roles
-                    val missingRoles = roleAssignment.roles.filterNot { user.roles.contains(it) }
-                    if (missingRoles.isNotEmpty()) {
-                        // add roles
-                        logger.info { "Add missing roles to user ${user.username} ${missingRoles}" }
-                        user.roles.addAll(missingRoles)
-                        return@flatMap userRepository.save(user)
+                lunarProperties.user.roleAssignments.find { it.uuid == UUID.fromString(user.uuid) }
+                    ?.let { roleAssignment ->
+                        // find missing roles
+                        val missingRoles = roleAssignment.roles.filterNot { user.roles.contains(it) }
+                        if (missingRoles.isNotEmpty()) {
+                            // add roles
+                            logger.info { "Add missing roles to user ${user.username} ${missingRoles}" }
+                            user.roles.addAll(missingRoles)
+                            return@flatMap userRepository.save(user)
+                        }
                     }
-                }
                 user.toMono()
             }
             .doOnNext { user ->
@@ -158,13 +158,13 @@ class UserServiceImpl(
         val user = userRepository.findByUsername(authentication.name).awaitFirst()
         if (user.password == null) {
             throw ResponseStatusException(
-                HttpStatusCode.valueOf(400),
+                HttpStatus.BAD_REQUEST,
                 "You doesn't have a password, please set it via lunar_bot"
             )
         }
         // verify old password
         if (!(passwordEncoder.matches(dto.oldPassword, user.password))) {
-            throw ResponseStatusException(HttpStatusCode.valueOf(400), "The old password didn't match.")
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "The old password didn't match.")
         }
         // change password
         user.password = passwordEncoder.encode(dto.newPassword)

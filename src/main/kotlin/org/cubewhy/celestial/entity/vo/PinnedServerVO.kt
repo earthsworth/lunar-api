@@ -1,6 +1,8 @@
 package org.cubewhy.celestial.entity.vo
 
 data class PinnedServerVO(
+    val id: String,
+
     val name: String,
     val ip: String,
     val expirationDate: Long = -1,

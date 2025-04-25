@@ -6,10 +6,12 @@ import org.springframework.data.mongodb.core.mapping.Document
 @Document
 data class PinnedServer(
     @Id val id: String? = null,
-    val name: String,
-    val address: String,
-    val minecraftVersions: List<String>,
-    val removable: Boolean,
+    var name: String,
+    var address: String,
+    var minecraftVersions: List<String>,
+    var removable: Boolean,
 
-    val starRegex: String?
-): TrackingEntity()
+    var starRegex: String?,
+
+    val owner: String
+) : TrackingEntity()

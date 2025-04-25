@@ -20,6 +20,7 @@ spring:
           supplier-out-0:
             producer:
               configuration:
+                # noinspection HttpUrlsUsage
                 schema.registry.url: http://${FULL_NAME}-schema-registry:8081
                 value.serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
         binder:

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service
 class PinnedServerMapperImpl : PinnedServerMapper {
     override fun mapToPinedServerVO(pinnedServer: PinnedServer): PinnedServerVO {
         return PinnedServerVO(
+            id = pinnedServer.id!!,
             name = pinnedServer.name,
             ip = pinnedServer.address,
             versions = pinnedServer.minecraftVersions,

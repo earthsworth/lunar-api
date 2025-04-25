@@ -1,6 +1,5 @@
 package org.cubewhy.celestial.config
 
-import org.cubewhy.celestial.entity.RestBean
 import org.cubewhy.celestial.entity.Role
 import org.cubewhy.celestial.entity.vo.AuthorizeVO
 import org.cubewhy.celestial.filter.JwtFilter
@@ -12,8 +11,6 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
-import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder
@@ -50,6 +47,10 @@ class SecurityConfig(
                 authorize(
                     pathMatchers(HttpMethod.GET, "/api/upload"),
                     permitAll
+                )
+                authorize(
+                    pathMatchers(HttpMethod.POST, "/api/pinned-server", "/api/pinned-server/*"),
+                    hasAnyRole(Role.ADMIN.name)
                 )
 //                authorize(
 //                    pathMatchers(HttpMethod.POST, "/api/upload", "/api/music"),
