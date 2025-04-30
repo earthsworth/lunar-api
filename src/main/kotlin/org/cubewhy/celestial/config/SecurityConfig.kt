@@ -45,7 +45,7 @@ class SecurityConfig(
 
             authorizeExchange {
                 authorize(
-                    pathMatchers(HttpMethod.GET, "/api/upload"),
+                    pathMatchers(HttpMethod.GET, "/api/upload", "/api/analysis", "/api/analysis/now"),
                     permitAll
                 )
                 authorize(
