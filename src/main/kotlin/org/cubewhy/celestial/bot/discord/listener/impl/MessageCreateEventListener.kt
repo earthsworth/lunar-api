@@ -29,7 +29,13 @@ class MessageCreateEventListener(
             val nickname = member.nickname.orElseGet { member.username }
             logger.info { "Discord -> IRC: $nickname -> ${message.content}" }
             // push to irc
-            conversationService.pushIrc(nickname, message.content, null, fromDiscord = true, force = false)
+            conversationService.pushIrc(
+                nickname = nickname,
+                content = message.content,
+                self = null,
+                fromDiscord = true,
+                force = false
+            )
         }
     }
 }

@@ -87,6 +87,12 @@ class SessionServiceImpl(
             .awaitFirst()
     }
 
+    override suspend fun isOnline(uuid: String): Boolean {
+        return userSessionReactiveRedisTemplate.opsForSet().scan(Const.USER_WEBSOCKET_SESSION_STORE)
+            .any { it.userUuid == uuid }
+            .awaitFirst()
+    }
+
     override fun push(userId: String, push: GeneratedMessage) {
         // convert to avro
         val payload = FederationMessage.newBuilder().apply {

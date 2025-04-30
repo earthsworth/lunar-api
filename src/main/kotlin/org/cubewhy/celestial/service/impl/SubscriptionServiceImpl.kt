@@ -1,13 +1,17 @@
 package org.cubewhy.celestial.service.impl
 
 import com.google.protobuf.ByteString
-import com.lunarclient.websocket.subscription.v1.*
+import com.lunarclient.websocket.subscription.v1.SubscribeRequest
+import com.lunarclient.websocket.subscription.v1.SubscribeResponse
+import com.lunarclient.websocket.subscription.v1.UnsubscribeRequest
+import com.lunarclient.websocket.subscription.v1.UnsubscribeResponse
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.cubewhy.celestial.entity.User
 import org.cubewhy.celestial.entity.WebsocketResponse
 import org.cubewhy.celestial.entity.emptyWebsocketResponse
 import org.cubewhy.celestial.entity.toWebsocketResponse
 import org.cubewhy.celestial.event.UserSubscribeEvent
+import org.cubewhy.celestial.service.SessionService
 import org.cubewhy.celestial.service.SubscriptionService
 import org.cubewhy.celestial.util.toUUIDString
 import org.springframework.context.ApplicationEventPublisher
@@ -16,7 +20,8 @@ import org.springframework.web.reactive.socket.WebSocketSession
 
 @Service
 class SubscriptionServiceImpl(
-    private val applicationEventPublisher: ApplicationEventPublisher
+    private val applicationEventPublisher: ApplicationEventPublisher,
+    private val sessionService: SessionService
 ) : SubscriptionService {
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -37,6 +42,7 @@ class SubscriptionServiceImpl(
                 session,
                 user
             ).toWebsocketResponse()
+
             "Unsubscribe" -> this.processUnsubscribe(
                 UnsubscribeRequest.parseFrom(payload),
                 session,
@@ -89,11 +95,12 @@ class SubscriptionServiceImpl(
         applicationEventPublisher.publishEvent(UserSubscribeEvent(this, user, uuids, session))
     }
 
-    override fun getWorldPlayerUuids(session: WebSocketSession): List<String> {
+    override suspend fun getWorldPlayerUuids(session: WebSocketSession): List<String> {
         if (!session.attributes.containsKey("multiplayer-uuids")) {
             return emptyList()
         }
         @Suppress("UNCHECKED_CAST")
-        return session.attributes["multiplayer-uuids"] as List<String>
+        return (session.attributes["multiplayer-uuids"] as List<String>)
+            .filter { sessionService.isOnline(it) }
     }
 }

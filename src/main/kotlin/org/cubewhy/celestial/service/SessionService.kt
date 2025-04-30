@@ -23,4 +23,5 @@ interface SessionService {
     suspend fun findSessions(user: User): List<UserSession>
     fun push(user: User, push: GeneratedMessage)
     suspend fun isOnline(user: User): Boolean
+    suspend fun isOnline(uuid: String): Boolean
 }
