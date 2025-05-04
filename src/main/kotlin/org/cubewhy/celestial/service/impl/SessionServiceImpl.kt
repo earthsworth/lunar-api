@@ -162,7 +162,7 @@ class SessionServiceImpl(
     override suspend fun removeSession(session: WebSocketSession) {
         this.getUserSession(session)?.let { userWebsocketSession ->
             val user = userRepository.findById(userWebsocketSession.userId).awaitFirst()
-            logger.info { "Remove ${user.username} from shared session store" }
+            logger.debug { "Remove ${user.username} from shared session store" }
             userSessionReactiveRedisTemplate.opsForSet()
                 .removeAndAwait(Const.USER_WEBSOCKET_SESSION_STORE, userWebsocketSession)
         }

@@ -1,7 +1,8 @@
 package org.cubewhy.celestial.service.impl
 
 import com.google.protobuf.ByteString
-import com.lunarclient.websocket.language.v1.*
+import com.lunarclient.websocket.language.v1.UpdateLanguageRequest
+import com.lunarclient.websocket.language.v1.UpdateLanguageResponse
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.cubewhy.celestial.entity.User
 import org.cubewhy.celestial.entity.WebsocketResponse
@@ -24,7 +25,7 @@ class LanguageServiceImpl : LanguageService {
         session: WebSocketSession,
         user: User
     ): UpdateLanguageResponse {
-        logger.info { "User ${user.username} selected new language ${request.newLanguage}" }
+        logger.debug { "User ${user.username} selected new language ${request.newLanguage}" }
         session.attributes["language"] = request.newLanguage
         return UpdateLanguageResponse.getDefaultInstance()
     }

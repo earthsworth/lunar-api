@@ -97,7 +97,7 @@ class CosmeticServiceImpl(
         user.cosmetic.showOverBoots = message.settings.showOverBoots
         user.cosmetic.showOverLeggings = message.settings.showOverLeggings
         // save user
-        logger.info { "Saving cosmetics settings of user ${user.username} (count: ${message.settings.equippedCosmeticsList.size})" }
+        logger.debug { "Saving cosmetics settings of user ${user.username} (count: ${message.settings.equippedCosmeticsList.size})" }
         userRepository.save(user).awaitFirst()
         // push settings to other players
         subscriptionService.getWorldPlayerUuids(session)
@@ -164,7 +164,7 @@ class CosmeticServiceImpl(
     @EventListener
     fun onUserSubscribe(event: UserSubscribeEvent): Mono<Void> {
         // push other user's cosmetic data to user
-        logger.info { "Sync multiplayer cosmetics data for user ${event.user.username}" }
+        logger.debug { "Sync multiplayer cosmetics data for user ${event.user.username}" }
         return userRepository.findAllByUuidIn(event.uuids.toFlux())
             .flatMap { user ->
                 val push = this@CosmeticServiceImpl.buildCosmeticsPush(user, buildCosmeticSettings(user))

@@ -4,8 +4,6 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.annotation.PostConstruct
 import kotlinx.coroutines.reactive.awaitFirst
 import kotlinx.coroutines.reactive.awaitFirstOrNull
-import kotlinx.coroutines.reactive.awaitLast
-import kotlinx.coroutines.reactive.collect
 import org.cubewhy.celestial.entity.Upload
 import org.cubewhy.celestial.entity.config.LunarProperties
 import org.cubewhy.celestial.entity.vo.UploadVO
@@ -16,16 +14,12 @@ import org.cubewhy.celestial.util.parseSizeString
 import org.cubewhy.celestial.util.responseFailure
 import org.cubewhy.celestial.util.streamData
 import org.springframework.core.io.buffer.DataBufferUtils
-import org.springframework.core.io.buffer.DefaultDataBufferFactory
 import org.springframework.http.HttpHeaders
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ServerWebExchange
 import reactor.core.scheduler.Schedulers
 import reactor.kotlin.core.publisher.toMono
 import java.io.File
-import java.nio.ByteBuffer
-import java.nio.channels.FileChannel
-import java.nio.file.StandardOpenOption
 import java.security.MessageDigest
 import kotlin.io.path.Path
 
@@ -47,7 +41,6 @@ class UploadServiceImpl(
     private fun init() {
         if (!UPLOAD_DIR.exists()) {
             // create dirs
-            logger.info { "Creating dirs" }
             UPLOAD_DIR.mkdirs()
         }
     }

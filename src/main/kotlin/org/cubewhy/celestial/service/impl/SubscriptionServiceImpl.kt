@@ -59,7 +59,7 @@ class SubscriptionServiceImpl(
         user: User
     ): UnsubscribeResponse {
         val uuids = request.targetUuidsList
-        logger.info { "User ${user.username} update multiplayer player list (removed ${uuids.size} players)" }
+        logger.debug { "User ${user.username} update multiplayer player list (removed ${uuids.size} players)" }
         @Suppress("UNCHECKED_CAST")
         (session.attributes["multiplayer-uuids"] as MutableList<String>).removeAll(uuids.map { it.toUUIDString() }
             .toSet()) // set new uuid list
@@ -83,7 +83,7 @@ class SubscriptionServiceImpl(
         uuids: List<String>,
         user: User
     ) {
-        logger.info { "User ${user.username} update multiplayer player list (added ${uuids.size} players)" }
+        logger.debug { "User ${user.username} update multiplayer player list (added ${uuids.size} players)" }
         if (!session.attributes.containsKey("multiplayer-uuids")) {
             session.attributes["multiplayer-uuids"] = uuids.toMutableList()
         } else {

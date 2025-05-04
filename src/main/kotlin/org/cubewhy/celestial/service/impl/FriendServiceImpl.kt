@@ -6,7 +6,6 @@ import com.lunarclient.common.v1.Location
 import com.lunarclient.common.v1.MinecraftVersion
 import com.lunarclient.common.v1.PublicServer
 import com.lunarclient.websocket.friend.v1.*
-import com.lunarclient.websocket.friend.v1.FriendRequest as LunarFriendRequest
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -28,6 +27,7 @@ import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.socket.WebSocketSession
 import java.time.Instant
+import com.lunarclient.websocket.friend.v1.FriendRequest as LunarFriendRequest
 
 
 @Service
@@ -144,7 +144,7 @@ class FriendServiceImpl(
         val relation = friendRepository.findFriendRelation(user.id!!, target.id!!).awaitFirstOrNull()
             ?: return RemoveFriendResponse.getDefaultInstance() // not friend
         // remove relation
-        logger.info { "Removed friend between ${user.username} and ${target.username}" }
+        logger.debug { "Removed friend between ${user.username} and ${target.username}" }
         friendRepository.delete(relation).awaitFirstOrNull()
         // push event
         val push = FriendRemovedYouPush.newBuilder().apply {
@@ -387,7 +387,7 @@ class FriendServiceImpl(
     ): GeneratedMessage {
         val targetUsername = message.targetUsername
 
-        logger.info { "User ${user.username} send friend request to $targetUsername" }
+        logger.debug { "User ${user.username} send friend request to $targetUsername" }
 
         if (user.username.equals(targetUsername, ignoreCase = true)) {
             return buildResponse(
@@ -441,7 +441,7 @@ class FriendServiceImpl(
         message: ToggleFriendRequestsRequest,
         user: User
     ): GeneratedMessage {
-        logger.info { "User ${if (message.allowFriendRequests) "enabled" else "disabled"} incoming friend requests" }
+        logger.debug { "User ${if (message.allowFriendRequests) "enabled" else "disabled"} incoming friend requests" }
         user.allowFriendRequests = message.allowFriendRequests
         // save user
         userRepository.save(user).awaitFirst()
@@ -455,7 +455,7 @@ class FriendServiceImpl(
         // save status
         user.status = UserStatus.resolve(message.newStatus)
         userRepository.save(user).awaitFirst()
-        logger.info { "User ${user.username} updated its status ${user.status}" }
+        logger.debug { "User ${user.username} updated its status ${user.status}" }
         // broadcast to other users
         this.findFriends(user).forEach { target ->
             // push event

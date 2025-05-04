@@ -56,7 +56,7 @@ class UserServiceImpl(
             .flatMap { user ->
                 if (user.username != username) {
                     // user updated it's IGN
-                    logger.info { "Update username ${user.username} -> $username" }
+                    logger.debug { "Update username ${user.username} -> $username" }
                     user.username = username // update username in database
                     return@flatMap userRepository.save(user)
                 }
@@ -67,7 +67,7 @@ class UserServiceImpl(
                         val missingRoles = roleAssignment.roles.filterNot { user.roles.contains(it) }
                         if (missingRoles.isNotEmpty()) {
                             // add roles
-                            logger.info { "Add missing roles to user ${user.username} ${missingRoles}" }
+                            logger.info { "Add missing roles to user ${user.username} $missingRoles" }
                             user.roles.addAll(missingRoles)
                             return@flatMap userRepository.save(user)
                         }
@@ -142,7 +142,7 @@ class UserServiceImpl(
             throw IllegalStateException("No permission")
         }
         // apply changes
-        logger.info { "User ${user.username} changed his logo color (${color.name})" }
+        logger.debug { "User ${user.username} changed his logo color (${color.name})" }
         user.cosmetic.lunarLogoColor = color
         // save user
         userRepository.save(user).awaitFirst()
