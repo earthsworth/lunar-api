@@ -1,14 +1,14 @@
 plugins {
     kotlin("jvm") version "2.1.0"
     kotlin("plugin.spring") version "1.9.25"
-    id("org.springframework.boot") version "3.5.0-SNAPSHOT"
+    id("org.springframework.boot") version "3.4.2"
     id("io.spring.dependency-management") version "1.1.7"
     id("com.google.protobuf") version "0.9.4"
     id("com.github.davidmc24.gradle.plugin.avro") version "1.9.1"
 }
 
 val frontendDir = "./dashboard"
-val springCloudVersion by extra("2025.0.0-M3")
+val springCloudVersion by extra("2024.0.0")
 val protobufVersion by extra("4.31.0-RC1")
 
 group = "org.cubewhy"
@@ -31,8 +31,8 @@ configurations.all {
 
 repositories {
     mavenCentral()
-    maven { url = uri("https://repo.spring.io/milestone") }
-    maven { url = uri("https://repo.spring.io/snapshot") }
+//    maven { url = uri("https://repo.spring.io/milestone") }
+//    maven { url = uri("https://repo.spring.io/snapshot") }
     maven { url = uri("https://packages.confluent.io/maven/") }
 }
 

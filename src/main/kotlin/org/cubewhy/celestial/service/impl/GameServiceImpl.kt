@@ -79,11 +79,11 @@ class GameServiceImpl(
                 active = AlertActive(
                     id = "729",
                     name = "Discord",
-                    text = "Join our Discord for news, giveaways, and more!",
+                    text = "Join our Telegram today!",
                     color = "RED",
                     icon = "BULLHORN",
                     dismissable = true,
-                    link = "https://discord.lunarclient.top"
+                    link = "https://t.me/earthsworth"
                 )
             ),
             pinnedServers = pinnedServers.mapNotNull { pinnedServerMapper.mapToPinedServerVO(it) }
