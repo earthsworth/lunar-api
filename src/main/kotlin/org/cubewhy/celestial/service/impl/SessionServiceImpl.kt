@@ -107,6 +107,8 @@ class SessionServiceImpl(
     }
 
     override suspend fun processWithSessionLocally(userId: String, func: suspend (WebSocketSession) -> Unit) {
+        // If user offline, make func stop
+        if(!isOnline(userId)) return
         // find the user
         val user = userRepository.findById(userId).awaitFirst()
         // find all available sessions
