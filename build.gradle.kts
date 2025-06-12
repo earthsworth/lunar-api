@@ -1,7 +1,7 @@
 plugins {
     kotlin("jvm") version "2.1.0"
     kotlin("plugin.spring") version "1.9.25"
-    id("org.springframework.boot") version "3.4.2"
+    id("org.springframework.boot") version "3.5.0"
     id("io.spring.dependency-management") version "1.1.7"
     id("com.google.protobuf") version "0.9.4"
     id("com.github.davidmc24.gradle.plugin.avro") version "1.9.1"
@@ -39,7 +39,6 @@ repositories {
 dependencies {
     protobuf(files("proto"))
 
-    implementation("cn.hutool:hutool-crypto:5.8.37")
     implementation("com.discord4j:discord4j-core:3.2.7")
     implementation("com.auth0:java-jwt:4.4.0")
     implementation("io.confluent:kafka-streams-avro-serde:7.8.0")
