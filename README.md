@@ -54,7 +54,7 @@ You can import it via [Swagger Editor](https://editor-next.swagger.io/)
 
 - The [ProtoDumper](https://github.com/ManTouQAQ/ProtoDumper)
 - The [Celestial Launcher](https://github.com/earthsworth/celestial)
-- The [LunarClient OpenAPI spec](https://api.lunarclientprod.com/f5278921b2d4429d95531e025f5318fd/openapi)
+- The [LunarClient OpenAPI spec](docs/lc-openapi.json)
 - Everything about [serviceOverride](https://github.com/earthsworth/celestial/wiki/Service-Override)
 - Everything about [reactor](https://projectreactor.io/)
 - [Shadcn/ui components](https://ui.shadcn.com/docs/)
