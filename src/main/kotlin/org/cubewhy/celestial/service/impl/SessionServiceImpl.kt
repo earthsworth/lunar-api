@@ -162,7 +162,7 @@ class SessionServiceImpl(
     /**
      * Remove a session from shared session store
      *
-     * @param session websocket session
+     * @param connection websocket session
      * */
     override suspend fun removeSession(connection: ClientConnection<*>) {
         this.getUserSession(connection)?.let { userWebsocketSession ->

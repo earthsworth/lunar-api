@@ -16,10 +16,10 @@ data class RpcResponse(
         }
     }
 
-    fun addPush(vararg push: Push): RpcResponse {
-        pushes.addAll(push)
-        return this
-    }
+//    fun addPush(vararg push: Push): RpcResponse {
+//        pushes.addAll(push)
+//        return this
+//    }
 
     fun addPush(pushList: List<Push>): RpcResponse {
         pushes.addAll(pushList)

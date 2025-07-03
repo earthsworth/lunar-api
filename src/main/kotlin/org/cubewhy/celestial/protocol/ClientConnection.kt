@@ -90,11 +90,10 @@ abstract class ClientConnection<T> {
     /**
      * Sends a single event message with encryption if applicable.
      *
-     * This method serializes the given protobuf [event], associates it with the optional [userId],
+     * This method serializes the given protobuf [event],
      * and sends the resulting message over the connection using encryption when available.
      *
      * @param event the protobuf event message to send
-     * @param userId optional user ID associated with the event
      */
     suspend fun sendPush(event: GeneratedMessage) {
         this.send(event.wrapPush())
