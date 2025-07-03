@@ -3,6 +3,7 @@ package org.cubewhy.celestial.controller.lunar
 import org.cubewhy.celestial.entity.vo.LunarSongVO
 import org.cubewhy.celestial.entity.vo.StyngrJwtVO
 import org.cubewhy.celestial.service.JamService
+import org.cubewhy.celestial.util.extractBaseUrl
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -17,7 +18,7 @@ class LunarStyngrController(
 
     @GetMapping("jams")
     suspend fun jams(exchange: ServerWebExchange): List<LunarSongVO> {
-        return jamService.availableSongs(exchange)
+        return jamService.availableSongs(exchange.extractBaseUrl())
     }
 
     @PostMapping("jwt")

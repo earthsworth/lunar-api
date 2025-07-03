@@ -2,6 +2,7 @@ package org.cubewhy.celestial.controller.lunar
 
 import org.cubewhy.celestial.entity.GameMetadataResponse
 import org.cubewhy.celestial.service.GameService
+import org.cubewhy.celestial.util.extractBaseUrl
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -13,6 +14,6 @@ import org.springframework.web.server.ServerWebExchange
 class LunarGameController(private val gameService: GameService) {
     @GetMapping("metadata")
     suspend fun metadata(@RequestParam(required = false) branch: String, exchange: ServerWebExchange): GameMetadataResponse {
-        return gameService.metadata(branch, exchange)
+        return gameService.metadata(branch, exchange.extractBaseUrl())
     }
 }

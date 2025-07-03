@@ -11,9 +11,7 @@ import org.cubewhy.celestial.repository.PinnedServerRepository
 import org.cubewhy.celestial.service.BlogPostMapper
 import org.cubewhy.celestial.service.GameService
 import org.cubewhy.celestial.service.PinnedServerMapper
-import org.cubewhy.celestial.util.extractBaseUrl
 import org.springframework.stereotype.Service
-import org.springframework.web.server.ServerWebExchange
 
 @Service
 class GameServiceImpl(
@@ -24,7 +22,7 @@ class GameServiceImpl(
     private val pinnedServerMapper: PinnedServerMapper
 ) : GameService {
 
-    override suspend fun metadata(branch: String, exchange: ServerWebExchange): GameMetadataResponse {
+    override suspend fun metadata(branch: String, baseUrl: String): GameMetadataResponse {
         val pinnedServers = pinnedServerRepository.findRandomItems(3)
             .collectList().awaitFirstOrNull() ?: listOf()
 
@@ -70,7 +68,7 @@ class GameServiceImpl(
             ),
             sentryFilteredExceptions = lunarProperties.sentry.filters.map { SentryFilter(it.identifier, it.regex) },
             starServers = pinnedServers.mapNotNull { pinnedServerMapper.mapToStarServerVO(it) },
-            blogPosts = this.loadBlogPosts(exchange.extractBaseUrl()),
+            blogPosts = this.loadBlogPosts(baseUrl),
             alert = Alert(
                 colors = mapOf(
                     "RED" to AlertColor("#59db4040", "#80db4040"),

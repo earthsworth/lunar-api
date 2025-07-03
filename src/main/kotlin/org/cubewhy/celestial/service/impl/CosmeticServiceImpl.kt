@@ -9,15 +9,14 @@ import kotlinx.coroutines.reactive.awaitFirstOrNull
 import kotlinx.coroutines.reactor.mono
 import org.cubewhy.celestial.entity.*
 import org.cubewhy.celestial.event.UserSubscribeEvent
+import org.cubewhy.celestial.protocol.ClientConnection
 import org.cubewhy.celestial.repository.UserRepository
 import org.cubewhy.celestial.service.CosmeticService
 import org.cubewhy.celestial.service.SessionService
 import org.cubewhy.celestial.service.SubscriptionService
-import org.cubewhy.celestial.util.pushEvent
 import org.cubewhy.celestial.util.toLunarClientUUID
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
-import org.springframework.web.reactive.socket.WebSocketSession
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toFlux
 import java.time.Instant
@@ -65,15 +64,15 @@ class CosmeticServiceImpl(
     override suspend fun process(
         method: String,
         payload: ByteString,
-        session: WebSocketSession,
+        connection: ClientConnection<*>,
         user: User
-    ): WebsocketResponse {
+    ): RpcResponse {
         return when (method) {
             "Login" -> this.processLogin(user).toWebsocketResponse() // process login packet
             "UpdateCosmeticSettings" -> {
                 // parse payload
                 val pb = UpdateCosmeticSettingsRequest.parseFrom(payload)
-                this.processUpdateCosmeticSettings(pb, user, session).toWebsocketResponse()
+                this.processUpdateCosmeticSettings(pb, user, connection).toWebsocketResponse()
             }
 
             else -> emptyWebsocketResponse() // unknown packet
@@ -83,7 +82,7 @@ class CosmeticServiceImpl(
     override suspend fun processUpdateCosmeticSettings(
         message: UpdateCosmeticSettingsRequest,
         user: User,
-        session: WebSocketSession
+        connection: ClientConnection<*>
     ): GeneratedMessage {
         user.cosmetic.equippedCosmetics =
             message.settings.equippedCosmeticsList.map { UserCosmetic(it.cosmeticId, Instant.now(), null, null) }
@@ -100,7 +99,7 @@ class CosmeticServiceImpl(
         logger.debug { "Saving cosmetics settings of user ${user.username} (count: ${message.settings.equippedCosmeticsList.size})" }
         userRepository.save(user).awaitFirst()
         // push settings to other players
-        subscriptionService.getWorldPlayerUuids(session)
+        subscriptionService.getWorldPlayerUuids(connection)
             .forEach { uuid ->
                 userRepository.findByUuid(uuid).awaitFirstOrNull()?.let {
                     this.pushCosmeticEvent(user, message.settings)
@@ -170,7 +169,7 @@ class CosmeticServiceImpl(
                 val push = this@CosmeticServiceImpl.buildCosmeticsPush(user, buildCosmeticSettings(user))
                 mono {
                     // push to websocket
-                    event.session.pushEvent(push)
+                    event.connection.sendPush(push)
                 }
             }.then()
     }

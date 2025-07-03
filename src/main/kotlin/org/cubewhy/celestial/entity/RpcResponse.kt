@@ -3,25 +3,25 @@ package org.cubewhy.celestial.entity
 import com.google.protobuf.ByteString
 import com.google.protobuf.GeneratedMessage
 
-data class WebsocketResponse(
+data class RpcResponse(
     var response: GeneratedMessage? = null,
     var pushes: MutableList<Push> = mutableListOf(),
 ) {
     var requestId: ByteString? = null
 
     companion object {
-        fun create(response: GeneratedMessage?): WebsocketResponse? {
+        fun create(response: GeneratedMessage?): RpcResponse? {
             if (response == null) return null
-            return WebsocketResponse(response)
+            return RpcResponse(response)
         }
     }
 
-    fun addPush(vararg push: Push): WebsocketResponse {
+    fun addPush(vararg push: Push): RpcResponse {
         pushes.addAll(push)
         return this
     }
 
-    fun addPush(pushList: List<Push>): WebsocketResponse {
+    fun addPush(pushList: List<Push>): RpcResponse {
         pushes.addAll(pushList)
         return this
     }
@@ -33,9 +33,9 @@ data class Push(
 )
 
 fun GeneratedMessage.toWebsocketResponse() =
-    WebsocketResponse(this)
+    RpcResponse(this)
 
 fun pushOf(payload: GeneratedMessage, broadcast: Boolean = true) =
     Push(payload, broadcast)
 
-fun emptyWebsocketResponse() = WebsocketResponse()
+fun emptyWebsocketResponse() = RpcResponse()

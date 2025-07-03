@@ -2,15 +2,15 @@ package org.cubewhy.celestial.service
 
 import com.google.protobuf.GeneratedMessage
 import com.lunarclient.websocket.friend.v1.*
+import org.cubewhy.celestial.entity.RpcResponse
 import org.cubewhy.celestial.entity.User
-import org.cubewhy.celestial.entity.WebsocketResponse
-import org.springframework.web.reactive.socket.WebSocketSession
+import org.cubewhy.celestial.protocol.ClientConnection
 
 interface FriendService : PacketProcessor {
     suspend fun processLogin(
         user: User,
-        session: WebSocketSession
-    ): WebsocketResponse
+        connection: ClientConnection<*>,
+    ): RpcResponse
 
     suspend fun processAddFriendRequest(
         message: SendFriendRequestRequest,

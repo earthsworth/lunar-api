@@ -11,6 +11,7 @@ import kotlinx.coroutines.reactive.awaitFirst
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import org.cubewhy.celestial.entity.*
 import org.cubewhy.celestial.entity.config.LunarProperties
+import org.cubewhy.celestial.protocol.ClientConnection
 import org.cubewhy.celestial.repository.MessageRepository
 import org.cubewhy.celestial.repository.UserRepository
 import org.cubewhy.celestial.service.CommandService
@@ -21,7 +22,6 @@ import org.cubewhy.celestial.util.*
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
-import org.springframework.web.reactive.socket.WebSocketSession
 import java.time.Instant
 import java.util.*
 
@@ -51,14 +51,14 @@ class ConversationServiceImpl(
     override suspend fun process(
         method: String,
         payload: ByteString,
-        session: WebSocketSession,
+        connection: ClientConnection<*>,
         user: User
-    ): WebsocketResponse {
+    ): RpcResponse {
         return when (method) {
             "SendConversationMessage" -> this.processSendMessage(
                 SendConversationMessageRequest.parseFrom(payload),
                 user,
-                session
+                connection
             )
 
             else -> emptyWebsocketResponse()
@@ -68,8 +68,8 @@ class ConversationServiceImpl(
     override suspend fun processSendMessage(
         request: SendConversationMessageRequest,
         user: User,
-        session: WebSocketSession
-    ): WebsocketResponse {
+        connection: ClientConnection<*>
+    ): RpcResponse {
         val recipientUuid = request.conversationReference.friendUuid.toUUIDString()
         val chatMessage = request.messageContents.plainText
         // is bot
@@ -116,7 +116,7 @@ class ConversationServiceImpl(
                 this.friendUuid = user.uuid.toLunarClientUUID()
             }.build())
         ) // push to recipient
-        session.pushEvent(
+        connection.sendPush(
             this.buildConversationMessagePush(
                 savedMessage,
                 user,

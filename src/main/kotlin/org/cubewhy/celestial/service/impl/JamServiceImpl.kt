@@ -13,19 +13,17 @@ import org.cubewhy.celestial.entity.dto.ModifySongDTO
 import org.cubewhy.celestial.entity.vo.LunarSongVO
 import org.cubewhy.celestial.entity.vo.SongVO
 import org.cubewhy.celestial.entity.vo.styngr.StyngrSongVO
+import org.cubewhy.celestial.protocol.ClientConnection
 import org.cubewhy.celestial.repository.SongRepository
 import org.cubewhy.celestial.repository.UploadRepository
 import org.cubewhy.celestial.repository.UserRepository
 import org.cubewhy.celestial.service.JamService
 import org.cubewhy.celestial.service.SongMapper
-import org.cubewhy.celestial.util.extractBaseUrl
 import org.cubewhy.celestial.util.toProtobufType
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
-import org.springframework.web.reactive.socket.WebSocketSession
 import org.springframework.web.server.ResponseStatusException
-import org.springframework.web.server.ServerWebExchange
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 import java.util.*
@@ -47,16 +45,16 @@ class JamServiceImpl(
     override suspend fun process(
         method: String,
         payload: ByteString,
-        session: WebSocketSession,
+        connection: ClientConnection<*>,
         user: User
-    ): WebsocketResponse {
+    ): RpcResponse {
         return when (method) {
-            "Login" -> this.processLogin(session, user)
+            "Login" -> this.processLogin(connection, user)
             else -> emptyWebsocketResponse()
         }
     }
 
-    override suspend fun processLogin(session: WebSocketSession, user: User): WebsocketResponse {
+    override suspend fun processLogin(connection: ClientConnection<*>, user: User): RpcResponse {
         val response = LoginResponse.newBuilder().apply {
             // find available songs
             this.addAllOwnedJams(
@@ -146,9 +144,9 @@ class JamServiceImpl(
         }.build()
     }
 
-    override suspend fun availableSongs(exchange: ServerWebExchange): List<LunarSongVO> {
+    override suspend fun availableSongs(baseUrl: String): List<LunarSongVO> {
         return songRepository.findAll().map { song ->
-            songMapper.mapToLunarSongVO(song, exchange.extractBaseUrl())
+            songMapper.mapToLunarSongVO(song, baseUrl)
         }.collectList().awaitLast()
     }
 }

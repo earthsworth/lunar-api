@@ -5,9 +5,7 @@ import org.cubewhy.celestial.entity.vo.UserVO
 import org.cubewhy.celestial.entity.vo.styngr.StyngrUserVO
 import org.cubewhy.celestial.service.UserMapper
 import org.cubewhy.celestial.util.JwtUtil
-import org.springframework.http.HttpHeaders
 import org.springframework.stereotype.Service
-import org.springframework.web.server.ServerWebExchange
 
 @Service
 class UserMapperImpl(private val jwtUtil: JwtUtil) : UserMapper {
@@ -19,8 +17,8 @@ class UserMapperImpl(private val jwtUtil: JwtUtil) : UserMapper {
         logoColor = user.cosmetic.lunarLogoColor.color
     )
 
-    override fun mapToStyngrUserVO(user: User, exchange: ServerWebExchange): StyngrUserVO {
-        val jwt = jwtUtil.convertToken(exchange.request.headers.getFirst(HttpHeaders.AUTHORIZATION) as String)!!
+    override fun mapToStyngrUserVO(user: User, headerToken: String): StyngrUserVO {
+        val jwt = jwtUtil.convertToken(headerToken)!!
         return StyngrUserVO(
             id = user.id!!,
             inGameCurrencyAmount = 9999.99,

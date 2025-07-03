@@ -4,19 +4,18 @@ import com.lunarclient.websocket.handshake.v1.Handshake
 import com.lunarclient.websocket.protocol.v1.ServerboundWebSocketMessage
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.reactive.awaitFirst
-import kotlinx.coroutines.reactive.awaitFirstOrNull
 import kotlinx.coroutines.reactor.mono
+import org.cubewhy.celestial.protocol.ClientConnection
+import org.cubewhy.celestial.protocol.WebsocketConnection
 import org.cubewhy.celestial.repository.UserRepository
 import org.cubewhy.celestial.service.PacketService
 import org.cubewhy.celestial.service.SessionService
-import org.cubewhy.celestial.util.pushEvent
-import org.cubewhy.celestial.util.wrapCommon
 import org.springframework.stereotype.Component
+import org.springframework.web.reactive.socket.CloseStatus
 import org.springframework.web.reactive.socket.WebSocketHandler
 import org.springframework.web.reactive.socket.WebSocketSession
 import reactor.core.publisher.Mono
 import reactor.core.scheduler.Schedulers
-import reactor.kotlin.core.publisher.toMono
 import reactor.netty.channel.AbortedException
 import java.util.concurrent.ConcurrentHashMap
 
@@ -28,23 +27,27 @@ class AssetsHandler(
 ) : WebSocketHandler {
     companion object {
         private val logger = KotlinLogging.logger {}
-        val sessions = ConcurrentHashMap<String, WebSocketSession>() // session-id:session
+        val sessions = ConcurrentHashMap<String, ClientConnection<*>>() // session-id:session
     }
 
     override fun handle(session: WebSocketSession): Mono<Void> {
+        // create the connection
+        val connection = WebsocketConnection(session)
+
         return session.receive().concatMap { message ->
-            if (!session.attributes.containsKey("user-id")) {
+            if (connection.metadata.userId == null) {
                 // process handshake
                 val pbMessage = Handshake.parseFrom(message.payload.asInputStream())
                 mono {
-                    val user = packetService.processHandshake(pbMessage, session)
+                    val user = packetService.processHandshake(pbMessage, connection)
                     if (user == null) {
                         // unauthorized, close the session
-                        session.close().awaitFirstOrNull()
+                        connection.close(CloseStatus.NOT_ACCEPTABLE.code, CloseStatus.NOT_ACCEPTABLE.reason)
                         return@mono null
                     }
-                    session.attributes["user-id"] = user.id
-                    sessions[session.id] = session
+                    // put user id
+                    connection.metadata.userId = user.id
+                    sessions[session.id] = connection
                     null // no response
                 }
             } else {
@@ -52,30 +55,22 @@ class AssetsHandler(
                 val pbMessage =
                     ServerboundWebSocketMessage.parseFrom(message.payload.asInputStream())
                 mono {
-                    packetService.process(pbMessage, session).apply {
+                    packetService.process(pbMessage, connection).apply {
                         requestId = pbMessage.requestId
                     }
                 }
             }
         }.concatMap { message ->
             mono {
-                message.response?.let { response ->
-                    session.send(session.binaryMessage {
-                        it.wrap(
-                            response.wrapCommon(message.requestId!!).toByteArray()
-                        )
-                    }.toMono()).awaitFirstOrNull() // send response
-                }
+                connection.sendResponse(message)
+
                 // find user
-                val userId = session.attributes["user-id"] as String
+                val userId = connection.metadata.userId!!
                 val user = userRepository.findById(userId).awaitFirst()
                 // send events
                 message.pushes.forEach { push ->
-                    if (!push.broadcast) {
-                        session.pushEvent(push.payload)
-                    } else {
+                    if (push.broadcast) {
                         // push to all sessions that logged in the same account
-                        // find user
                         sessionService.push(user, push.payload)
                     }
                 }
@@ -86,14 +81,14 @@ class AssetsHandler(
                 logger.error(e) { "WebSocket processing error" }
             }
         }.doFinally { signalType ->
-            (session.attributes["user-id"] as String?)?.let { userId ->
+            (connection.metadata.userId)?.let { userId ->
                 // remove from local session store
                 sessions.remove(session.id)
                 // perform processDisconnect
                 mono {
                     // find user
                     val user = userRepository.findById(userId).awaitFirst()
-                    packetService.processDisconnect(signalType, session, user)
+                    packetService.processDisconnect(signalType, connection, user)
                 }.publishOn(Schedulers.boundedElastic()).subscribe()
             }
         }.then()

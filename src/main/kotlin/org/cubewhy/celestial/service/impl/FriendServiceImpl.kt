@@ -16,6 +16,7 @@ import kotlinx.coroutines.reactor.mono
 import org.cubewhy.celestial.entity.*
 import org.cubewhy.celestial.entity.FriendRequest
 import org.cubewhy.celestial.event.UserOfflineEvent
+import org.cubewhy.celestial.protocol.ClientConnection
 import org.cubewhy.celestial.repository.FriendRepository
 import org.cubewhy.celestial.repository.FriendRequestRepository
 import org.cubewhy.celestial.repository.UserRepository
@@ -25,7 +26,6 @@ import org.cubewhy.celestial.util.*
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
-import org.springframework.web.reactive.socket.WebSocketSession
 import java.time.Instant
 import com.lunarclient.websocket.friend.v1.FriendRequest as LunarFriendRequest
 
@@ -57,11 +57,11 @@ class FriendServiceImpl(
     override suspend fun process(
         method: String,
         payload: ByteString,
-        session: WebSocketSession,
+        connection: ClientConnection<*>,
         user: User
-    ): WebsocketResponse {
+    ): RpcResponse {
         return when (method) {
-            "Login" -> this.processLogin(user, session)
+            "Login" -> this.processLogin(user, connection)
             "SendFriendRequest" -> this.processAddFriendRequest(
                 SendFriendRequestRequest.parseFrom(payload),
                 user
@@ -261,8 +261,8 @@ class FriendServiceImpl(
      */
     override suspend fun processLogin(
         user: User,
-        session: WebSocketSession
-    ): WebsocketResponse {
+        connection: ClientConnection<*>,
+    ): RpcResponse {
         val friends = findFriends(user)
         val botFriend = if (botState) buildBotFriend(user) else null
         // update friend status

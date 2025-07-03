@@ -16,6 +16,7 @@ import org.cubewhy.celestial.entity.User
 import org.cubewhy.celestial.entity.UserSession
 import org.cubewhy.celestial.entity.config.InstanceProperties
 import org.cubewhy.celestial.handler.websocket.AssetsHandler
+import org.cubewhy.celestial.protocol.ClientConnection
 import org.cubewhy.celestial.repository.UserRepository
 import org.cubewhy.celestial.service.SessionService
 import org.cubewhy.celestial.util.Const
@@ -24,7 +25,6 @@ import org.springframework.cloud.stream.function.StreamBridge
 import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.data.redis.core.removeAndAwait
 import org.springframework.stereotype.Service
-import org.springframework.web.reactive.socket.WebSocketSession
 import reactor.kotlin.core.publisher.toFlux
 import java.time.Instant
 
@@ -57,14 +57,14 @@ class SessionServiceImpl(
         }
     }
 
-    override suspend fun saveSession(user: User, websocketSession: WebSocketSession) {
-        if (this.isOnSession(websocketSession, user)) {
-            logger.warn { "Skipping save session of user ${user.username} on websocket connection ${websocketSession.id} (already exists)" }
+    override suspend fun saveSession(user: User, connection: ClientConnection<*>) {
+        if (this.isOnSession(connection, user)) {
+            logger.warn { "Skipping save session of user ${user.username} on websocket connection ${connection.id} (already exists)" }
             return
         }
-        logger.debug { "Saving session for ${user.username} at connection ${websocketSession.id}" }
+        logger.debug { "Saving session for ${user.username} at connection ${connection.id}" }
         val wsSessionObject = UserSession(
-            websocketId = websocketSession.id,
+            websocketId = connection.id,
             userId = user.id!!,
             userUuid = user.uuid,
             instanceId = instanceProperties.id
@@ -73,8 +73,8 @@ class SessionServiceImpl(
             .awaitFirst()
     }
 
-    override suspend fun isOnSession(session: WebSocketSession, user: User): Boolean {
-        return findSessions(user).any { it.websocketId == session.id }
+    override suspend fun isOnSession(connection: ClientConnection<*>, user: User): Boolean {
+        return findSessions(user).any { it.websocketId == connection.id }
     }
 
     override fun push(user: User, push: GeneratedMessage) {
@@ -106,7 +106,10 @@ class SessionServiceImpl(
         }
     }
 
-    override suspend fun processWithSessionLocally(userId: String, func: suspend (WebSocketSession) -> Unit) {
+    override suspend fun processWithSessionLocally(
+        userId: String,
+        func: suspend (connection: ClientConnection<*>) -> Unit
+    ) {
         // If user offline, make func stop
         if(!isOnline(userId)) return
         // find the user
@@ -118,8 +121,8 @@ class SessionServiceImpl(
                 // find on local session map
                 AssetsHandler.sessions[it.websocketId]
             }
-            .flatMap { session ->
-                mono { func.invoke(session!!) }
+            .flatMap { connection ->
+                mono { func.invoke(connection!!) }
             }
             .collectList()
             .awaitFirstOrNull()
@@ -161,8 +164,8 @@ class SessionServiceImpl(
      *
      * @param session websocket session
      * */
-    override suspend fun removeSession(session: WebSocketSession) {
-        this.getUserSession(session)?.let { userWebsocketSession ->
+    override suspend fun removeSession(connection: ClientConnection<*>) {
+        this.getUserSession(connection)?.let { userWebsocketSession ->
             val user = userRepository.findById(userWebsocketSession.userId).awaitFirst()
             logger.debug { "Remove ${user.username} from shared session store" }
             userSessionReactiveRedisTemplate.opsForSet()
@@ -170,9 +173,9 @@ class SessionServiceImpl(
         }
     }
 
-    override suspend fun getUserSession(session: WebSocketSession): UserSession? {
+    override suspend fun getUserSession(connection: ClientConnection<*>): UserSession? {
         return userSessionReactiveRedisTemplate.opsForSet().scan(Const.USER_WEBSOCKET_SESSION_STORE)
-            .filter { it.websocketId == session.id }
+            .filter { it.websocketId == connection.id }
             .awaitLast()
     }
 

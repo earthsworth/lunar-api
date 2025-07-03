@@ -5,6 +5,7 @@ import org.cubewhy.celestial.entity.vo.styngr.StyngrUserVO
 import org.cubewhy.celestial.service.JamService
 import org.cubewhy.celestial.service.UserService
 import org.cubewhy.celestial.util.extractBaseUrl
+import org.springframework.http.HttpHeaders
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.PathVariable
@@ -25,7 +26,8 @@ class StyngrController(
         @AuthenticationPrincipal authentication: Authentication,
         exchange: ServerWebExchange
     ): StyngrUserVO {
-        return userService.loadStyngrUser(authentication, exchange)
+        val token = exchange.request.headers.getFirst(HttpHeaders.AUTHORIZATION) as String
+        return userService.loadStyngrUser(authentication, token)
     }
 
     @PostMapping("/v1/sdk/styngs/{songId}/play")

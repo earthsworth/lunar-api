@@ -4,13 +4,13 @@ import com.google.protobuf.ByteString
 import com.lunarclient.websocket.language.v1.UpdateLanguageRequest
 import com.lunarclient.websocket.language.v1.UpdateLanguageResponse
 import io.github.oshai.kotlinlogging.KotlinLogging
+import org.cubewhy.celestial.entity.RpcResponse
 import org.cubewhy.celestial.entity.User
-import org.cubewhy.celestial.entity.WebsocketResponse
 import org.cubewhy.celestial.entity.emptyWebsocketResponse
 import org.cubewhy.celestial.entity.toWebsocketResponse
+import org.cubewhy.celestial.protocol.ClientConnection
 import org.cubewhy.celestial.service.LanguageService
 import org.springframework.stereotype.Service
-import org.springframework.web.reactive.socket.WebSocketSession
 
 @Service
 class LanguageServiceImpl : LanguageService {
@@ -22,11 +22,11 @@ class LanguageServiceImpl : LanguageService {
 
     override suspend fun processUpdateLanguageRequest(
         request: UpdateLanguageRequest,
-        session: WebSocketSession,
+        connection: ClientConnection<*>,
         user: User
     ): UpdateLanguageResponse {
         logger.debug { "User ${user.username} selected new language ${request.newLanguage}" }
-        session.attributes["language"] = request.newLanguage
+        connection.metadata.language = request.newLanguage.iso6393Code
         return UpdateLanguageResponse.getDefaultInstance()
     }
 
@@ -34,14 +34,14 @@ class LanguageServiceImpl : LanguageService {
     override suspend fun process(
         method: String,
         payload: ByteString,
-        session: WebSocketSession,
+        connection: ClientConnection<*>,
         user: User
-    ): WebsocketResponse {
+    ): RpcResponse {
         return when (method) {
             "UpdateLanguageRequest" ->
                 this.processUpdateLanguageRequest(
                     UpdateLanguageRequest.parseFrom(payload),
-                    session,
+                    connection,
                     user
                 ).toWebsocketResponse()
 

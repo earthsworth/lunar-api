@@ -6,13 +6,13 @@ import com.lunarclient.websocket.emote.v1.*
 import kotlinx.coroutines.reactive.awaitFirst
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import org.cubewhy.celestial.entity.*
+import org.cubewhy.celestial.protocol.ClientConnection
 import org.cubewhy.celestial.repository.UserRepository
 import org.cubewhy.celestial.service.EmoteService
 import org.cubewhy.celestial.service.SessionService
 import org.cubewhy.celestial.service.SubscriptionService
 import org.cubewhy.celestial.util.toLunarClientUUID
 import org.springframework.stereotype.Service
-import org.springframework.web.reactive.socket.WebSocketSession
 
 @Service
 class EmoteServiceImpl(
@@ -57,25 +57,25 @@ class EmoteServiceImpl(
     override suspend fun process(
         method: String,
         payload: ByteString,
-        session: WebSocketSession,
+        connection: ClientConnection<*>,
         user: User
-    ): WebsocketResponse {
+    ): RpcResponse {
         return when (method) {
             "Login" -> this.processLogin(user).toWebsocketResponse()
             "UseEmote" -> this.processUseEmote(
                 UseEmoteRequest.parseFrom(payload),
-                session,
+                connection,
                 user
             ).toWebsocketResponse()
 
             "StopEmote" -> this.processStopEmote(
-                session,
+                connection,
                 user
             ).toWebsocketResponse()
 
             "UpdateEquippedEmotes" -> this.processUpdateEquippedEmotes(
                 UpdateEquippedEmotesRequest.parseFrom(payload),
-                session,
+                connection,
                 user
             ).toWebsocketResponse()
 
@@ -85,10 +85,11 @@ class EmoteServiceImpl(
 
     override suspend fun processUpdateEquippedEmotes(
         request: UpdateEquippedEmotesRequest,
-        session: WebSocketSession,
+        connection: ClientConnection<*>,
         user: User
     ): UpdateEquippedEmotesResponse {
-        user.emote.equippedEmotes = request.equippedEmotesList.map { Emote(it.emoteId, it.slotNumber, it.attachedJamId) }
+        user.emote.equippedEmotes =
+            request.equippedEmotesList.map { Emote(it.emoteId, it.slotNumber, it.attachedJamId) }
         userRepository.save(user).awaitFirst()
         return UpdateEquippedEmotesResponse.newBuilder().build()
     }
@@ -107,12 +108,12 @@ class EmoteServiceImpl(
 
     override suspend fun processUseEmote(
         request: UseEmoteRequest,
-        session: WebSocketSession,
+        connection: ClientConnection<*>,
         user: User
     ): UseEmoteResponse {
         // build push
         val push = this.buildUseEmotePush(request, user)
-        subscriptionService.getWorldPlayerUuids(session).forEach { uuid ->
+        subscriptionService.getWorldPlayerUuids(connection).forEach { uuid ->
             userRepository.findByUuid(uuid).awaitFirstOrNull()?.let { target ->
                 // push to players
                 sessionService.push(target, push)
@@ -127,11 +128,11 @@ class EmoteServiceImpl(
     }
 
     override suspend fun processStopEmote(
-        session: WebSocketSession,
+        connection: ClientConnection<*>,
         user: User
     ): StopEmoteResponse {
         val push = this.buildStopEmotePush(user)
-        subscriptionService.getWorldPlayerUuids(session).forEach { uuid ->
+        subscriptionService.getWorldPlayerUuids(connection).forEach { uuid ->
             // find target
             userRepository.findByUuid(uuid).awaitFirstOrNull()?.let { target ->
                 sessionService.push(target, push)

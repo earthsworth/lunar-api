@@ -25,7 +25,6 @@ import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
-import org.springframework.web.server.ServerWebExchange
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
 import reactor.kotlin.core.publisher.toMono
@@ -80,10 +79,10 @@ class UserServiceImpl(
             .awaitFirst()
     }
 
-    override suspend fun loadStyngrUser(authentication: Authentication, exchange: ServerWebExchange): StyngrUserVO {
+    override suspend fun loadStyngrUser(authentication: Authentication, token: String): StyngrUserVO {
         // find user
         val user = userRepository.findByUsername(authentication.name).awaitFirst()
-        return userMapper.mapToStyngrUserVO(user, exchange)
+        return userMapper.mapToStyngrUserVO(user, token)
     }
 
     override suspend fun getPlayerInfo(playerName: String): PlayerInfoVO {
