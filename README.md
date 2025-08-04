@@ -41,7 +41,7 @@ Enable LunarClient debug mode and add these JVM params to your client
 -DserviceOverrideStyngr=http://127.0.0.1:8080/api/styngr
 ```
 
-Use the [Javaagent](https://github.com/earthsworth/LunarDebugger/releases/tag/v1.0.0) to enable Lunar debug mode
+Use the [Javaagent](https://github.com/earthsworth/BrowserDebugger/releases) to enable Lunar debug mode
 if you don't want to manually modify the file (DO NOT USE THE 1.1.0 VERSION)
 
 ## OpenAPI

@@ -44,16 +44,16 @@ class SessionServiceImpl(
     @PostConstruct
     private fun clearGhostSessions() {
         scope.launch {
-            val ghostSessions = userSessionReactiveRedisTemplate.opsForSet().scan(Const.USER_WEBSOCKET_SESSION_STORE)
+            userSessionReactiveRedisTemplate.opsForSet().scan(Const.USER_WEBSOCKET_SESSION_STORE)
                 .filter { it.instanceId == instanceProperties.id || it.instanceId == null }
                 .collectList()
                 .awaitLast()
-            ghostSessions.forEach { ghostSession ->
-                logger.info { "Remove ghost session ${ghostSession.websocketId}" }
-                userSessionReactiveRedisTemplate
-                    .opsForSet()
-                    .removeAndAwait(Const.USER_WEBSOCKET_SESSION_STORE, ghostSession)
-            }
+                .forEach { ghostSession ->
+                    logger.info { "Remove ghost session ${ghostSession.websocketId}" }
+                    userSessionReactiveRedisTemplate
+                        .opsForSet()
+                        .removeAndAwait(Const.USER_WEBSOCKET_SESSION_STORE, ghostSession)
+                }
         }
     }
 
@@ -111,7 +111,7 @@ class SessionServiceImpl(
         func: suspend (connection: ClientConnection<*>) -> Unit
     ) {
         // If user offline, make func stop
-        if(!isOnline(userId)) return
+        if (!isOnline(userId)) return
         // find the user
         val user = userRepository.findById(userId).awaitFirst()
         // find all available sessions
@@ -165,11 +165,11 @@ class SessionServiceImpl(
      * @param connection websocket session
      * */
     override suspend fun removeSession(connection: ClientConnection<*>) {
-        this.getUserSession(connection)?.let { userWebsocketSession ->
-            val user = userRepository.findById(userWebsocketSession.userId).awaitFirst()
+        this.getUserSession(connection)?.let { session ->
+            val user = userRepository.findById(session.userId).awaitFirst()
             logger.debug { "Remove ${user.username} from shared session store" }
             userSessionReactiveRedisTemplate.opsForSet()
-                .removeAndAwait(Const.USER_WEBSOCKET_SESSION_STORE, userWebsocketSession)
+                .removeAndAwait(Const.USER_WEBSOCKET_SESSION_STORE, session)
         }
     }
 

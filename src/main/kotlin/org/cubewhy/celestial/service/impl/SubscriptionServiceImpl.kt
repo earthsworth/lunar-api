@@ -93,7 +93,6 @@ class SubscriptionServiceImpl(
         if (!connection.metadata.multiplayerUuids.isEmpty()) {
             return emptyList()
         }
-        @Suppress("UNCHECKED_CAST")
         return connection.metadata.multiplayerUuids.filter { sessionService.isOnline(it) }
     }
 }
