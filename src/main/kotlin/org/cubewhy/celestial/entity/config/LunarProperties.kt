@@ -2,14 +2,15 @@ package org.cubewhy.celestial.entity.config
 
 import org.cubewhy.celestial.entity.Role
 import org.springframework.boot.context.properties.ConfigurationProperties
-import java.util.UUID
+import java.util.*
 
 @ConfigurationProperties(prefix = "lunar")
 data class LunarProperties(
     var user: UserProperties,
     var discord: DiscordProperties,
     var upload: UploadProperties,
-    var sentry: SentryProperties
+    var sentry: SentryProperties,
+    var alert: AlertProperties,
 ) {
     data class UserProperties(
         var verify: Boolean,
@@ -41,4 +42,14 @@ data class LunarProperties(
             var regex: String
         )
     }
+
+    data class AlertProperties(
+        var show: Boolean,
+        var name: String,
+        var text: String,
+        var color: String, // TODO: replace this with enum
+        var icon: String, // TODO: replace this with enum
+        var dismissable: Boolean,
+        var link: String,
+    )
 }

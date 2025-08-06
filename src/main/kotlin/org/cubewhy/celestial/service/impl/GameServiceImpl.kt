@@ -26,6 +26,20 @@ class GameServiceImpl(
         val pinnedServers = pinnedServerRepository.findRandomItems(3)
             .collectList().awaitFirstOrNull() ?: listOf()
 
+        val activeAlert = if (lunarProperties.alert.show) {
+            lunarProperties.alert.let { alert ->
+                AlertActive(
+                    id = "0721",
+                    name = alert.name,
+                    text = alert.text,
+                    color = alert.color,
+                    icon = alert.icon,
+                    dismissable = alert.dismissable,
+                    link = alert.link
+                )
+            }
+        } else null
+
         return GameMetadataResponse(
             store = emptyMap(),
             langOverride = emptyMap(),
@@ -74,15 +88,7 @@ class GameServiceImpl(
                     "RED" to AlertColor("#59db4040", "#80db4040"),
                     "BLUE" to AlertColor("#592b71ce", "#802b71ce")
                 ),
-                active = AlertActive(
-                    id = "729",
-                    name = "Discord",
-                    text = "Join our Telegram today!",
-                    color = "RED",
-                    icon = "BULLHORN",
-                    dismissable = true,
-                    link = "https://t.me/earthsworth"
-                )
+                active = activeAlert
             ),
             pinnedServers = pinnedServers.mapNotNull { pinnedServerMapper.mapToPinedServerVO(it) }
         )

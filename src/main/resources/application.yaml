@@ -67,3 +67,11 @@ lunar:
     irc:
       # Channel ID to sync irc messages
       channel: 1358028995899293746
+  alert:
+    show: true
+    name: Discord
+    text: Join our Discord today!
+    color: RED
+    icon: BULLHORN
+    dismissable: true
+    link: https://discord.lunarclient.top
