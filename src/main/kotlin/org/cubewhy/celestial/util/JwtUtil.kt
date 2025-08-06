@@ -39,13 +39,14 @@ class JwtUtil(
         }
     }
 
-    fun createJwt(user: User): String {
+    fun createJwt(user: User, upstreamToken: String? = null): String {
         val algorithm: Algorithm = Algorithm.HMAC256(key)
         return JWT.create()
             .withJWTId(UUID.randomUUID().toString())
             .withClaim("id", user.id) // internal id
             .withClaim("name", user.username) // username
             .withClaim("mcuuid", user.uuid) // minecraft uuid
+            .withClaim("upstream-token", upstreamToken)
             .withClaim(
                 "pwd-hash",
                 sha256(user.password ?: "no-password")

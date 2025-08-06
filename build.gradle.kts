@@ -32,6 +32,7 @@ configurations.all {
 
 application {
     mainClass = "org.cubewhy.celestial.LunarApiApplicationKt"
+    applicationDefaultJvmArgs = mutableListOf("-Ddebug")
 }
 
 repositories {

@@ -8,6 +8,7 @@ import com.lunarclient.websocket.handshake.v1.Handshake
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.reactive.awaitFirst
 import org.cubewhy.celestial.entity.RpcResponse
+import org.cubewhy.celestial.entity.UpstreamAuthResponse
 import org.cubewhy.celestial.entity.User
 import org.cubewhy.celestial.entity.config.LunarProperties
 import org.cubewhy.celestial.entity.emptyWebsocketResponse
@@ -23,12 +24,14 @@ import com.lunarclient.websocket.protocol.v1.ServerboundWebSocketMessage as Asse
 
 @Service
 class PacketServiceImpl(
+    private val lunarProps: LunarProperties,
     private val userService: UserService,
     private val friendService: FriendService,
     private val sessionService: SessionService,
     private val jwtUtil: JwtUtil,
     private val userRepository: UserRepository,
     private val mojangService: MojangService,
+    private val extendService: ExtendService,
 
     packetProcessors: List<PacketProcessor>,
 
@@ -43,21 +46,53 @@ class PacketServiceImpl(
 
     override suspend fun processAuthorize(
         connection: ClientConnection<*>,
-        message: AuthenticatorServerboundWebsocketMessage
+        message: AuthenticatorServerboundWebsocketMessage,
+        upstreamAuthenticatorConnection: ClientConnection<*>?,
     ): GeneratedMessage? {
         // load user
         if (message.hasHello()) {
             val hello = message.hello
-            if (!lunarProperties.user.verify) {
+            if (!lunarProperties.user.verify && upstreamAuthenticatorConnection == null) {
+                // NOTE: if using extend service, the
                 // verification is disabled
                 // create or find user
                 val user = userService.loadUser(hello.identity)
                 // generate jwt
                 val jwt = jwtUtil.createJwt(user)
-                logger.debug { "User ${user.username} successfully authenticated" }
+                logger.info { "User ${user.username} successfully authenticated" }
                 return AuthSuccessMessage.newBuilder().apply {
                     this.jwt = jwt
                 }.build()
+            } else if (upstreamAuthenticatorConnection != null) {
+                // Auth with upstream authenticator
+                logger.info { "Auth with upstream authenticator for player ${message.hello.identity.username}" }
+                upstreamAuthenticatorConnection.send(message) // send auth message
+                // await for EncryptionRequestMessage
+                val authResponse: UpstreamAuthResponse = try {
+                    extendService.awaitForAuthResponse(upstreamAuthenticatorConnection)
+                        ?: throw NullPointerException("Upstream responded null")
+                } catch (e: Exception) {
+                    logger.error(e) { "Failed to auth with upstream (handshake step)" }
+                    // close the connection
+                    connection.close(1001, "Failed to auth with upstream (handshake step)")
+                    return null
+                }
+
+                if (authResponse.authSuccessMessage != null) {
+                    // The upstream doesn't require auth
+                    // find or create user
+                    val user = userService.loadUser(message.hello.identity)
+                    // get jwt from authResponse
+                    val upstreamToken = authResponse.authSuccessMessage.jwt
+                    val token = jwtUtil.createJwt(user, upstreamToken)
+                    return AuthSuccessMessage.newBuilder().apply {
+                        this.jwt = token
+                    }.build()
+                } else if (authResponse.encryptRequest != null) {
+                    // let client process join server request
+                    return authResponse.encryptRequest
+                }
+
             } else {
                 // verify account
                 // put user info into websocket session
@@ -90,6 +125,37 @@ class PacketServiceImpl(
             logger.warn { "Failed to verify session with user ${identity.username} (${identity.uuid.toUUIDString()}): ${encryptionFail.reason}" }
         } else if (message.hasEncryptionResponse()) {
             val encryptionResponse = message.encryptionResponse
+            if (upstreamAuthenticatorConnection != null) {
+                // send back auth response
+                // let upstream request hasJoined api
+                upstreamAuthenticatorConnection.send(encryptionResponse)
+
+                // wait for auth success message
+                val authResponse: UpstreamAuthResponse = try {
+                    extendService.awaitForAuthResponse(upstreamAuthenticatorConnection)
+                        ?: throw NullPointerException("Upstream responded null")
+                } catch (e: Exception) {
+                    logger.error(e) { "Failed to auth with upstream (join server step)" }
+                    // close the connection
+                    connection.close(1001, "Failed to auth with upstream (join server step)")
+                    return null
+                }
+                if (authResponse.authSuccessMessage == null) {
+                    // unreachable in most cases
+                    logger.error { "Upstream handle encrypt request unexpectedly (null authSuccess message)" }
+                    connection.close(1001, "Upstream handle encrypt request unexpectedly (null authSuccess message)")
+                    return null // manual return null
+                }
+                // build jwt token
+                // find or create user
+                val user = userService.loadUser(message.hello.identity)
+                // get jwt from authResponse
+                val upstreamToken = authResponse.authSuccessMessage.jwt
+                val token = jwtUtil.createJwt(user, upstreamToken)
+                return AuthSuccessMessage.newBuilder().apply {
+                    this.jwt = token
+                }.build()
+            }
             // get server private key
             val keypair = connection.metadata.keypair!!
             // decode random bytes

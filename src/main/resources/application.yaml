@@ -35,6 +35,15 @@ instance:
   id: ${HOSTNAME:earthsworth}
 
 lunar:
+  upstream:
+    # If this option is true, the servlet will create connections to the services
+    enabled: true
+    # The parent auth websocket address
+    auth: wss://authenticator.lunarclientprod.com
+    #    auth: wss://ws.lunarclient.top/ws
+    # The parent rpc websocket address
+    rpc: wss://websocket.lunarclientprod.com/game
+  #    rpc: wss://ws.lunarclient.top/ws/game
   user:
     # Check if the player is authenticated with a valid Mojang/Microsoft account.
     verify: true

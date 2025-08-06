@@ -6,6 +6,7 @@ import java.util.*
 
 @ConfigurationProperties(prefix = "lunar")
 data class LunarProperties(
+    var upstream: UpstreamProperties,
     var user: UserProperties,
     var discord: DiscordProperties,
     var upload: UploadProperties,
@@ -13,6 +14,12 @@ data class LunarProperties(
     var alert: AlertProperties,
     var mojang: MojangProperties,
 ) {
+    data class UpstreamProperties(
+        var enabled: Boolean,
+        var auth: String,
+        var rpc: String,
+    )
+
     data class UserProperties(
         var verify: Boolean,
         var roleAssignments: List<RoleAssignment>

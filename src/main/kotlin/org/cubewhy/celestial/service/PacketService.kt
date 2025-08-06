@@ -17,7 +17,8 @@ interface PacketService {
 
     suspend fun processAuthorize(
         connection: ClientConnection<*>,
-        message: AuthenticatorServerboundWebsocketMessage
+        message: AuthenticatorServerboundWebsocketMessage,
+        upstreamAuthenticatorConnection: ClientConnection<*>?
     ): GeneratedMessage?
 
     suspend fun processHandshake(message: Handshake, connection: ClientConnection<*>): User?
