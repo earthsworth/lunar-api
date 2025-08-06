@@ -157,7 +157,7 @@ class PacketServiceImpl(
                 val user = userService.loadUser(connection.metadata.identity!!)
                 // get jwt from authResponse
                 val upstreamToken = authResponse.authSuccessMessage.jwt
-                logger.info { "Complete auth with upstream (upstream token is $upstreamToken)" }
+                logger.info { "User ${user.username} completed auth with upstream" }
                 val token = jwtUtil.createJwt(user, upstreamToken)
                 return AuthSuccessMessage.newBuilder().apply {
                     this.jwt = token

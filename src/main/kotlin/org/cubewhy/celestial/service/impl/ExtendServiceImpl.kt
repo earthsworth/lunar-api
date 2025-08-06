@@ -82,6 +82,7 @@ class ExtendServiceImpl(
                         }.then()
                 }.awaitFirstOrNull()
             } catch (e: Exception) {
+                // TODO: reconnect
                 logger.error(e) { "Failed to connect to upstream" }
                 promise.completeExceptionally(e)
             }
