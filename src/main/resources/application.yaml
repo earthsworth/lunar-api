@@ -69,7 +69,7 @@ lunar:
       - identifier: everything
         regex: ".*"
   upload:
-    maxSize: 5mb
+    maxSize: 100mb
   discord:
     enabled: false
     token: discord_token
