@@ -75,3 +75,9 @@ lunar:
     icon: BULLHORN
     dismissable: true
     link: https://discord.lunarclient.top
+  mojang:
+    # This config allows you custom the request endpoint to Mojang api
+    # Most for using reverse proxy propose
+    endpoints:
+      # https://minecraft.wiki/w/Mojang_API#Verify_login_session_on_client
+      hasJoined: https://sessionserver.mojang.com/session/minecraft/hasJoined

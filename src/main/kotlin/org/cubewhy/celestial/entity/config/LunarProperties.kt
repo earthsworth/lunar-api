@@ -11,6 +11,7 @@ data class LunarProperties(
     var upload: UploadProperties,
     var sentry: SentryProperties,
     var alert: AlertProperties,
+    var mojang: MojangProperties,
 ) {
     data class UserProperties(
         var verify: Boolean,
@@ -52,4 +53,12 @@ data class LunarProperties(
         var dismissable: Boolean,
         var link: String,
     )
+
+    data class MojangProperties(
+        var endpoints: Endpoints,
+    ) {
+        data class Endpoints(
+            var hasJoined: String,
+        )
+    }
 }
