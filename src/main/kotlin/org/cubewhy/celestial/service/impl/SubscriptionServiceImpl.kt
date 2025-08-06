@@ -1,6 +1,7 @@
 package org.cubewhy.celestial.service.impl
 
 import com.google.protobuf.ByteString
+import com.google.protobuf.kotlin.toByteString
 import com.lunarclient.websocket.subscription.v1.SubscribeRequest
 import com.lunarclient.websocket.subscription.v1.SubscribeResponse
 import com.lunarclient.websocket.subscription.v1.UnsubscribeRequest
@@ -15,6 +16,7 @@ import org.cubewhy.celestial.protocol.ClientConnection
 import org.cubewhy.celestial.service.SessionService
 import org.cubewhy.celestial.service.SubscriptionService
 import org.cubewhy.celestial.util.toUUIDString
+import org.cubewhy.celestial.util.wrapCommonServer
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 
@@ -58,6 +60,13 @@ class SubscriptionServiceImpl(
         connection: ClientConnection<*>,
         user: User
     ): UnsubscribeResponse {
+        connection.metadata.upstreamConnection?.let { upstream ->
+            // forward to upstream
+            val payload =
+                request.wrapCommonServer(listOf(0x1.toByte()).toByteArray().toByteString(), serviceName, "Unsubscribe")
+            upstream.send(payload)
+        }
+
         val uuids = request.targetUuidsList
         logger.debug { "User ${user.username} update multiplayer player list (removed ${uuids.size} players)" }
         connection.metadata.multiplayerUuids.removeAll(uuids.map { it.toUUIDString() }
@@ -70,6 +79,13 @@ class SubscriptionServiceImpl(
         connection: ClientConnection<*>,
         user: User
     ): SubscribeResponse {
+        connection.metadata.upstreamConnection?.let { upstream ->
+            // forward to upstream
+            val payload =
+                request.wrapCommonServer(listOf(0x1.toByte()).toByteArray().toByteString(), serviceName, "Subscribe")
+            upstream.send(payload)
+        }
+
         val playerUuids = request.targetUuidsList.map { it.toUUIDString() }
         // save ids to session properties
         this.saveWorldPlayerUuids(connection, playerUuids, user)

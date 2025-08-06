@@ -2,6 +2,7 @@ package org.cubewhy.celestial.service.impl
 
 import com.google.protobuf.ByteString
 import com.google.protobuf.GeneratedMessage
+import com.google.protobuf.kotlin.toByteStringUtf8
 import com.lunarclient.websocket.cosmetic.v1.*
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.reactive.awaitFirst
@@ -15,11 +16,14 @@ import org.cubewhy.celestial.service.CosmeticService
 import org.cubewhy.celestial.service.SessionService
 import org.cubewhy.celestial.service.SubscriptionService
 import org.cubewhy.celestial.util.toLunarClientUUID
+import org.cubewhy.celestial.util.wrapCommonClient
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toFlux
 import java.time.Instant
+import java.util.*
+import com.lunarclient.websocket.cosmetic.v1.LoginRequest as CosmeticsLoginRequest
 
 @Service
 class CosmeticServiceImpl(
@@ -68,7 +72,16 @@ class CosmeticServiceImpl(
         user: User
     ): RpcResponse {
         return when (method) {
-            "Login" -> this.processLogin(user).toWebsocketResponse() // process login packet
+            "Login" -> {
+                connection.metadata.upstreamConnection?.let { upstream ->
+                    // forward to upstream
+                    // NOTE: the payload is empty
+                    val payload = CosmeticsLoginRequest.getDefaultInstance()
+                        .wrapCommonClient(UUID.randomUUID().toString().toByteStringUtf8())
+                    upstream.send(payload)
+                }
+                this.processLogin(user).toWebsocketResponse()
+            } // process login packet
             "UpdateCosmeticSettings" -> {
                 // parse payload
                 val pb = UpdateCosmeticSettingsRequest.parseFrom(payload)

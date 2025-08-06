@@ -3,7 +3,7 @@ package org.cubewhy.celestial.protocol
 import com.google.protobuf.GeneratedMessage
 import com.lunarclient.common.v1.UuidAndUsername
 import org.cubewhy.celestial.entity.RpcResponse
-import org.cubewhy.celestial.util.wrapCommon
+import org.cubewhy.celestial.util.wrapCommonClient
 import org.cubewhy.celestial.util.wrapPush
 import java.security.KeyPair
 
@@ -73,7 +73,7 @@ abstract class ClientConnection<T> {
             // session closed
             return
         }
-        val responsePayload = response.response?.wrapCommon(response.requestId!!)
+        val responsePayload = response.response?.wrapCommonClient(response.requestId!!)
 
         val messages = mutableListOf<GeneratedMessage>()
         // add response payload
@@ -104,6 +104,7 @@ abstract class ClientConnection<T> {
         var userId: String? = null,
         var multiplayerUuids: MutableList<String> = mutableListOf(),
         var language: String? = null,
+        var upstreamConnection: ClientConnection<*>? = null,
 
         // authenticator
         var identity: UuidAndUsername? = null,

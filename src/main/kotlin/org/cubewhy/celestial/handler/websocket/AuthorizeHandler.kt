@@ -39,9 +39,9 @@ class AuthorizeHandler(
             } // parse message
             .flatMap { message ->
                 mono {
-                    upstream = if (lunarProps.upstream.enabled) {
-                        extendService.openAuthConnection()
-                    } else null
+                    if (upstream == null && lunarProps.upstream.enabled) {
+                        upstream = extendService.openAuthConnection()
+                    }
                     packetService.processAuthorize(connection, message, upstream)
                 }
             } // process message

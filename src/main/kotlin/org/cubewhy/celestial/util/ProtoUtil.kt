@@ -12,22 +12,33 @@ import com.lunarclient.common.v1.Uuid
 import com.lunarclient.common.v1.UuidAndUsername
 import com.lunarclient.websocket.conversation.v1.*
 import com.lunarclient.websocket.protocol.v1.WebSocketRpcResponse
-import kotlinx.coroutines.reactive.awaitFirstOrNull
 import org.cubewhy.celestial.entity.Message
-import org.springframework.web.reactive.socket.WebSocketSession
-import reactor.kotlin.core.publisher.toMono
 import java.time.Instant
 import java.util.*
 import com.lunarclient.authenticator.v1.ClientboundWebSocketMessage as AuthenticatorClientboundWebsocketMessage
 import com.lunarclient.websocket.protocol.v1.ClientboundWebSocketMessage as AssetsClientboundWebsocketMessage
+import com.lunarclient.websocket.protocol.v1.ServerboundWebSocketMessage as RpcServerboundWebSocketMessage
 
+
+fun GeneratedMessage.wrapCommonServer(
+    requestId: ByteString,
+    serviceName: String,
+    methodName: String
+): RpcServerboundWebSocketMessage {
+    return RpcServerboundWebSocketMessage.newBuilder()
+        .setRequestId(requestId)
+        .setService(serviceName)
+        .setMethod(methodName)
+        .setInput(this.toByteString())
+        .build()
+}
 
 /**
  * Wrap an assets server packet with LunarClient wrapper
  *
  * @param requestId clientside request id
  * */
-fun GeneratedMessage.wrapCommon(requestId: ByteString): AssetsClientboundWebsocketMessage {
+fun GeneratedMessage.wrapCommonClient(requestId: ByteString): AssetsClientboundWebsocketMessage {
     return AssetsClientboundWebsocketMessage.newBuilder()
         .setRpcResponse(
             WebSocketRpcResponse.newBuilder()
@@ -75,13 +86,6 @@ fun UUID.toLunarClientUUID(): Uuid = Uuid.newBuilder().apply {
 }.build()
 
 fun String.toLunarClientUUID() = UUID.fromString(this).toLunarClientUUID()
-
-suspend fun WebSocketSession.pushEvent(event: GeneratedMessage) {
-    val payload = event
-        .wrapPush()
-        .toByteArray()
-    this.send(this.binaryMessage { it.wrap(payload) }.toMono()).awaitFirstOrNull()
-}
 
 val botUuid: UUID = UUID.fromString("1f133c76-fc28-463c-9611-f0013e68e529")
 

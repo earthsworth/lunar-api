@@ -11,7 +11,10 @@ data class UpstreamAuthResponse(
 
     companion object {
         fun from(response: ClientboundWebSocketMessage): UpstreamAuthResponse {
-            return UpstreamAuthResponse(response.encryptionRequest, response.authSuccess)
+            return UpstreamAuthResponse(
+                if (response.hasEncryptionRequest()) response.encryptionRequest else null,
+                if (response.hasAuthSuccess()) response.authSuccess else null
+            )
         }
     }
 

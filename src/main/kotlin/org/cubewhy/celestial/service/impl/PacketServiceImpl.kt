@@ -64,12 +64,15 @@ class PacketServiceImpl(
                     this.jwt = jwt
                 }.build()
             } else if (upstreamAuthenticatorConnection != null) {
+                // store identity
+                connection.metadata.identity = message.hello.identity
                 // Auth with upstream authenticator
                 logger.info { "Auth with upstream authenticator for player ${message.hello.identity.username}" }
-                upstreamAuthenticatorConnection.send(message) // send auth message
                 // await for EncryptionRequestMessage
                 val authResponse: UpstreamAuthResponse = try {
-                    extendService.awaitForAuthResponse(upstreamAuthenticatorConnection)
+                    extendService.awaitForAuthResponse(upstreamAuthenticatorConnection) {
+                        upstreamAuthenticatorConnection.send(message) // send auth message
+                    }
                         ?: throw NullPointerException("Upstream responded null")
                 } catch (e: Exception) {
                     logger.error(e) { "Failed to auth with upstream (handshake step)" }
@@ -124,15 +127,18 @@ class PacketServiceImpl(
             val encryptionFail = message.encryptionFail
             logger.warn { "Failed to verify session with user ${identity.username} (${identity.uuid.toUUIDString()}): ${encryptionFail.reason}" }
         } else if (message.hasEncryptionResponse()) {
-            val encryptionResponse = message.encryptionResponse
             if (upstreamAuthenticatorConnection != null) {
-                // send back auth response
-                // let upstream request hasJoined api
-                upstreamAuthenticatorConnection.send(encryptionResponse)
-
+                if (!(upstreamAuthenticatorConnection.isOpen)) {
+                    connection.close(1001, "Upstream authenticator closed")
+                    return null
+                }
                 // wait for auth success message
                 val authResponse: UpstreamAuthResponse = try {
-                    extendService.awaitForAuthResponse(upstreamAuthenticatorConnection)
+                    extendService.awaitForAuthResponse(upstreamAuthenticatorConnection) {
+                        // send back auth response
+                        // let upstream request hasJoined api
+                        upstreamAuthenticatorConnection.send(message)
+                    }
                         ?: throw NullPointerException("Upstream responded null")
                 } catch (e: Exception) {
                     logger.error(e) { "Failed to auth with upstream (join server step)" }
@@ -148,14 +154,16 @@ class PacketServiceImpl(
                 }
                 // build jwt token
                 // find or create user
-                val user = userService.loadUser(message.hello.identity)
+                val user = userService.loadUser(connection.metadata.identity!!)
                 // get jwt from authResponse
                 val upstreamToken = authResponse.authSuccessMessage.jwt
+                logger.info { "Complete auth with upstream (upstream token is $upstreamToken)" }
                 val token = jwtUtil.createJwt(user, upstreamToken)
                 return AuthSuccessMessage.newBuilder().apply {
                     this.jwt = token
                 }.build()
             }
+            val encryptionResponse = message.encryptionResponse
             // get server private key
             val keypair = connection.metadata.keypair!!
             // decode random bytes
@@ -224,11 +232,27 @@ class PacketServiceImpl(
             }
         }
         logger.debug { "User ${user.username} logged in to the assets service" }
+        val upstreamToken = decodedJWT.claims["upstream-token"]
+        if (upstreamToken != null) {
+            // connect to upstream
+            val upstreamRpcConnection = extendService.openRpcConnection(message, upstreamToken.asString()) { message ->
+                // TODO: move to another service
+                if (message.hasPushNotification()) {
+                    if (message.pushNotification.typeUrl == "type.googleapis.com/lunarclient.websocket.cosmetic.v1.PlayerCosmeticsPush") {
+                        // forward cosmetics push
+                        // forward to client
+                        connection.send(message)
+                    }
+                }
+            }
+            connection.metadata.upstreamConnection = upstreamRpcConnection
+        }
         return user
     }
 
     override suspend fun processDisconnect(signalType: SignalType, connection: ClientConnection<*>, user: User) {
         // remove user from shared store
+        connection.metadata.upstreamConnection?.close(1000, "Completed")
         sessionService.removeSession(connection)
         logger.debug { "User ${user.username} disconnected" }
         logger.debug { "Websocket terminated [${signalType.name}]" }

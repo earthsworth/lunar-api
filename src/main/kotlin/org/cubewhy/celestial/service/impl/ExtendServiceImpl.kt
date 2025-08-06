@@ -1,6 +1,6 @@
 package org.cubewhy.celestial.service.impl
 
-import com.lunarclient.authenticator.v1.ClientboundWebSocketMessage
+import com.lunarclient.websocket.handshake.v1.Handshake
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
@@ -16,6 +16,8 @@ import org.cubewhy.celestial.service.ExtendService
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.socket.client.ReactorNettyWebSocketClient
 import java.net.URI
+import com.lunarclient.authenticator.v1.ClientboundWebSocketMessage as AuthClientboundWebSocketMessage
+import com.lunarclient.websocket.protocol.v1.ClientboundWebSocketMessage as RpcClientboundWebSocketMessage
 
 @Service
 class ExtendServiceImpl(
@@ -25,54 +27,58 @@ class ExtendServiceImpl(
     companion object {
         private val logger = KotlinLogging.logger {}
 
-        val authConnections: MutableMap<String, ClientConnection<*>> = mutableMapOf()
-        val authPromisesMap: MutableMap<String, MutableList<CompletableDeferred<ClientboundWebSocketMessage>>> =
+        val connections: MutableMap<String, ClientConnection<*>> = mutableMapOf()
+        val promisesMap: MutableMap<String, MutableList<CompletableDeferred<ByteArray>>> =
             mutableMapOf()
     }
 
-    fun removeAuthConnection(connId: String) {
-        logger.info { "Upstream auth session $connId closed" }
+    fun removeConnection(connId: String) {
         // clean promise
-        authPromisesMap.remove(connId)
+        promisesMap.remove(connId)
         // remove from connections map
-        authConnections.remove(connId)
+        connections.remove(connId)
     }
 
-    fun addAuthConnection(conn: ClientConnection<*>) {
-        logger.info { "Upstream auth session ${conn.id} opened" }
-        authConnections[conn.id] = conn
+    fun addConnection(conn: ClientConnection<*>) {
+        logger.info { "Upstream session ${conn.id} opened" }
+        connections[conn.id] = conn
     }
 
-    suspend fun handleAuthMessage(connection: ClientConnection<*>, message: ClientboundWebSocketMessage) {
-        logger.info {
-            val msgType =
-                if (message.hasAuthSuccess()) "auth success" else if (message.hasEncryptionRequest()) "join server request" else "<unknown>"
-            "Upstream auth session ${connection.id} received $msgType message"
-        }
+    suspend fun handleMessageInternal(connection: ClientConnection<*>, message: ByteArray) {
         // find promises
-        authPromisesMap[connection.id]?.forEach { promise ->
+        promisesMap[connection.id]?.forEach { promise ->
             // complete promise
             promise.complete(message)
         }
     }
 
-    override suspend fun openAuthConnection(): ClientConnection<*> {
+    private suspend fun openConnection(
+        url: String,
+        handleMessage: suspend (ByteArray) -> Unit = {}
+    ): ClientConnection<*> {
         val promise = CompletableDeferred<ClientConnection<*>>()
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                websocketClient.execute(URI.create(lunarProp.upstream.auth)) { session ->
-                    logger.info { "Handle upstream auth session" }
+                websocketClient.execute(URI.create(url)) { session ->
                     val conn = WebsocketConnection(session)
                     promise.complete(conn)
 
                     session.receive()
                         .flatMap { message ->
                             // parse message
-                            val payload = ClientboundWebSocketMessage.parseFrom(message.payload.asInputStream())
-                            mono { handleAuthMessage(conn, payload) }
+                            val payload = message.payload.asInputStream().readAllBytes()
+                            mono {
+                                handleMessage(payload)
+                                handleMessageInternal(conn, payload)
+                            }
                         }
                         .doFinally {
-                            removeAuthConnection(conn.id)
+                            CoroutineScope(Dispatchers.IO).launch {
+                                val reason = conn.nativeConnection.closeStatus().awaitFirstOrNull()?.reason
+                                logger.info { "Upstream session ${conn.id} closed (${reason})" }
+
+                            }
+                            removeConnection(conn.id)
                         }.then()
                 }.awaitFirstOrNull()
             } catch (e: Exception) {
@@ -81,25 +87,59 @@ class ExtendServiceImpl(
             }
         }
 
-        // wait for connection and add connection to cache
-        val connection = promise.await()
-        addAuthConnection(connection)
+        // wait for connection
+        return promise.await().also { connection ->
+            addConnection(connection)
+        }
+    }
+
+    override suspend fun openAuthConnection(): ClientConnection<*> {
+        // wait for connection open and add connection to cache
+        val connection = openConnection(lunarProp.upstream.auth)
         return connection
     }
 
-    override suspend fun awaitForAuthResponse(connection: ClientConnection<*>): UpstreamAuthResponse? {
+    override suspend fun openRpcConnection(
+        baseHandshake: Handshake,
+        upstreamToken: String,
+        handler: suspend (RpcClientboundWebSocketMessage) -> Unit
+    ): ClientConnection<*> {
+        val connection = openConnection(lunarProp.upstream.rpc) { payload ->
+            val message = RpcClientboundWebSocketMessage.parseFrom(payload)
+            handler(message)
+        }
+        val identity = baseHandshake.identity.toBuilder().setAuthenticatorJwt(upstreamToken)
+        val handshake = baseHandshake.toBuilder().setIdentity(identity).build()
+        connection.send(handshake)
+        return connection
+    }
+
+    override suspend fun awaitForNextMessage(
+        connection: ClientConnection<*>,
+        beforeAwait: suspend () -> Unit
+    ): ByteArray? {
         if (!(connection.isOpen)) return null // connection closed
         // create promise list if not found
-        if (authPromisesMap[connection.id] == null) {
-            authPromisesMap[connection.id] = mutableListOf()
+        if (promisesMap[connection.id] == null) {
+            promisesMap[connection.id] = mutableListOf()
         }
         // find promise list
-        val promises = authPromisesMap[connection.id]!!
+        val promises = promisesMap[connection.id]!!
         // create promise
-        val promise = CompletableDeferred<ClientboundWebSocketMessage>()
+        val promise = CompletableDeferred<ByteArray>()
         promises.add(promise)
 
-        val response = promise.await() // wait for response
+        beforeAwait()
+
+        return promise.await() // wait for response
+    }
+
+    override suspend fun awaitForAuthResponse(
+        connection: ClientConnection<*>,
+        beforeAwait: suspend () -> Unit
+    ): UpstreamAuthResponse? {
+        // parse payload
+        val response = AuthClientboundWebSocketMessage.parseFrom(awaitForNextMessage(connection, beforeAwait))
         return UpstreamAuthResponse.from(response)
     }
 }
