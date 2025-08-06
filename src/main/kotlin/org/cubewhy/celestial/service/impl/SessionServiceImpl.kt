@@ -81,15 +81,15 @@ class SessionServiceImpl(
         this.push(user.id!!, push)
     }
 
-    override suspend fun isOnline(user: User): Boolean {
+    override suspend fun isOnlineByUuid(uuid: String): Boolean {
         return userSessionReactiveRedisTemplate.opsForSet().scan(Const.USER_WEBSOCKET_SESSION_STORE)
-            .any { it.userId == user.id!! }
+            .any { it.userUuid == uuid }
             .awaitFirst()
     }
 
-    override suspend fun isOnline(uuid: String): Boolean {
+    override suspend fun isOnlineByUserId(userId: String): Boolean {
         return userSessionReactiveRedisTemplate.opsForSet().scan(Const.USER_WEBSOCKET_SESSION_STORE)
-            .any { it.userUuid == uuid }
+            .any { it.userId == userId }
             .awaitFirst()
     }
 
@@ -111,7 +111,7 @@ class SessionServiceImpl(
         func: suspend (connection: ClientConnection<*>) -> Unit
     ) {
         // If user offline, make func stop
-        if (!isOnline(userId)) return
+        if (!isOnlineByUserId(userId)) return
         // find the user
         val user = userRepository.findById(userId).awaitFirst()
         // find all available sessions

@@ -93,6 +93,6 @@ class SubscriptionServiceImpl(
         if (!connection.metadata.multiplayerUuids.isEmpty()) {
             return emptyList()
         }
-        return connection.metadata.multiplayerUuids.filter { sessionService.isOnline(it) }
+        return connection.metadata.multiplayerUuids.filter { sessionService.isOnlineByUuid(it) }
     }
 }
