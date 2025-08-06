@@ -5,6 +5,7 @@ plugins {
     id("io.spring.dependency-management") version "1.1.7"
     id("com.google.protobuf") version "0.9.4"
     id("com.github.davidmc24.gradle.plugin.avro") version "1.9.1"
+    application
 }
 
 val frontendDir = "./dashboard"
@@ -27,6 +28,10 @@ avro {
 
 configurations.all {
     exclude(group = "commons-logging", module = "commons-logging")
+}
+
+application {
+    mainClass = "org.cubewhy.celestial.LunarApiApplicationKt"
 }
 
 repositories {
