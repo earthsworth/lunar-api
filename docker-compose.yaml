@@ -1,6 +1,6 @@
 services:
   mongo:
-    image: mongo:latest
+    image: mongo:8.0.9
     container_name: lunar-mongo
     ports:
       - '27017:27017'
@@ -13,7 +13,7 @@ services:
     restart: no
 
   valkey:
-    image: valkey/valkey:latest
+    image: valkey/valkey:8.1.3
     container_name: lunar-valkey
     ports:
       - '6379:6379'
@@ -34,7 +34,7 @@ services:
 #    restart: unless-stopped
 
   zookeeper:
-    image: confluentinc/cp-zookeeper:latest
+    image: confluentinc/cp-zookeeper:7.9.2
     container_name: lunar-zookeeper
     restart: no
     ports:
@@ -44,7 +44,7 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
 
   kafka:
-    image: confluentinc/cp-kafka:latest
+    image: confluentinc/cp-kafka:7.9.2
     container_name: lunar-kafka
     hostname: kafka
     depends_on:
@@ -61,7 +61,7 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
   schema-registry:
-    image: confluentinc/cp-schema-registry:latest
+    image: confluentinc/cp-schema-registry:8.0.0
     hostname: schema-registry
     container_name: lunar-schema-registry
     depends_on:
