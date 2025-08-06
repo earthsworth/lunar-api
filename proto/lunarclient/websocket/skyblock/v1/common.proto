@@ -23,11 +23,11 @@ message EarlyInUnknown {
   lunarclient.common.v1.Vector2i position = 1;
 }
 
-message RoomIdRot {
+message RoomDetection {
   lunarclient.common.v1.Vector2i position = 1;
-  string room_id = 2;
-  lunarclient.websocket.skyblock.v1.DungeonRoomRotation rot = 3;
-  lunarclient.websocket.skyblock.v1.DungeonRoomType type = 4;
+  string hash = 2;
+  lunarclient.common.v1.Vector3i origin = 3;
+  lunarclient.websocket.skyblock.v1.DungeonRoomRotation rotation = 4;
 }
 
 message RoomSecrets {
@@ -41,7 +41,7 @@ message DungeonUpdate {
     lunarclient.websocket.skyblock.v1.EarlyInDoor early_in_door = 1;
     lunarclient.websocket.skyblock.v1.EarlyInRoom early_in_room = 2;
     lunarclient.websocket.skyblock.v1.EarlyInUnknown early_in_unknown = 3;
-    lunarclient.websocket.skyblock.v1.RoomIdRot room_id_rot = 4;
+    lunarclient.websocket.skyblock.v1.RoomDetection room_detection = 4;
     lunarclient.websocket.skyblock.v1.RoomSecrets room_secrets = 5;
   }
 }

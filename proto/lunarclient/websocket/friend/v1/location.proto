@@ -39,6 +39,7 @@ message InboundInGame {
   lunarclient.common.v1.MinecraftVersion minecraft_version = 1;
   bool is_launch = 2;
   lunarclient.common.v1.PlayerModpack modpack = 3;
+  bool is_badlion = 4;
 }
 
 message InboundLocation {

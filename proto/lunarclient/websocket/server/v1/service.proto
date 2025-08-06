@@ -37,5 +37,15 @@ message CheckServerRecommendationsResponse {
   lunarclient.websocket.server.v1.ServerRecommendations recommendations = 1;
 }
 
+message CheckAuthorizedFeaturesRequest {
+  string server_ip = 1;
+}
+
+message CheckAuthorizedFeaturesResponse {
+  repeated string scopes = 1;
+  repeated int32 associated_cosmetic_ids = 2;
+  repeated int32 associated_emote_ids = 3;
+}
+
 
 

@@ -26,6 +26,7 @@ message Handshake {
   string cpu_architecture = 6;
   lunarclient.websocket.language.v1.Language language = 7;
   string canary_token = 10;
+  string overwolf_muid = 12;
   oneof client {
     lunarclient.websocket.handshake.v1.GameHandshake game_handshake = 8;
     lunarclient.websocket.handshake.v1.LauncherHandshake launcher_handshake = 9;
@@ -154,6 +155,7 @@ message LauncherHandshake {
   bool analytics = 14;
   bool owahe = 15;
   repeated lunarclient.websocket.setting.v1.LauncherSetting settings = 16;
+  bool safe_storage = 17;
 
   enum ElectronBinariesType {
     ELECTRON_BINARIES_TYPE_UNSPECIFIED = 0;

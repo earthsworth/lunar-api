@@ -3,6 +3,7 @@ syntax = "proto3";
 package lunarclient.websocket.emote.v1;
 
 import "google/protobuf/timestamp.proto";
+import "lunarclient/common/v1/gift.proto";
 
 option java_package = "com.lunarclient.websocket.emote.v1";
 option java_outer_classname = "CommonProto";
@@ -17,6 +18,7 @@ message OwnedEmote {
   google.protobuf.Timestamp granted_at = 2;
   google.protobuf.Timestamp expires_at = 3;
   repeated lunarclient.websocket.emote.v1.RecommendedJam recommended_jams = 4;
+  lunarclient.common.v1.GiftInfo gift_info = 5;
 }
 
 message EquippedEmote {

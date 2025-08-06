@@ -16,5 +16,19 @@ message RecordScreenshotRequest {
 message RecordScreenshotResponse {
 }
 
+message LoginRequest {
+}
+
+message LoginResponse {
+  lunarclient.websocket.screenshot.v1.ScreenshotPrivacy default_upload_privacy = 1;
+}
+
+message SetDefaultUploadPrivacyRequest {
+  lunarclient.websocket.screenshot.v1.ScreenshotPrivacy default_upload_privacy = 1;
+}
+
+message SetDefaultUploadPrivacyResponse {
+}
+
 
 

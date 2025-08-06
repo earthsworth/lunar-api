@@ -78,6 +78,7 @@ message ReplayWorld {
 message InGame {
   lunarclient.common.v1.MinecraftVersion minecraft_version = 1;
   lunarclient.common.v1.PlayerModpack modpack = 2;
+  bool is_badlion = 3;
 }
 
 message Location {

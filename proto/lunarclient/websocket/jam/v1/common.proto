@@ -3,6 +3,7 @@ syntax = "proto3";
 package lunarclient.websocket.jam.v1;
 
 import "google/protobuf/timestamp.proto";
+import "lunarclient/common/v1/gift.proto";
 
 option java_package = "com.lunarclient.websocket.jam.v1";
 option java_outer_classname = "CommonProto";
@@ -12,6 +13,7 @@ message OwnedJam {
   int32 jam_id = 1;
   google.protobuf.Timestamp granted_at = 2;
   google.protobuf.Timestamp expires_at = 3;
+  lunarclient.common.v1.GiftInfo gift_info = 4;
 }
 
 

@@ -21,6 +21,7 @@ message OpenUrlRequest {
     INITIATOR_SOCIAL_LINK = 5;
     INITIATOR_HOME_BUTTON = 6;
     INITIATOR_LINK_CONFIRM = 7;
+    INITIATOR_SCREENSHOT_UPLOAD = 8;
   }
 
   enum OpenType {

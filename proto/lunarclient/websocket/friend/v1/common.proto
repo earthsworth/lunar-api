@@ -34,6 +34,7 @@ message OnlineFriend {
   google.protobuf.Timestamp friends_since = 11;
   lunarclient.websocket.friend.v1.FriendSocials socials = 12;
   string rank_name = 13;
+  string country_code = 14;
 }
 
 message OfflineFriend {
@@ -45,6 +46,7 @@ message OfflineFriend {
   google.protobuf.Timestamp friends_since = 6;
   lunarclient.websocket.friend.v1.FriendSocials socials = 7;
   string rank_name = 8;
+  string country_code = 9;
 }
 
 message FriendRequest {
@@ -68,6 +70,13 @@ enum LastSeenVisibility {
   LAST_SEEN_VISIBILITY_UNSPECIFIED = 0;
   LAST_SEEN_VISIBILITY_FRIENDS = 1;
   LAST_SEEN_VISIBILITY_NOONE = 2;
+}
+
+enum CountryFlagVisibility {
+  COUNTRY_FLAG_VISIBILITY_UNSPECIFIED = 0;
+  COUNTRY_FLAG_VISIBILITY_EVERYONE = 1;
+  COUNTRY_FLAG_VISIBILITY_FRIENDS = 2;
+  COUNTRY_FLAG_VISIBILITY_NOONE = 3;
 }
 
 

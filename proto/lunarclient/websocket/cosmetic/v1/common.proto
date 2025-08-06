@@ -5,6 +5,7 @@ package lunarclient.websocket.cosmetic.v1;
 import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
 import "lunarclient/common/v1/color.proto";
+import "lunarclient/common/v1/gift.proto";
 
 option java_package = "com.lunarclient.websocket.cosmetic.v1";
 option java_outer_classname = "CommonProto";
@@ -39,6 +40,7 @@ message OwnedCosmetic {
   google.protobuf.Timestamp granted_at = 2;
   google.protobuf.Timestamp expires_at = 3;
   lunarclient.websocket.cosmetic.v1.OwnedCosmetic.ExpirationReason expiration_reason = 4;
+  lunarclient.common.v1.GiftInfo gift_info = 5;
 
   enum ExpirationReason {
     EXPIRATION_REASON_UNSPECIFIED = 0;

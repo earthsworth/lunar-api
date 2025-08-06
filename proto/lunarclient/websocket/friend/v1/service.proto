@@ -25,6 +25,7 @@ message LoginResponse {
   repeated lunarclient.websocket.friend.v1.FriendRequest inbound_friend_add_requests = 7;
   repeated lunarclient.common.v1.Uuid pinned_friends = 8;
   lunarclient.websocket.friend.v1.LastSeenVisibility last_seen_visibility = 9;
+  lunarclient.websocket.friend.v1.CountryFlagVisibility country_flag_visibility = 10;
 }
 
 message BroadcastLocationChangeRequest {
@@ -164,6 +165,13 @@ message SetLastSeenVisibilityRequest {
 }
 
 message SetLastSeenVisibilityResponse {
+}
+
+message SetCountryFlagVisibilityRequest {
+  lunarclient.websocket.friend.v1.CountryFlagVisibility visibility = 1;
+}
+
+message SetCountryFlagVisibilityResponse {
 }
 
 

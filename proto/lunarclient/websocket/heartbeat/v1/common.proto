@@ -4,7 +4,7 @@ package lunarclient.websocket.heartbeat.v1;
 
 import "lunarclient/common/v1/modpack.proto";
 import "lunarclient/common/v1/version.proto";
-import "lunarclient/websocket/friend/v1/location.proto";
+import "lunarclient/common/v1/location.proto";
 
 option java_package = "com.lunarclient.websocket.heartbeat.v1";
 option java_outer_classname = "CommonProto";
@@ -26,7 +26,7 @@ message RunningInstance {
   lunarclient.common.v1.MinecraftVersion minecraft_version = 2;
   string module = 3;
   lunarclient.common.v1.PlayerModpack modpack = 4;
-  lunarclient.websocket.friend.v1.InboundLocation location = 5;
+  lunarclient.common.v1.Location location = 5;
   lunarclient.websocket.heartbeat.v1.RunningInstanceLoader loader = 6;
 }
 
