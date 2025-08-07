@@ -16,7 +16,7 @@ import org.cubewhy.celestial.service.CosmeticService
 import org.cubewhy.celestial.service.SessionService
 import org.cubewhy.celestial.service.SubscriptionService
 import org.cubewhy.celestial.util.toLunarClientUUID
-import org.cubewhy.celestial.util.wrapCommonClient
+import org.cubewhy.celestial.util.wrapCommonServer
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
@@ -77,7 +77,7 @@ class CosmeticServiceImpl(
                     // forward to upstream
                     // NOTE: the payload is empty
                     val payload = CosmeticsLoginRequest.getDefaultInstance()
-                        .wrapCommonClient(UUID.randomUUID().toString().toByteStringUtf8())
+                        .wrapCommonServer(UUID.randomUUID().toString().toByteStringUtf8(), serviceName, "Login")
                     upstream.send(payload)
                 }
                 this.processLogin(user).toWebsocketResponse()
