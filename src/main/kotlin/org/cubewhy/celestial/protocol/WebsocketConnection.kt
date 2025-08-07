@@ -14,11 +14,15 @@ class WebsocketConnection(override val nativeConnection: WebSocketSession) : Cli
         get() = this.nativeConnection.isOpen
 
     override suspend fun send(payload: ByteArray) {
-        this.nativeConnection.send(this.nativeConnection.binaryMessage { it.wrap(payload) }.toMono())
-            .awaitFirstOrNull()
+        if (this.isOpen) {
+            this.nativeConnection.send(this.nativeConnection.binaryMessage { it.wrap(payload) }.toMono())
+                .awaitFirstOrNull()
+        }
     }
 
     override suspend fun close(code: Int, reason: String?) {
-        this.nativeConnection.close(CloseStatus.create(code, reason)).awaitFirstOrNull()
+        if (this.isOpen) {
+            this.nativeConnection.close(CloseStatus.create(code, reason)).awaitFirstOrNull()
+        }
     }
 }

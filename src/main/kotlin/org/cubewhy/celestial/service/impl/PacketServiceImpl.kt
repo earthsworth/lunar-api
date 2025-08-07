@@ -252,10 +252,11 @@ class PacketServiceImpl(
 
     override suspend fun processDisconnect(signalType: SignalType, connection: ClientConnection<*>, user: User) {
         // remove user from shared store
-        connection.metadata.upstreamConnection?.close(1000, "Completed")
         sessionService.removeSession(connection)
         logger.debug { "User ${user.username} disconnected" }
         logger.debug { "Websocket terminated [${signalType.name}]" }
+        // close upstream connection
+        connection.metadata.upstreamConnection?.close(1000, "Completed")
         if (!sessionService.isOnline(user)) {
             // save last seen timestamp
             userService.markOffline(user)
