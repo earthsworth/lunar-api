@@ -2,8 +2,10 @@ package org.cubewhy.celestial.service.impl
 
 import com.google.protobuf.GeneratedMessage
 import com.google.protobuf.kotlin.toByteString
+import com.google.protobuf.kotlin.unpack
 import com.lunarclient.authenticator.v1.AuthSuccessMessage
 import com.lunarclient.authenticator.v1.EncryptionRequestMessage
+import com.lunarclient.websocket.cosmetic.v1.PlayerCosmeticsPush
 import com.lunarclient.websocket.handshake.v1.Handshake
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.reactive.awaitFirst
@@ -241,7 +243,12 @@ class PacketServiceImpl(
                     if (message.pushNotification.typeUrl == "type.googleapis.com/lunarclient.websocket.cosmetic.v1.PlayerCosmeticsPush") {
                         // forward cosmetics push
                         // forward to client
-                        connection.send(message)
+                        // parse push
+                        val push = message.pushNotification.unpack<PlayerCosmeticsPush>()
+                        if (!sessionService.isOnlineByUuid(push.playerUuid.toUUIDString())) {
+                            // only forward if user not online (using the official lunarclient rpc service)
+                            connection.send(message)
+                        }
                     }
                 }
             }
