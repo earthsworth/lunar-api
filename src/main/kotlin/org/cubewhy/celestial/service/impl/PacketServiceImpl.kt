@@ -235,7 +235,7 @@ class PacketServiceImpl(
         }
         logger.debug { "User ${user.username} logged in to the assets service" }
         val upstreamToken = decodedJWT.claims["upstream-token"]
-        if (upstreamToken != null) {
+        if (upstreamToken?.isNull == false) {
             // connect to upstream
             val upstreamRpcConnection = extendService.openRpcConnection(message, upstreamToken.asString()) { message ->
                 // TODO: move to another service
