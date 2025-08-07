@@ -93,13 +93,13 @@ class SubscriptionServiceImpl(
         return SubscribeResponse.newBuilder().build() // empty data
     }
 
-    fun saveWorldPlayerUuids(
+    suspend fun saveWorldPlayerUuids(
         connection: ClientConnection<*>,
         uuids: List<String>,
         user: User
     ) {
         logger.debug { "User ${user.username} update multiplayer player list (added ${uuids.size} players)" }
-        connection.metadata.multiplayerUuids.addAll(uuids)
+        connection.metadata.multiplayerUuids.addAll(uuids.filter { uuid -> sessionService.isOnlineByUuid(uuid) })
         // send event
         logger.debug { "Push UserJoinWorldEvent" }
         applicationEventPublisher.publishEvent(UserSubscribeEvent(this, user, uuids, connection))
