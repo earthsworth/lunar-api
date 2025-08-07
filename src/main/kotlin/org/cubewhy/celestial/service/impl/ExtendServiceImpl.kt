@@ -15,6 +15,7 @@ import org.cubewhy.celestial.protocol.WebsocketConnection
 import org.cubewhy.celestial.service.ExtendService
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.socket.client.ReactorNettyWebSocketClient
+import reactor.netty.channel.AbortedException
 import java.net.URI
 import com.lunarclient.authenticator.v1.ClientboundWebSocketMessage as AuthClientboundWebSocketMessage
 import com.lunarclient.websocket.protocol.v1.ClientboundWebSocketMessage as RpcClientboundWebSocketMessage
@@ -70,6 +71,12 @@ class ExtendServiceImpl(
                             mono {
                                 handleMessage(payload)
                                 handleMessageInternal(conn, payload)
+                            }
+                        }
+                        .doOnError { e ->
+                            if (e !is AbortedException) {
+                                // ignore session disconnected
+                                logger.error(e) { "Upstream webSocket processing error" }
                             }
                         }
                         .doFinally {
