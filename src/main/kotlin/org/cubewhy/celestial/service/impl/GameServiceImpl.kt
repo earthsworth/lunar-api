@@ -78,7 +78,9 @@ class GameServiceImpl(
                 FeatureFlag("SentryIchorHandler", false),
                 FeatureFlag("LunarPlus", true),
                 FeatureFlag("DevSentryReportHandler", false),
-                FeatureFlag("BetaSentryReportHandler", false)
+                FeatureFlag("BetaSentryReportHandler", false),
+                FeatureFlag("GamePromotionCTA", false),
+                FeatureFlag("devTools", true)
             ),
             sentryFilteredExceptions = lunarProperties.sentry.filters.map { SentryFilter(it.identifier, it.regex) },
             starServers = pinnedServers.mapNotNull { pinnedServerMapper.mapToStarServerVO(it) },
