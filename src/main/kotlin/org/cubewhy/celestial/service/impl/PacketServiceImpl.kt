@@ -184,14 +184,14 @@ class PacketServiceImpl(
             val serverHash = CryptUtil.getServerIdHash("", keypair.public!!, clientSecretKey)
             // get identity
             val identity = connection.metadata.identity!!
-            logger.debug { "Verifying player ${identity.username} with Mojang API" }
+            logger.info { "Verifying player ${identity.username} with Mojang API" }
             // verify with Mojang API
             if (mojangService.hasJoined(identity.username, serverHash.toString())) {
                 // create or find user
                 val user = userService.loadUser(identity)
                 // generate jwt
                 val jwt = jwtUtil.createJwt(user)
-                logger.debug { "User ${user.username} successfully authenticated (via Mojang API)" }
+                logger.info { "User ${user.username} successfully authenticated (via Mojang API)" }
                 return AuthSuccessMessage.newBuilder().apply {
                     this.jwt = jwt
                 }.build()
@@ -260,7 +260,7 @@ class PacketServiceImpl(
     override suspend fun processDisconnect(signalType: SignalType, connection: ClientConnection<*>, user: User) {
         // remove user from shared store
         sessionService.removeSession(connection)
-        logger.debug { "User ${user.username} disconnected" }
+        logger.info { "User ${user.username} disconnected" }
         logger.debug { "Websocket terminated [${signalType.name}]" }
         // close upstream connection
         connection.metadata.upstreamConnection?.close(1000, "Completed")
@@ -279,7 +279,7 @@ class PacketServiceImpl(
         val userId = connection.metadata.userId!!
         // find user
         val user = userRepository.findById(userId).awaitFirst()
-        logger.debug { "User ${user.username} send packet ${message.service}:${message.method}" }
+        logger.info { "User ${user.username} send packet ${message.service}:${message.method}" }
 
         val processor = packetProcessorMap[message.service]
         return processor?.process(message.method, message.input, connection, user)
