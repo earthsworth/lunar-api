@@ -106,9 +106,6 @@ class SubscriptionServiceImpl(
     }
 
     override suspend fun getWorldPlayerUuids(connection: ClientConnection<*>): List<String> {
-        if (!connection.metadata.multiplayerUuids.isEmpty()) {
-            return emptyList()
-        }
-        return connection.metadata.multiplayerUuids.filter { sessionService.isOnlineByUuid(it) }
+        return connection.metadata.multiplayerUuids
     }
 }
