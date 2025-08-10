@@ -49,7 +49,7 @@ class SecurityConfig(
                     permitAll
                 )
                 authorize(
-                    pathMatchers(HttpMethod.POST, "/api/pinned-server", "/api/pinned-server/*"),
+                    pathMatchers(HttpMethod.POST, "/api/pinned-server", "/api/pinned-server/*", "/api/song/purge"),
                     hasAnyRole(Role.ADMIN.name)
                 )
 //                authorize(

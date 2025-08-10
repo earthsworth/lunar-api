@@ -17,4 +17,6 @@ interface JamService : PacketProcessor {
     suspend fun createSong(dto: CreateSongDTO, authentication: Authentication, baseUrl: String): SongVO
     suspend fun modifySong(dto: ModifySongDTO, authentication: Authentication, baseUrl: String): SongVO
     suspend fun listOwn(authentication: Authentication, baseUrl: String): List<SongVO>
+
+    suspend fun purgeAll()
 }

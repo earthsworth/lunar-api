@@ -73,6 +73,11 @@ class JamServiceImpl(
         return songs.map { songMapper.mapToSongVO(it, baseUrl) }
     }
 
+    override suspend fun purgeAll() {
+        logger.info { "Purged all songs" }
+        songRepository.deleteAll().awaitFirstOrNull()
+    }
+
     override suspend fun styngrPlaySong(songId: String, baseUrl: String): StyngrSongVO {
         // find song
         logger.debug { "Request song $songId" }

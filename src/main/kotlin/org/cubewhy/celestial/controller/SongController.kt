@@ -58,4 +58,10 @@ class SongController(
             )
         )
     }
+
+    @DeleteMapping("purge")
+    suspend fun purge(): ResponseEntity<RestBean<String>> {
+        jamService.purgeAll()
+        return ResponseEntity.ok(RestBean.success("Success"))
+    }
 }
