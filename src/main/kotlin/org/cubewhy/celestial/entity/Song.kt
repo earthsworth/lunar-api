@@ -3,7 +3,7 @@ package org.cubewhy.celestial.entity
 import org.bson.types.ObjectId
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
-import java.util.UUID
+import java.util.*
 
 @Document
 data class Song(
@@ -18,7 +18,8 @@ data class Song(
     var album: String, // description
     var durationMillis: Int,
 
-    var uploadId: String, // file id
+    var uploadId: String?, // file id
+    var remoteFileUrl: String?,
 ) : TrackingEntity() {
     val numberId: Int
         get() {

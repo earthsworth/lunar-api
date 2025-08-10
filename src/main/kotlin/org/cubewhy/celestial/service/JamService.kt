@@ -14,7 +14,7 @@ interface JamService : PacketProcessor {
     suspend fun availableSongs(baseUrl: String): List<LunarSongVO>
     suspend fun processLogin(connection: ClientConnection<*>, user: User): RpcResponse
     suspend fun styngrPlaySong(songId: String, baseUrl: String): StyngrSongVO
-    suspend fun createSong(dto: CreateSongDTO, authentication: Authentication): SongVO
-    suspend fun modifySong(dto: ModifySongDTO, authentication: Authentication): SongVO
-    suspend fun listOwn(authentication: Authentication): List<SongVO>
+    suspend fun createSong(dto: CreateSongDTO, authentication: Authentication, baseUrl: String): SongVO
+    suspend fun modifySong(dto: ModifySongDTO, authentication: Authentication, baseUrl: String): SongVO
+    suspend fun listOwn(authentication: Authentication, baseUrl: String): List<SongVO>
 }

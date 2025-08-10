@@ -22,7 +22,8 @@ class SongMapperImpl : SongMapper {
         )
     }
 
-    override fun mapToSongVO(song: Song): SongVO {
+    override fun mapToSongVO(song: Song, baseUrl: String): SongVO {
+        val url = if (song.remoteFileUrl != null) song.remoteFileUrl!! else "$baseUrl/api/upload?id=${song.uploadId}"
         return SongVO(
             id = song.id!!,
             name = song.name,
@@ -31,7 +32,7 @@ class SongMapperImpl : SongMapper {
             artist = song.artist,
             album = song.album,
             durationMillis = song.durationMillis,
-            uploadId = song.uploadId,
+            url = url,
             createdAt = song.createdAt.epochSecond
         )
     }

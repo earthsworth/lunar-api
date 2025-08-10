@@ -6,5 +6,5 @@ import org.cubewhy.celestial.entity.vo.SongVO
 
 interface SongMapper {
     fun mapToLunarSongVO(song: Song, baseUrl: String): LunarSongVO
-    fun mapToSongVO(song: Song) : SongVO
+    fun mapToSongVO(song: Song, baseUrl: String): SongVO
 }

@@ -9,5 +9,6 @@ data class ModifySongDTO(
     val album: String,
     val durationMillis: Int,
 
-    val uploadId: String
+    val uploadId: String?,
+    val remoteFileUrl: String?
 )

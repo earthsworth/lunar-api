@@ -9,6 +9,6 @@ data class SongVO(
     val album: String,
     val durationMillis: Int,
 
-    val uploadId: String, // song upload id
+    val url: String, // song upload id
     val createdAt: Long
 )

@@ -65,12 +65,12 @@ class JamServiceImpl(
         return response
     }
 
-    override suspend fun listOwn(authentication: Authentication): List<SongVO> {
+    override suspend fun listOwn(authentication: Authentication, baseUrl: String): List<SongVO> {
         // find user
         val user = userRepository.findByUsername(authentication.name).awaitFirstOrNull() ?: return emptyList()
         // find songs
         val songs = songRepository.findAllByOwner(user.id!!).collectList().awaitFirst()
-        return songs.map { songMapper.mapToSongVO(it) }
+        return songs.map { songMapper.mapToSongVO(it, baseUrl) }
     }
 
     override suspend fun styngrPlaySong(songId: String, baseUrl: String): StyngrSongVO {
@@ -81,12 +81,12 @@ class JamServiceImpl(
         val song = songRepository.findByUuid(parsedUuid).awaitFirstOrNull()
             ?: throw IllegalStateException("Song with uuid $songId not found")
         return StyngrSongVO(
-            url = "${baseUrl}api/upload?id=${song.uploadId}",
+            url = if (song.remoteFileUrl != null) song.remoteFileUrl!! else "${baseUrl}api/upload?id=${song.uploadId}",
             expiresAt = Instant.now().plus(1, ChronoUnit.DAYS).toString()
         )
     }
 
-    override suspend fun createSong(dto: CreateSongDTO, authentication: Authentication): SongVO {
+    override suspend fun createSong(dto: CreateSongDTO, authentication: Authentication, baseUrl: String): SongVO {
         val user = userRepository.findByUsername(authentication.name).awaitFirst()
         // check contentType
         val thumbnailUpload = uploadRepository.findById(dto.thumbnail).awaitFirstOrNull()
@@ -94,11 +94,18 @@ class JamServiceImpl(
         if (!thumbnailUpload.contentType.startsWith("image/")) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Thumbnail is not a image")
         }
-        val songUpload = uploadRepository.findById(dto.uploadId).awaitFirstOrNull()
-            ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad song upload id")
-        if (songUpload.contentType != "audio/x-wav" && songUpload.contentType != "audio/vnd.wave") {
-            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad song content type, only wave files allowed")
+        if (dto.uploadId != null) {
+            val songUpload = uploadRepository.findById(dto.uploadId).awaitFirstOrNull()
+                ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad song upload id")
+            if (songUpload.contentType != "audio/x-wav" && songUpload.contentType != "audio/vnd.wave") {
+                throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad song content type, only wave files allowed")
+            }
         }
+
+        if (dto.uploadId == null && dto.remoteFileUrl == null) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "No file provided")
+        }
+
         val song = Song(
             owner = user.id!!,
             name = dto.name,
@@ -107,14 +114,15 @@ class JamServiceImpl(
             artist = dto.artist,
             album = dto.album,
             durationMillis = dto.durationMillis,
-            uploadId = dto.uploadId
+            uploadId = dto.uploadId,
+            remoteFileUrl = dto.remoteFileUrl
         )
         // save the song
         logger.info { "Song ${song.name} was created by user ${user.username}" }
-        return songMapper.mapToSongVO(songRepository.save(song).awaitFirst())
+        return songMapper.mapToSongVO(songRepository.save(song).awaitFirst(), baseUrl)
     }
 
-    override suspend fun modifySong(dto: ModifySongDTO, authentication: Authentication): SongVO {
+    override suspend fun modifySong(dto: ModifySongDTO, authentication: Authentication, baseUrl: String): SongVO {
         // find song
         val song = songRepository.findById(dto.songId).awaitFirstOrNull()
             ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Song with id ${dto.songId} not found")
@@ -123,6 +131,16 @@ class JamServiceImpl(
         if (song.owner != user.id!! && !user.roles.contains(Role.ADMIN)) {
             throw ResponseStatusException(HttpStatus.FORBIDDEN, "You had no permission to edit this song")
         }
+
+        if (dto.uploadId == null && dto.remoteFileUrl == null) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "No file provided")
+        } else if (dto.uploadId != null && dto.remoteFileUrl != null) {
+            throw ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "uploadId and remoteFileUrl cannot be defined at the same time"
+            )
+        }
+
         song.apply {
             this.songName = dto.songName
             this.name = dto.name
@@ -131,9 +149,10 @@ class JamServiceImpl(
             this.artist = dto.artist
             this.durationMillis = dto.durationMillis
             this.uploadId = dto.uploadId
+            this.remoteFileUrl = dto.remoteFileUrl
         }
         // save song
-        return songMapper.mapToSongVO(songRepository.save(song).awaitFirst())
+        return songMapper.mapToSongVO(songRepository.save(song).awaitFirst(), baseUrl)
     }
 
 
