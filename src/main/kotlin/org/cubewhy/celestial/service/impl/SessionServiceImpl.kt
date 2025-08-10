@@ -83,7 +83,7 @@ class SessionServiceImpl(
 
     override suspend fun isOnlineByUuid(uuid: String): Boolean {
         return userSessionReactiveRedisTemplate.opsForSet().scan(Const.USER_WEBSOCKET_SESSION_STORE)
-            .any { it.userUuid == uuid }
+            .any { it.userUuid.replace("-", "") == uuid.replace("-", "") }
             .awaitFirst()
     }
 
