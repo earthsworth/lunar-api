@@ -317,7 +317,7 @@ class FriendServiceImpl(
 //            this.playerRankName = recipient.role.rank
             this.playerRankName = "Player"
             if (recipient.cosmetic.lunarPlusState) {
-                this.playerPlusColor = recipient.cosmetic.lunarPlusColor.toLunarClientColor()
+                this.playerPlusColor = recipient.cosmetic.lunarPlusColor?.toLunarClientColor() ?: PlusColor.GREEN.toLunarClientColor()
             }
         }.build()
     }
@@ -502,7 +502,7 @@ class FriendServiceImpl(
             rankName = "Player"
             friendsSince = friend.createdAt.toProtobufType()
             if (friendUser.cosmetic.lunarPlusState) {
-                plusColor = friendUser.cosmetic.lunarPlusColor.toLunarClientColor()
+                plusColor = friendUser.cosmetic.lunarPlusColor?.toLunarClientColor() ?: PlusColor.GREEN.toLunarClientColor()
             }
             logoColor = friendUser.logoColor
             isRadioPremium = friendUser.radioPremium
@@ -510,17 +510,14 @@ class FriendServiceImpl(
         }.build()
     }
 
-    private suspend fun hasOutboundFriendRequests(user: User, targetUser: User): Boolean {
-        return friendRequestRepository.existsBySenderIdAndRecipientId(user.id!!, targetUser.id!!).awaitFirst()
-    }
+    private suspend fun hasOutboundFriendRequests(user: User, targetUser: User): Boolean =
+        friendRequestRepository.existsBySenderIdAndRecipientId(user.id!!, targetUser.id!!).awaitFirst()
 
-    private suspend fun hasInboundFriendRequests(user: User, targetUser: User): Boolean {
-        return friendRequestRepository.existsBySenderIdAndRecipientId(targetUser.id!!, user.id!!).awaitFirst()
-    }
+    private suspend fun hasInboundFriendRequests(user: User, targetUser: User): Boolean =
+        friendRequestRepository.existsBySenderIdAndRecipientId(targetUser.id!!, user.id!!).awaitFirst()
 
-    override suspend fun hasFriend(user: User, target: User): Boolean {
-        return friendRepository.findFriendRelation(user.id!!, target.id!!).awaitFirstOrNull() != null
-    }
+    override suspend fun hasFriend(user: User, target: User): Boolean =
+        friendRepository.findFriendRelation(user.id!!, target.id!!).awaitFirstOrNull() != null
 
     private suspend fun sendFriendRequest(user: User, target: User) {
         friendRequestRepository.save(FriendRequest(null, user.id!!, target.id!!, Instant.now())).awaitFirst()
@@ -529,7 +526,7 @@ class FriendServiceImpl(
             sender = user.toLunarClientPlayer()
             senderLogoColor = user.logoColor
             if (user.cosmetic.lunarPlusState) {
-                senderPlusColor = user.cosmetic.lunarPlusColor.toLunarClientColor()
+                senderPlusColor = user.cosmetic.lunarPlusColor?.toLunarClientColor() ?: PlusColor.GREEN.toLunarClientColor()
             }
             senderRankName = "Player"
 

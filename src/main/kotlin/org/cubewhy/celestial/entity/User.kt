@@ -81,7 +81,7 @@ data class UserEmoteSettings(
 
 data class UserCosmeticSettings(
     var lunarLogoColor: LogoColor = LogoColor.WHITE,
-    var lunarPlusColor: PlusColor = PlusColor.GREEN,
+    var lunarPlusColor: PlusColor? = PlusColor.GREEN,
     var lunarPlusState: Boolean = true,
     var clothCloak: Boolean = true,
 

@@ -157,18 +157,18 @@ class CosmeticServiceImpl(
     }
 
     private fun buildCosmeticSettings(user: User): CustomizableCosmeticSettings {
-        return CustomizableCosmeticSettings.newBuilder().apply {
-            addAllActiveCosmeticIds(user.cosmetic.activeCosmetics.map { it })
-            addAllEquippedCosmetics(user.cosmetic.equippedCosmetics.map { it.toEquippedCosmetic() })
-            flipShoulderPet = user.cosmetic.flipShoulderPet
-            showHatsOverHelmet = user.cosmetic.showHatsOverHelmet
-            showHatsOverSkinLayer = user.cosmetic.showHatsOverSkinLayer
-            showOverChestplate = user.cosmetic.showOverChestplate
-            showOverLeggings = user.cosmetic.showOverLeggings
-            showOverBoots = user.cosmetic.showOverBoots
+        return CustomizableCosmeticSettings.newBuilder().also { builder ->
+            builder.addAllActiveCosmeticIds(user.cosmetic.activeCosmetics.map { it })
+            builder.addAllEquippedCosmetics(user.cosmetic.equippedCosmetics.map { it.toEquippedCosmetic() })
+            builder.flipShoulderPet = user.cosmetic.flipShoulderPet
+            builder.showHatsOverHelmet = user.cosmetic.showHatsOverHelmet
+            builder.showHatsOverSkinLayer = user.cosmetic.showHatsOverSkinLayer
+            builder.showOverChestplate = user.cosmetic.showOverChestplate
+            builder.showOverLeggings = user.cosmetic.showOverLeggings
+            builder.showOverBoots = user.cosmetic.showOverBoots
             if (user.cosmetic.lunarPlusState) {
-                clothCloak = user.cosmetic.clothCloak
-                plusColor = user.cosmetic.lunarPlusColor.toLunarClientColor()
+                builder.clothCloak = user.cosmetic.clothCloak
+                builder.plusColor = user.cosmetic.lunarPlusColor?.toLunarClientColor() ?: PlusColor.GREEN.toLunarClientColor()
             }
         }.build()
     }
