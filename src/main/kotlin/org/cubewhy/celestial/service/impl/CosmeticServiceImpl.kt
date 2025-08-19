@@ -100,7 +100,7 @@ class CosmeticServiceImpl(
         user.cosmetic.equippedCosmetics =
             message.settings.equippedCosmeticsList.map { UserCosmetic(it.cosmeticId, Instant.now(), null, null) }
         user.cosmetic.flipShoulderPet = message.settings.flipShoulderPet
-        user.cosmetic.lunarPlusColor = PlusColor.entries.first { it.color == message.settings.plusColor.color }
+        user.cosmetic.lunarPlusColor = PlusColor.entries.firstOrNull { it.color == message.settings.plusColor.color }?: PlusColor.GREEN
         user.cosmetic.clothCloak = message.settings.clothCloak
         user.cosmetic.showHatsOverHelmet = message.settings.showHatsOverHelmet
         user.cosmetic.showHatsOverSkinLayer = message.settings.showHatsOverSkinLayer
