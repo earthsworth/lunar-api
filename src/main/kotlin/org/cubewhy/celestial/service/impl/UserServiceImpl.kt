@@ -6,6 +6,8 @@ import kotlinx.coroutines.reactive.awaitFirst
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import org.cubewhy.celestial.entity.LogoColor
 import org.cubewhy.celestial.entity.User
+import org.cubewhy.celestial.entity.UserCosmeticSettings
+import org.cubewhy.celestial.entity.UserEmoteSettings
 import org.cubewhy.celestial.entity.config.LunarProperties
 import org.cubewhy.celestial.entity.dto.UpdatePasswordDTO
 import org.cubewhy.celestial.entity.vo.PlayerInfoVO
@@ -189,5 +191,11 @@ class UserServiceImpl(
                     .roles(*user.resolvedRoles.map { it.name }.toTypedArray())
                     .build().toMono()
             }
+    }
+
+    override suspend fun resetProfile(user: User) {
+        user.cosmetic = UserCosmeticSettings()
+        user.emote = UserEmoteSettings()
+        userRepository.save(user).awaitFirst()
     }
 }

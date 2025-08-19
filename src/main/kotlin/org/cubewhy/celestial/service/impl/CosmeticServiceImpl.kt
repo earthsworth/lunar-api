@@ -109,7 +109,7 @@ class CosmeticServiceImpl(
         user.cosmetic.showOverBoots = message.settings.showOverBoots
         user.cosmetic.showOverLeggings = message.settings.showOverLeggings
         // save user
-        logger.debug { "Saving cosmetics settings of user ${user.username} (count: ${message.settings.equippedCosmeticsList.size})" }
+        logger.info { "Saving cosmetics settings of user ${user.username} (count: ${message.settings.equippedCosmeticsList.size})" }
         userRepository.save(user).awaitFirst()
         // push settings to other players
         subscriptionService.getWorldPlayerUuids(connection)
@@ -168,7 +168,7 @@ class CosmeticServiceImpl(
             builder.showOverBoots = user.cosmetic.showOverBoots
             if (user.cosmetic.lunarPlusState) {
                 builder.clothCloak = user.cosmetic.clothCloak
-                builder.plusColor = user.cosmetic.lunarPlusColor?.toLunarClientColor() ?: PlusColor.GREEN.toLunarClientColor()
+                builder.plusColor = (user.cosmetic.lunarPlusColor ?: PlusColor.GREEN).toLunarClientColor()
             }
         }.build()
     }

@@ -27,4 +27,6 @@ interface UserService : ReactiveUserDetailsService {
 
     suspend fun getPlayerInfo(playerName: String): PlayerInfoVO
     suspend fun getUserRoles(username: String): List<String>
+
+    suspend fun resetProfile(user: User)
 }
