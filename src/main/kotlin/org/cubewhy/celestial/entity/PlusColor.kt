@@ -19,18 +19,18 @@ enum class PlusColor(val color: Int) {
     ORANGE(0xFC3D03),
     CORAL(0xFF8AFF),
     BROWN(0x964B00),
-    CRIMSON(0xDC143C),
+    CRIMSON(0xE8A761),
     PURPLE(0x7F00D9),
-    AMBER(0xc0e0a4),
+    AMBER(0xC0E0A4),
     TURQUOISE(0xFFD7BE),
-    COPPER(0xFF9900),
+    COPPER(0xBF834E),
     SALMON(0xFA8072),
     VIOLET(0x800080),
-    CHARCOAL(0x333333),
+    CHARCOAL(0x323232),
     MINT(0xB2FFFC),
     LAVENDER(0xC7B8EA),
     PEACH(0x808080),
-    GREY(0x000000),
+    GREY(0x010101),
     RED(0x730505);
 
     fun toLunarClientColor(): Color = Color.newBuilder()
