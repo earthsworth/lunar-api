@@ -1,4 +1,4 @@
-package org.cubewhy.celestial.converer
+package org.cubewhy.celestial.conveter
 
 import org.cubewhy.celestial.entity.Role
 import org.springframework.core.convert.converter.Converter
