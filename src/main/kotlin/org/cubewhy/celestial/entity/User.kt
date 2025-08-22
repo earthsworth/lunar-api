@@ -7,6 +7,8 @@ import org.cubewhy.celestial.util.toLunarClientUUID
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.index.Indexed
 import org.springframework.data.mongodb.core.mapping.Document
+import org.springframework.data.mongodb.core.mapping.Field
+import org.springframework.data.mongodb.core.mapping.FieldType
 import java.io.Serializable
 import java.time.Instant
 
@@ -22,7 +24,8 @@ data class User(
     var password: String? = null,
     @Indexed(unique = true)
     val uuid: String,
-    val roles: MutableList<Role> = mutableListOf(),
+    @Field(targetType = FieldType.STRING)
+    val roles: MutableSet<Role> = mutableSetOf(),
 
     var radioPremium: Boolean = false,
     var lastSeenAt: Instant = Instant.now(),

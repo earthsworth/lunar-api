@@ -18,5 +18,18 @@ enum class Role(
 
     HELPER(LogoColor.SAGE_GREEN, LogoColor.LIME),
 
-    TESTER(LogoColor.DEEP_CYAN),
+    TESTER(LogoColor.DEEP_CYAN), ;
+
+
+    companion object {
+        fun fromDb(raw: String?): Role {
+            if (raw == null) return USER
+            return try {
+                Role.valueOf(raw)
+            } catch (exp: IllegalArgumentException) {
+                // map to USER
+                USER
+            }
+        }
+    }
 }
