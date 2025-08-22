@@ -6,8 +6,7 @@ import org.springframework.data.convert.WritingConverter
 
 @WritingConverter
 class RoleToStringConverter : Converter<Role, String> {
-    override fun convert(source: Role): String? {
-        if (source == Role.USER) return null
+    override fun convert(source: Role): String {
         return source.name
     }
 }
